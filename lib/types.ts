@@ -1,0 +1,35 @@
+export type AppRole = "admin" | "councillor" | "api_integration";
+
+export type DocumentKind =
+  | "decree"
+  | "plenary_agreement"
+  | "government_board_agreement"
+  | "agenda"
+  | "minutes"
+  | "motion"
+  | "amendment"
+  | "committee"
+  | "contract"
+  | "report"
+  | "budget"
+  | "agreement"
+  | "grant"
+  | "other";
+
+export type ProcessingStatus =
+  | "uploaded"
+  | "text_extracted"
+  | "ai_extracted"
+  | "needs_review"
+  | "validated"
+  | "failed";
+
+export type Organization = {
+  id: string;
+  slug: string;
+  name: string;
+  party: string;
+  municipality: string;
+  province: string;
+  region: string;
+};
