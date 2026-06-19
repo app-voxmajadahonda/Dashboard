@@ -1,4 +1,5 @@
 import { Building2, ShieldCheck } from "lucide-react";
+import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
@@ -24,7 +25,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <LoginForm />
+        <Suspense fallback={<div className="login-form">Cargando acceso...</div>}>
+          <LoginForm />
+        </Suspense>
       </section>
     </main>
   );
