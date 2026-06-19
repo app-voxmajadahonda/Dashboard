@@ -1,0 +1,69 @@
+{
+  "portalTitle": "Portal Grupo Municipal VOX Majadahonda",
+  "groupName": "Grupo Municipal VOX Majadahonda",
+  "party": "VOX",
+  "municipality": {
+    "name": "Majadahonda",
+    "ineCode": "28080",
+    "province": "Madrid",
+    "region": "Comunidad de Madrid",
+    "mandate": "2023-2027",
+    "population": {
+      "value": "Pendiente de sincronizar",
+      "label": "Población oficial",
+      "sourceName": "INE - Padrón municipal",
+      "sourceUrl": "https://www.ine.es/"
+    },
+    "surfaceKm2": "38,48",
+    "density": "Pendiente de cálculo",
+    "coordinates": {
+      "latitude": 40.4731,
+      "longitude": -3.8713
+    }
+  },
+  "mayor": {
+    "name": "Lola Moreno",
+    "party": "PP",
+    "mandate": "2023-2027",
+    "sourceName": "Ayuntamiento de Majadahonda / fuentes públicas",
+    "sourceUrl": "https://www.majadahonda.org/"
+  },
+  "councilGroups": [
+    {
+      "name": "Partido Popular",
+      "shortName": "PP",
+      "seats": 15,
+      "color": "#1f6fb2"
+    },
+    {
+      "name": "VOX",
+      "shortName": "VOX",
+      "seats": 4,
+      "color": "#73A35D"
+    },
+    {
+      "name": "Partido Socialista Obrero Español",
+      "shortName": "PSOE",
+      "seats": 3,
+      "color": "#d71920"
+    },
+    {
+      "name": "Vecinos por Majadahonda",
+      "shortName": "VPMJ",
+      "seats": 2,
+      "color": "#7b61ff"
+    },
+    {
+      "name": "Más Madrid",
+      "shortName": "MM",
+      "seats": 1,
+      "color": "#00a78e"
+    }
+  ],
+  "publicModules": [
+    "Control del pleno",
+    "Gestión documental",
+    "Fiscalización de decretos y expedientes",
+    "Alertas y planificación política"
+  ]
+}

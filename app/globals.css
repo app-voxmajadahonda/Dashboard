@@ -1,16 +1,18 @@
 :root {
-  --background: #f7f8fa;
+  --background: #f7f8f5;
   --surface: #ffffff;
-  --surface-muted: #eef1f5;
-  --text: #171a1f;
-  --muted: #647084;
-  --border: #d9dee7;
-  --brand: #2f6f5e;
-  --brand-strong: #1f4f43;
-  --accent: #b83232;
+  --surface-muted: #eef2ea;
+  --text: #172015;
+  --muted: #5f6b5a;
+  --border: #dde5d8;
+  --brand: #73a35d;
+  --brand-strong: #3f511d;
+  --brand-dark: #27291d;
+  --dark-surface: #0f1a0e;
+  --accent: #d92d20;
   --warning: #b7791f;
-  --info: #275d8d;
-  --shadow: 0 12px 30px rgba(22, 28, 37, 0.08);
+  --info: #3f511d;
+  --shadow: 0 8px 22px rgba(39, 41, 29, 0.08);
 }
 
 * {
@@ -27,8 +29,8 @@ body {
   background: var(--background);
   color: var(--text);
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    "Gotham", "Montserrat", "Inter", "Arial", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 button,
@@ -50,7 +52,7 @@ a {
 }
 
 .sidebar {
-  background: #10151d;
+  background: var(--dark-surface);
   color: #f8fafc;
   display: flex;
   flex-direction: column;
@@ -66,7 +68,8 @@ a {
 .brand-mark {
   align-items: center;
   background: var(--brand);
-  border-radius: 6px;
+  border-radius: 4px;
+  color: #ffffff;
   display: inline-flex;
   font-size: 14px;
   font-weight: 800;
@@ -77,7 +80,7 @@ a {
 
 .brand-title {
   font-size: 18px;
-  font-weight: 750;
+  font-weight: 900;
   line-height: 1.15;
   margin-top: 8px;
 }
@@ -94,7 +97,8 @@ a {
 
 .nav-item {
   align-items: center;
-  border-radius: 6px;
+  border-left: 3px solid transparent;
+  border-radius: 4px;
   color: #d9e2ef;
   display: flex;
   gap: 10px;
@@ -103,7 +107,8 @@ a {
 }
 
 .nav-item[data-active="true"] {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(115, 163, 93, 0.18);
+  border-left-color: var(--brand);
   color: #ffffff;
 }
 
@@ -164,7 +169,7 @@ a {
 .button {
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
@@ -178,6 +183,17 @@ a {
   background: var(--brand);
   border-color: var(--brand);
   color: #ffffff;
+  font-weight: 800;
+}
+
+.button.primary:hover {
+  background: var(--brand-strong);
+  border-color: var(--brand-strong);
+}
+
+.button:not(.primary) {
+  color: var(--brand-strong);
+  font-weight: 700;
 }
 
 .content {
@@ -197,11 +213,12 @@ a {
 .table-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: var(--shadow);
 }
 
 .metric-card {
+  border-top: 4px solid var(--brand);
   display: grid;
   gap: 12px;
   min-height: 124px;
@@ -218,8 +235,9 @@ a {
 }
 
 .metric-value {
+  color: var(--brand-strong);
   font-size: 32px;
-  font-weight: 780;
+  font-weight: 900;
   line-height: 1;
 }
 
@@ -235,6 +253,7 @@ a {
 }
 
 .panel {
+  border-top: 4px solid var(--brand);
   padding: 20px;
 }
 
@@ -267,7 +286,7 @@ a {
 .source-item {
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 4px;
   display: grid;
   gap: 4px;
   grid-template-columns: 1fr auto;
@@ -276,7 +295,7 @@ a {
 
 .status-title,
 .source-title {
-  font-weight: 680;
+  font-weight: 800;
 }
 
 .status-meta,
@@ -288,13 +307,13 @@ a {
 .badge {
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 680;
+  font-weight: 800;
   padding: 4px 8px;
   white-space: nowrap;
 }
 
 .badge.green {
-  background: #e4f4ed;
+  background: #e7f0e2;
   color: var(--brand-strong);
 }
 
@@ -304,7 +323,7 @@ a {
 }
 
 .badge.blue {
-  background: #e6f0f8;
+  background: #edf2ea;
   color: var(--info);
 }
 
@@ -314,6 +333,7 @@ a {
 }
 
 .table-panel {
+  border-top: 4px solid var(--brand);
   overflow: hidden;
 }
 
@@ -364,6 +384,289 @@ tr:last-child td {
   gap: 34px;
   min-height: 100vh;
   padding: 22px;
+}
+
+.portal-page {
+  background: var(--background);
+  display: grid;
+  gap: 24px;
+  min-height: 100vh;
+  padding: 22px;
+}
+
+.portal-hero {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+  margin: 0 auto;
+  max-width: 1220px;
+  width: 100%;
+}
+
+.portal-content {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+  padding: 8px 0;
+}
+
+.portal-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.portal-brand {
+  align-items: center;
+  color: var(--brand-dark);
+  display: inline-flex;
+  font-weight: 850;
+  gap: 10px;
+}
+
+.portal-title-block {
+  display: grid;
+  gap: 18px;
+  max-width: 860px;
+  padding-top: 28px;
+}
+
+.portal-title-block h1 {
+  color: var(--brand-dark);
+  font-size: clamp(38px, 5vw, 64px);
+  letter-spacing: 0;
+  line-height: 1;
+  margin: 0;
+  font-weight: 900;
+}
+
+.portal-title-block p {
+  color: #394434;
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 760px;
+}
+
+.municipal-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.municipal-card,
+.portal-map-panel,
+.council-card,
+.modules-card,
+.portal-login {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+.municipal-card {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  min-height: 112px;
+  padding: 16px;
+}
+
+.municipal-card div {
+  display: grid;
+  gap: 6px;
+}
+
+.municipal-card strong {
+  color: var(--brand-dark);
+  line-height: 1.2;
+}
+
+.municipal-card span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.card-icon {
+  align-items: center;
+  background: #e7f0e2;
+  border-radius: 4px;
+  color: var(--brand-strong);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.card-icon.strong {
+  background: var(--brand);
+  color: #ffffff;
+  height: 40px;
+  width: 40px;
+}
+
+.portal-map-panel {
+  align-items: stretch;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 0.78fr) minmax(260px, 0.45fr);
+  padding: 18px;
+}
+
+.portal-map-panel h2,
+.section-heading h2,
+.login-card-header h2 {
+  color: var(--brand-dark);
+  font-size: 18px;
+  margin: 0;
+}
+
+.portal-map-panel p,
+.login-card-header p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 6px 0 0;
+}
+
+.region-map {
+  background: #f7f8f5;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 184px;
+  overflow: hidden;
+  position: relative;
+}
+
+.region-map::before {
+  background: #dfe8d9;
+  border: 2px solid #c7d7bf;
+  border-radius: 45% 52% 40% 58%;
+  content: "";
+  height: 138px;
+  left: 50%;
+  position: absolute;
+  top: 52%;
+  transform: translate(-50%, -50%) rotate(-9deg);
+  width: 180px;
+}
+
+.map-label {
+  color: #6b7865;
+  font-size: 12px;
+  font-weight: 750;
+  left: 14px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 12px;
+}
+
+.municipality-pin {
+  align-items: center;
+  background: var(--brand-strong);
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 10px 20px rgba(18, 36, 12, 0.22);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 5px;
+  left: 34%;
+  padding: 7px 10px;
+  position: absolute;
+  top: 48%;
+}
+
+.portal-login {
+  align-self: start;
+  border-top: 5px solid var(--brand);
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  position: sticky;
+  top: 22px;
+}
+
+.login-card-header {
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.portal-login .login-form {
+  padding: 14px 0 0;
+}
+
+.portal-public-data {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  margin: 0 auto;
+  max-width: 1220px;
+  width: 100%;
+}
+
+.council-card,
+.modules-card {
+  border-top: 4px solid var(--brand);
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.section-heading span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.seat-list {
+  display: grid;
+  gap: 8px;
+}
+
+.seat-row {
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr auto;
+  padding: 10px 12px;
+}
+
+.party-dot {
+  border-radius: 999px;
+  height: 12px;
+  width: 12px;
+}
+
+.module-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.module-list span {
+  background: #e7f0e2;
+  border: 1px solid #c9dcbc;
+  border-radius: 999px;
+  color: var(--brand-dark);
+  font-size: 13px;
+  font-weight: 750;
+  padding: 8px 10px;
 }
 
 .public-nav {
@@ -430,7 +733,7 @@ tr:last-child td {
 }
 
 .public-summary {
-  background: #10151d;
+  background: var(--dark-surface);
   border-radius: 8px;
   box-shadow: var(--shadow);
   color: #ffffff;
@@ -499,6 +802,15 @@ tr:last-child td {
   .dashboard-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .portal-hero,
+  .portal-public-data {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-login {
+    position: static;
+  }
 }
 
 @media (max-width: 760px) {
@@ -529,6 +841,33 @@ tr:last-child td {
   td {
     padding: 12px;
   }
+
+  .portal-page {
+    padding: 14px;
+  }
+
+  .portal-title-block {
+    padding-top: 8px;
+  }
+
+  .municipal-grid,
+  .portal-map-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-login,
+  .municipal-card,
+  .portal-map-panel,
+  .council-card,
+  .modules-card {
+    padding: 16px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 
 .login-page {
@@ -552,7 +891,7 @@ tr:last-child td {
 }
 
 .login-copy {
-  background: #10151d;
+  background: var(--dark-surface);
   color: #ffffff;
   display: grid;
   gap: 18px;
@@ -602,15 +941,23 @@ tr:last-child td {
 
 .login-form input {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   min-height: 42px;
   padding: 10px 12px;
+}
+
+.login-form input:focus,
+.admin-form input:focus,
+.admin-form select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(115, 163, 93, 0.18);
+  outline: none;
 }
 
 .login-form select,
 .admin-form select {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   min-height: 42px;
   padding: 10px 12px;
 }
@@ -664,7 +1011,7 @@ tr:last-child td {
 
 .admin-form input {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   min-height: 42px;
   padding: 10px 12px;
 }
@@ -672,16 +1019,16 @@ tr:last-child td {
 .form-error {
   background: #fbe7e7;
   border: 1px solid #f0b8b8;
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--accent);
   font-size: 14px;
   padding: 10px 12px;
 }
 
 .form-success {
-  background: #e4f4ed;
+  background: #e7f0e2;
   border: 1px solid #b9dfcc;
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--brand-strong);
   font-size: 14px;
   padding: 10px 12px;

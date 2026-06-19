@@ -29,7 +29,7 @@ export function LoginForm() {
     setIsSubmitting(false);
 
     if (signInError) {
-      setError("No se ha podido iniciar sesion con esas credenciales.");
+      setError("No se ha podido iniciar sesión con esas credenciales.");
       return;
     }
 
@@ -53,12 +53,12 @@ export function LoginForm() {
         />
       </label>
       <label>
-        Contrasena
+        Contraseña
         <input
           autoComplete="current-password"
           name="password"
           onChange={(event) => setPassword(event.target.value)}
-          placeholder="Introduce tu contrasena"
+          placeholder="Introduce tu contraseña"
           required
           type="password"
           value={password}
@@ -69,8 +69,8 @@ export function LoginForm() {
         {isSubmitting ? "Entrando..." : "Entrar"}
       </button>
       <p className="muted">
-        Acceso mediante usuario y contrasena. Los permisos se aplican por rol
-        dentro de la organizacion.
+        Acceso mediante usuario y contraseña. Los permisos se aplican por rol
+        dentro de la organización.
       </p>
     </form>
   );

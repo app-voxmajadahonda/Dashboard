@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Dashboard Grupo Municipal",
-  description: "Seguimiento documental, politico y operativo para grupos municipales."
+  title: "Portal Grupo Municipal",
+  description: "Portal interno de seguimiento documental, político y operativo para grupos municipales."
 };
 
 export default function RootLayout({
