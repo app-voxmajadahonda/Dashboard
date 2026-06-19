@@ -14,8 +14,8 @@
       "sourceName": "INE - Padrón municipal",
       "sourceUrl": "https://www.ine.es/"
     },
-    "surfaceKm2": "38,48",
-    "density": "Pendiente de cálculo",
+    "surfaceKm2": "38,47",
+    "density": "1.853,37 hab./km²",
     "coordinates": {
       "latitude": 40.4731,
       "longitude": -3.8713
@@ -29,7 +29,7 @@
         "label": "Comunidad de Madrid - nomenclátor oficial y callejero",
         "url": "https://www.comunidad.madrid/"
       },
-      "status": "Pendiente de incorporar GeoJSON oficial al repositorio"
+      "status": "Límites reales incorporados desde shapefile oficial ETRS89"
     }
   },
   "mayor": {

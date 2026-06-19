@@ -3,6 +3,8 @@ import { CreateUserForm } from "@/components/admin/create-user-form";
 import { appRoles } from "@/lib/auth/roles";
 import { requireUser } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminUsersPage() {
   await requireUser();
 
@@ -12,12 +14,12 @@ export default async function AdminUsersPage() {
         <div>
           <span className="eyebrow">
             <ShieldCheck size={16} />
-            Administracion
+            Administración
           </span>
           <h1>Usuarios y roles</h1>
           <p>
-            Alta de usuarios internos y asignacion inicial de permisos para la
-            organizacion configurada.
+            Alta de usuarios internos y asignación inicial de permisos para la
+            organización configurada.
           </p>
         </div>
         <a className="button" href="/dashboard">
@@ -30,7 +32,7 @@ export default async function AdminUsersPage() {
           <div className="panel-header">
             <div>
               <h2>Crear usuario</h2>
-              <p>Solo los administradores podran usar esta accion.</p>
+              <p>Solo los administradores podrán usar esta acción.</p>
             </div>
             <Users size={20} />
           </div>

@@ -1,10 +1,22 @@
-node_modules
-.next
-out
-dist
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# Environment and provider state
 .env
 .env*.local
+.vercel/
+
+# Logs and caches
 *.log
-.vercel
-.turbo
-coverage
+.turbo/
+coverage/
+/.pnpm-store/v11/files/00
+/.pnpm-store/v11/files/01
+.pnpm-store/v11/files/02/110a46861b57f729dffd0d174f7bdd9d6a764196f2242f4c1401c1ec3fb91d03cc0003a9993cd447da933b24735ecd4c68dd7ece0b31b5e0b8731632cc8d4d
+/.pnpm-store/v11/files
+/.pnpm-store/v11

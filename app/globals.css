@@ -765,10 +765,7 @@ tr:last-child td {
 }
 
 .official-map-frame {
-  background:
-    linear-gradient(90deg, rgba(15, 26, 14, 0.96), rgba(39, 41, 29, 0.84)),
-    repeating-linear-gradient(0deg, transparent 0, transparent 31px, rgba(255, 255, 255, 0.04) 32px),
-    repeating-linear-gradient(90deg, transparent 0, transparent 31px, rgba(255, 255, 255, 0.04) 32px);
+  background: linear-gradient(90deg, rgba(15, 26, 14, 0.98), rgba(39, 41, 29, 0.9));
   border-radius: 6px;
   color: #ffffff;
   min-height: 430px;
@@ -776,14 +773,23 @@ tr:last-child td {
   position: relative;
 }
 
-.map-watermark {
-  bottom: 14px;
-  color: rgba(255, 255, 255, 0.08);
-  font-size: clamp(120px, 18vw, 260px);
-  font-weight: 900;
-  line-height: 0.8;
+.official-boundary-map {
+  inset: 18px;
   position: absolute;
-  right: 18px;
+}
+
+.official-boundary-map path {
+  fill: rgba(255, 255, 255, 0.13);
+  stroke: rgba(255, 255, 255, 0.26);
+  stroke-linejoin: round;
+  stroke-width: 1;
+}
+
+.official-boundary-map path.is-selected {
+  fill: var(--brand);
+  filter: drop-shadow(0 0 14px rgba(115, 163, 93, 0.8));
+  stroke: #ffffff;
+  stroke-width: 2.6;
 }
 
 .map-focus {

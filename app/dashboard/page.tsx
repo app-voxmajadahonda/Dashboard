@@ -27,6 +27,8 @@ import { LogoutButton } from "@/components/auth/logout-button";
 import municipalProfile from "@/config/municipal-profile.json";
 import { requireUser } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 const metrics = [
   {
     label: "Documentos pendientes",

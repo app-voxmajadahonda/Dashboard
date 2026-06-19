@@ -1,5 +1,7 @@
 import { Landmark, LockKeyhole, MapPin, ShieldCheck, UsersRound } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
+import madridMap from "@/config/geo/madrid-map.json";
 import municipalProfile from "@/config/municipal-profile.json";
 import { LoginForm } from "@/components/auth/login-form";
 
@@ -23,10 +25,10 @@ export default function PublicHomePage() {
   return (
     <main className="portal-page">
       <header className="portal-top">
-        <a className="portal-brand" href="/">
+        <Link className="portal-brand" href="/">
           <span className="brand-mark">VOX</span>
           <span>{municipalProfile.portalTitle}</span>
-        </a>
+        </Link>
         <aside className="portal-login compact" aria-label="Acceso privado">
           <div className="login-card-header">
             <div className="card-icon strong">
@@ -87,7 +89,22 @@ export default function PublicHomePage() {
           </div>
 
           <div className="official-map-frame">
-            <div className="map-watermark">CAM</div>
+            <svg
+              aria-label="Mapa real de municipios de la Comunidad de Madrid con Majadahonda destacada"
+              className="official-boundary-map"
+              role="img"
+              viewBox={madridMap.viewBox}
+            >
+              {madridMap.municipalities.map((municipalityBoundary) => (
+                <path
+                  className={municipalityBoundary.isSelected ? "is-selected" : undefined}
+                  d={municipalityBoundary.path}
+                  key={municipalityBoundary.natCode}
+                >
+                  <title>{municipalityBoundary.name}</title>
+                </path>
+              ))}
+            </svg>
             <div className="map-focus">
               <MapPin size={22} />
               <strong>{municipality.name}</strong>
