@@ -1,8 +1,11 @@
 import { ShieldCheck, Users } from "lucide-react";
 import { CreateUserForm } from "@/components/admin/create-user-form";
 import { appRoles } from "@/lib/auth/roles";
+import { requireUser } from "@/lib/supabase/server";
 
-export default function AdminUsersPage() {
+export default async function AdminUsersPage() {
+  await requireUser();
+
   return (
     <main className="admin-page">
       <header className="admin-header">

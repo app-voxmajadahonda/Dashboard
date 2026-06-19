@@ -17,6 +17,7 @@ import {
   Users
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { requireUser } from "@/lib/supabase/server";
 
 const metrics = [
   {
@@ -127,7 +128,9 @@ const sources = [
   }
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireUser();
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
