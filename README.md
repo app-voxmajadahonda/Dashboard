@@ -138,6 +138,10 @@ Google Cloud queda como opción futura si se decide mover infraestructura o serv
 
 Para centralizar el desarrollo, despliegues y configuración de servicios desde Codex, ver [CODEX.md](./CODEX.md).
 
+## Hoja de ruta funcional
+
+Las decisiones, ideas y tareas funcionales pendientes se registran en [HOJA_RUTA.md](./HOJA_RUTA.md).
+
 ## Siguientes pasos técnicos
 
 1. Conectar el dashboard a datos reales.
