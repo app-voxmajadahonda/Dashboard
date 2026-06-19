@@ -19,6 +19,17 @@
     "coordinates": {
       "latitude": 40.4731,
       "longitude": -3.8713
+    },
+    "boundarySources": {
+      "region": {
+        "label": "CNIG - límites administrativos",
+        "url": "https://centrodedescargas.cnig.es/CentroDescargas/index.jsp"
+      },
+      "municipality": {
+        "label": "Comunidad de Madrid - nomenclátor oficial y callejero",
+        "url": "https://www.comunidad.madrid/"
+      },
+      "status": "Pendiente de incorporar GeoJSON oficial al repositorio"
     }
   },
   "mayor": {
