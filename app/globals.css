@@ -795,7 +795,7 @@ tr:last-child td {
 }
 
 .official-boundary-map {
-  inset: 14px 28px;
+  inset: 28px 72px;
   position: absolute;
 }
 
