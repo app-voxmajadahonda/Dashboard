@@ -128,6 +128,10 @@ Primer despliegue:
 
 Ver [GOOGLE_CLOUD.md](./GOOGLE_CLOUD.md).
 
+## Operacion desde Codex
+
+Para centralizar el desarrollo, despliegues y configuracion de servicios desde Codex, ver [CODEX.md](./CODEX.md).
+
 ## Siguientes pasos tecnicos
 
 1. Conectar Supabase Auth.

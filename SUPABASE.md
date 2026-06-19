@@ -10,8 +10,8 @@ Pendiente:
 - Obtener `anon public key` / `publishable key`. Estado: configurada.
 - Guardar `service role key` en gestor de contrasenas.
 - Guardar `database password` en gestor de contrasenas.
-- Crear bucket privado `documents`.
-- Ejecutar migracion inicial.
+- Crear bucket privado `documents`. Estado: preparado en migracion.
+- Ejecutar migraciones iniciales.
 
 ## Datos que se pueden compartir para configurar la app
 
@@ -35,6 +35,14 @@ La `service role key` permite saltarse politicas RLS y debe tratarse como secret
 
 ## Crear bucket documental
 
+El bucket puede crearse ejecutando la migracion:
+
+```text
+supabase/migrations/0002_documents_storage.sql
+```
+
+Tambien se puede crear manualmente.
+
 En Supabase:
 
 1. Ir a `Storage`.
@@ -49,21 +57,22 @@ documents
 
 Este bucket guardara PDFs, DOCX y documentos originales.
 
-## Ejecutar migracion inicial
+## Ejecutar migraciones iniciales
 
 En Supabase:
 
 1. Ir a `SQL Editor`.
 2. Crear nueva query.
-3. Copiar el contenido de:
+3. Ejecutar, en orden, el contenido de:
 
 ```text
 supabase/migrations/0001_initial_schema.sql
+supabase/migrations/0002_documents_storage.sql
 ```
 
 4. Ejecutar.
 
-La migracion crea:
+Las migraciones crean:
 
 - Organizacion inicial Vox Majadahonda.
 - Perfiles de usuario.
@@ -74,8 +83,10 @@ La migracion crea:
 - Acciones de gobierno.
 - Auditoria.
 - Politicas RLS iniciales.
+- Bucket privado `documents`.
+- Politicas de Storage para documentos por organizacion.
 
-## Despues de ejecutar la migracion
+## Despues de ejecutar las migraciones
 
 Crear el primer usuario administrador:
 
@@ -83,6 +94,12 @@ Crear el primer usuario administrador:
 2. Invitar o crear el usuario del portavoz/administrador.
 3. Copiar el `user id`.
 4. Insertar una membresia admin para la organizacion `vox-majadahonda`.
+
+Plantilla disponible:
+
+```text
+supabase/setup_first_admin.sql
+```
 
 SQL orientativo:
 
