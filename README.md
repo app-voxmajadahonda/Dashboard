@@ -14,7 +14,7 @@ La primera configuracion sera para Vox Majadahonda, pero el proyecto esta plante
 - Supabase Storage
 - OpenAI API
 - n8n
-- Vercel como despliegue inicial recomendado
+- Google Cloud Run como despliegue recomendado
 
 ## Estado actual
 
@@ -52,6 +52,13 @@ Comprobacion:
 npm run typecheck
 npm run lint
 npm run build
+```
+
+Endpoints de salud:
+
+```text
+/api/health
+/api/config-check
 ```
 
 ## Variables de entorno
@@ -103,11 +110,12 @@ Primer despliegue:
 
 1. Crear repositorio privado en GitHub.
 2. Subir este proyecto.
-3. Conectar el repositorio a Vercel.
-4. Configurar variables de entorno en Vercel.
-5. Desplegar `main`.
+3. Crear proyecto Google Cloud.
+4. Activar Cloud Run, Cloud Build, Artifact Registry y Secret Manager.
+5. Conectar el repositorio a Cloud Build.
+6. Desplegar con `cloudbuild.yaml`.
 
-Mas adelante se podra migrar a Google Cloud Run si conviene concentrar la infraestructura en Google Cloud.
+Ver [GOOGLE_CLOUD.md](./GOOGLE_CLOUD.md).
 
 ## Siguientes pasos tecnicos
 

@@ -23,7 +23,7 @@ Nombre recomendado:
 Esta cuenta debe ser propietaria o administradora de:
 
 - GitHub.
-- Google Cloud o Vercel.
+- Google Cloud.
 - Supabase.
 - n8n.
 - OpenAI API.
@@ -41,7 +41,7 @@ Para avanzar rapido sin perder seriedad tecnica:
 - Storage documental: Supabase Storage al inicio.
 - IA: OpenAI API.
 - Automatizaciones: n8n.
-- Despliegue: Vercel al inicio, con opcion futura a Google Cloud Run.
+- Despliegue: Google Cloud Run.
 
 Motivo:
 
@@ -140,7 +140,7 @@ Pantallas iniciales:
 2. Crear o autorizar una cuenta de GitHub.
 3. Crear cuenta de Supabase con la cuenta tecnica.
 4. Crear cuenta de OpenAI API con la cuenta tecnica.
-5. Decidir si usamos Vercel o Google Cloud Run para el primer despliegue.
+5. Crear proyecto Google Cloud para el primer despliegue.
 6. Elegir 3 o 4 documentos reales de prueba.
 
 ## Lo que puede hacer Codex
@@ -158,11 +158,11 @@ Pantallas iniciales:
 
 1. Crear cuenta tecnica.
 2. Crear repositorio privado en GitHub.
-3. Crear proyecto Supabase.
+3. Crear proyecto Supabase. Estado: creado desde movil.
 4. Crear app Next.js.
 5. Conectar Supabase Auth.
 6. Crear tablas iniciales.
-7. Desplegar una primera version vacia en Vercel.
+7. Desplegar una primera version vacia en Google Cloud Run.
 8. Subir primer PDF.
 9. Extraer texto.
 10. Extraer datos con IA.
@@ -171,6 +171,6 @@ Pantallas iniciales:
 
 Para empezar ya, la decision clave es:
 
-Usamos Vercel + Supabase para el primer MVP, manteniendo abierta la migracion posterior a Google Cloud Run.
+Usamos Google Cloud Run + Supabase para el primer MVP.
 
-Esta es la opcion recomendada para no retrasar el proyecto por infraestructura antes de validar la aplicacion.
+Esta es la opcion recomendada si queremos prescindir de Vercel y mantener la infraestructura principal bajo la cuenta tecnica de Google.

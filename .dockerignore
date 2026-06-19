@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.env
+.env*.local
+*.log
+coverage
+.vercel
+.turbo
+README.md
+ARQUITECTURA.md
+ARRANQUE.md
+CUENTAS.md
+GITHUB.md
+SEGURIDAD.md
+SUPABASE.md
