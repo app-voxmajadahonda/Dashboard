@@ -61,6 +61,17 @@ Endpoints de salud:
 /api/config-check
 ```
 
+## Rutas iniciales
+
+```text
+/           Parte publica
+/login      Login de usuarios
+/dashboard  Dashboard privado
+/admin/users Gestion de usuarios y roles
+```
+
+La proteccion usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `councillor` y `api_integration`.
+
 ## Variables de entorno
 
 Copiar `.env.example` a `.env.local` y rellenar los valores reales:

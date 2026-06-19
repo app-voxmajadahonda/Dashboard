@@ -93,6 +93,24 @@ from organizations
 where slug = 'vox-majadahonda';
 ```
 
+Cuando ese primer administrador exista, podra entrar en:
+
+```text
+/admin/users
+```
+
+Desde ahi podra crear otros usuarios y asignarles uno de estos roles:
+
+- `admin`
+- `councillor`
+- `api_integration`
+
+Para que la creacion de usuarios funcione desde la app, Vercel debe tener configurada la variable secreta:
+
+```text
+SUPABASE_SERVICE_ROLE_KEY
+```
+
 ## Problema de acceso desde red municipal
 
 Si Supabase no abre desde la red municipal, probablemente sea por DNS/proxy.

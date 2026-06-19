@@ -1,4 +1,5 @@
-import { Building2, KeyRound, ShieldCheck } from "lucide-react";
+import { Building2, ShieldCheck } from "lucide-react";
+import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
@@ -23,24 +24,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <form className="login-form">
-          <label>
-            Email
-            <input placeholder="usuario@dominio.es" type="email" />
-          </label>
-          <label>
-            Contrasena
-            <input placeholder="Introduce tu contrasena" type="password" />
-          </label>
-          <button className="button primary" type="button">
-            <KeyRound size={17} />
-            Entrar
-          </button>
-          <p className="muted">
-            Esta pantalla quedara conectada a Supabase Auth cuando tengamos las
-            credenciales del proyecto.
-          </p>
-        </form>
+        <LoginForm />
       </section>
     </main>
   );
