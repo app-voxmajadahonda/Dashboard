@@ -239,7 +239,7 @@ a {
 }
 
 .panel-header {
-  align-items: start;
+  align-items: flex-start;
   display: flex;
   gap: 16px;
   justify-content: space-between;
@@ -624,7 +624,7 @@ tr:last-child td {
 }
 
 .admin-header {
-  align-items: start;
+  align-items: flex-start;
   display: flex;
   gap: 16px;
   justify-content: space-between;
