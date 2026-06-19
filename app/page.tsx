@@ -54,9 +54,32 @@ export default function PublicHomePage() {
                 </small>
               </article>
               <article>
+                <span>Gobierno</span>
+                <strong>
+                  <span
+                    className="party-logo-chip"
+                    style={{ backgroundColor: mayor.partyColor }}
+                  >
+                    {mayor.partyLogoText}
+                  </span>
+                  {mayor.party}
+                </strong>
+                <small>Partido de gobierno</small>
+              </article>
+              <article>
                 <span>{municipality.population.label}</span>
                 <strong>{municipality.population.value}</strong>
                 <small>{municipality.population.sourceName}</small>
+              </article>
+              <article>
+                <span>{municipality.budget.label}</span>
+                <strong>{municipality.budget.value}</strong>
+                <small>{municipality.budget.sourceName}</small>
+              </article>
+              <article>
+                <span>Superficie</span>
+                <strong>{municipality.surfaceKm2} km²</strong>
+                <small>Densidad: {municipality.density}</small>
               </article>
             </div>
           </section>

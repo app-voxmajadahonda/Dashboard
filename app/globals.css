@@ -731,6 +731,7 @@ tr:last-child td {
 }
 
 .municipal-facts article {
+  align-content: space-between;
   background: var(--surface);
   border: 1px solid var(--border);
   border-top: 4px solid var(--brand);
@@ -738,8 +739,9 @@ tr:last-child td {
   box-shadow: var(--shadow);
   display: grid;
   gap: 4px;
-  min-height: 92px;
+  min-height: 84px;
   padding: 12px;
+  min-width: 0;
 }
 
 .municipal-facts span,
@@ -750,10 +752,28 @@ tr:last-child td {
 }
 
 .municipal-facts strong {
+  align-items: center;
   color: var(--brand-dark);
+  display: flex;
   font-size: 19px;
   font-weight: 900;
+  gap: 8px;
   line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.party-logo-chip {
+  align-items: center;
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 900;
+  height: 24px;
+  justify-content: center;
+  min-width: 30px;
+  padding: 0 6px;
 }
 
 .portal-visual-grid {
@@ -795,8 +815,12 @@ tr:last-child td {
 }
 
 .official-boundary-map {
-  inset: 28px 72px;
+  height: 82%;
+  left: 50%;
   position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 54%;
 }
 
 .official-boundary-map path {

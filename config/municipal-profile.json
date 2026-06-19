@@ -14,6 +14,11 @@
       "sourceName": "INE - Padrón municipal",
       "sourceUrl": "https://www.ine.es/"
     },
+    "budget": {
+      "value": "Pendiente",
+      "label": "Presupuesto municipal",
+      "sourceName": "Ayuntamiento de Majadahonda"
+    },
     "surfaceKm2": "38,47",
     "density": "1.853,37 hab./km²",
     "coordinates": {
@@ -35,6 +40,8 @@
   "mayor": {
     "name": "Lola Moreno",
     "party": "PP",
+    "partyLogoText": "PP",
+    "partyColor": "#1f6fb2",
     "mandate": "2023-2027",
     "sourceName": "Ayuntamiento de Majadahonda / fuentes públicas",
     "sourceUrl": "https://www.majadahonda.org/"
