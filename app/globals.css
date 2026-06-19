@@ -789,13 +789,13 @@ tr:last-child td {
   background: transparent;
   border-radius: 6px;
   color: var(--text);
-  min-height: clamp(330px, 47vh, 470px);
+  min-height: clamp(240px, 34vh, 330px);
   overflow: hidden;
   position: relative;
 }
 
 .official-boundary-map {
-  inset: 0;
+  inset: 14px 28px;
   position: absolute;
 }
 
@@ -1121,7 +1121,7 @@ tr:last-child td {
   }
 
   .official-map-frame {
-    min-height: 300px;
+    min-height: 240px;
   }
 
   .map-meta {
