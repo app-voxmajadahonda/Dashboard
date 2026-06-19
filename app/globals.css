@@ -389,9 +389,9 @@ tr:last-child td {
 .portal-page {
   background: var(--background);
   display: grid;
-  gap: 24px;
+  gap: 14px;
   min-height: 100vh;
-  padding: 22px;
+  padding: 16px 24px;
 }
 
 .portal-hero {
@@ -581,7 +581,7 @@ tr:last-child td {
 }
 
 .portal-login {
-  align-self: start;
+  align-self: flex-start;
   border-top: 5px solid var(--brand);
   display: grid;
   gap: 8px;
@@ -670,42 +670,63 @@ tr:last-child td {
 }
 
 .portal-top {
-  align-items: start;
-  display: grid;
-  gap: 24px;
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
   margin: 0 auto;
   max-width: 1440px;
   width: 100%;
 }
 
 .portal-top .portal-brand {
-  font-size: 17px;
-  min-height: 40px;
+  font-size: 16px;
+  min-height: 34px;
 }
 
-.portal-command {
+.portal-layout {
   display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(0, 1fr) minmax(520px, 0.7fr);
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 390px;
   margin: 0 auto;
   max-width: 1440px;
   width: 100%;
 }
 
+.portal-main,
+.portal-side {
+  display: grid;
+  gap: 14px;
+}
+
+.portal-side {
+  align-content: flex-start;
+}
+
+.portal-command {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 0.72fr);
+}
+
 .portal-command .portal-title-block {
-  max-width: 780px;
+  max-width: 700px;
   padding-top: 0;
 }
 
 .portal-command .portal-title-block h1 {
-  font-size: clamp(30px, 3vw, 48px);
+  font-size: clamp(28px, 2.6vw, 42px);
   line-height: 1.04;
+}
+
+.portal-command .portal-title-block p {
+  font-size: 16px;
+  line-height: 1.45;
+  max-width: 660px;
 }
 
 .municipal-facts {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -716,9 +737,9 @@ tr:last-child td {
   border-radius: 6px;
   box-shadow: var(--shadow);
   display: grid;
-  gap: 5px;
-  min-height: 118px;
-  padding: 16px;
+  gap: 4px;
+  min-height: 92px;
+  padding: 12px;
 }
 
 .municipal-facts span,
@@ -730,7 +751,7 @@ tr:last-child td {
 
 .municipal-facts strong {
   color: var(--brand-dark);
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 900;
   line-height: 1.05;
 }
@@ -752,8 +773,8 @@ tr:last-child td {
   border-radius: 6px;
   box-shadow: var(--shadow);
   display: grid;
-  gap: 16px;
-  padding: 18px;
+  gap: 12px;
+  padding: 14px;
 }
 
 .official-map-card .section-heading strong {
@@ -765,152 +786,115 @@ tr:last-child td {
 }
 
 .official-map-frame {
-  background: linear-gradient(90deg, rgba(15, 26, 14, 0.98), rgba(39, 41, 29, 0.9));
+  background: transparent;
   border-radius: 6px;
-  color: #ffffff;
-  min-height: 430px;
+  color: var(--text);
+  min-height: clamp(330px, 47vh, 470px);
   overflow: hidden;
   position: relative;
 }
 
 .official-boundary-map {
-  inset: 18px;
+  inset: 0;
   position: absolute;
 }
 
 .official-boundary-map path {
-  fill: rgba(255, 255, 255, 0.13);
-  stroke: rgba(255, 255, 255, 0.26);
+  fill: rgba(63, 81, 29, 0.08);
+  stroke: rgba(63, 81, 29, 0.28);
   stroke-linejoin: round;
-  stroke-width: 1;
+  stroke-width: 0.9;
 }
 
 .official-boundary-map path.is-selected {
   fill: var(--brand);
-  filter: drop-shadow(0 0 14px rgba(115, 163, 93, 0.8));
-  stroke: #ffffff;
-  stroke-width: 2.6;
+  filter: drop-shadow(0 0 8px rgba(115, 163, 93, 0.55));
+  stroke: var(--brand-dark);
+  stroke-width: 2.4;
 }
 
-.map-focus {
-  align-items: center;
-  background: rgba(115, 163, 93, 0.95);
-  border: 2px solid #ffffff;
-  border-radius: 6px;
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
-  display: grid;
-  gap: 4px;
-  left: 12%;
-  padding: 14px 16px;
-  position: absolute;
-  top: 34%;
-}
-
-.map-focus svg {
-  margin-bottom: 4px;
-}
-
-.map-focus strong {
-  font-size: 24px;
+.map-badge {
+  background: var(--brand-dark);
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 12px;
   font-weight: 900;
+  left: 10px;
+  padding: 7px 10px;
+  position: absolute;
+  top: 10px;
 }
 
-.map-focus span {
+.map-meta {
+  align-items: center;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  display: flex;
   font-size: 12px;
   font-weight: 700;
-}
-
-.map-status {
-  background: rgba(255, 255, 255, 0.1);
-  border-left: 4px solid var(--brand);
-  bottom: 18px;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 800;
-  left: 18px;
-  max-width: 420px;
-  padding: 10px 12px;
-  position: absolute;
+  gap: 10px;
+  justify-content: space-between;
+  padding-top: 8px;
 }
 
 .map-sources {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px;
+  justify-content: flex-end;
 }
 
 .map-sources a {
   border: 1px solid var(--brand);
   border-radius: 999px;
   color: var(--brand-strong);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  padding: 7px 10px;
+  padding: 5px 8px;
 }
 
-.chamber {
-  aspect-ratio: 1.55;
-  background: #f7f8f5;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-}
-
-.chamber::before {
-  border: 2px solid #c9d7bf;
-  border-bottom: 0;
-  border-radius: 260px 260px 0 0;
-  content: "";
-  height: 72%;
-  left: 10%;
-  position: absolute;
-  top: 18%;
-  width: 80%;
-}
-
-.chamber-seat {
-  border: 2px solid #ffffff;
+.council-bar {
   border-radius: 999px;
-  box-shadow: 0 4px 10px rgba(39, 41, 29, 0.18);
+  display: flex;
   height: 18px;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 18px;
+  overflow: hidden;
+  width: 100%;
 }
 
-.chamber-dais {
-  align-items: center;
-  background: var(--brand-dark);
-  border-radius: 999px;
-  bottom: 10%;
-  color: #ffffff;
-  display: inline-flex;
-  font-size: 13px;
-  font-weight: 900;
-  gap: 7px;
-  left: 50%;
-  padding: 10px 14px;
-  position: absolute;
-  transform: translateX(-50%);
+.council-bar span {
+  min-width: 4px;
 }
 
 .seat-list.compact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  grid-template-columns: 1fr;
 }
 
 .seat-list.compact .seat-row {
+  grid-template-columns: auto 1fr auto;
+  padding: 7px 9px;
+}
+
+.majority-note {
+  align-items: center;
+  background: var(--surface-muted);
+  border-left: 4px solid var(--brand);
+  color: var(--brand-dark);
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  justify-content: space-between;
   padding: 8px 10px;
 }
 
 .portal-login.compact {
-  padding: 16px;
+  padding: 14px;
   position: static;
 }
 
 .portal-login.compact .login-form {
-  gap: 10px;
-  padding: 12px 0 0;
+  gap: 9px;
+  padding: 10px 0 0;
 }
 
 .portal-login.compact .login-form input {
@@ -1059,7 +1043,8 @@ tr:last-child td {
   .portal-public-data,
   .portal-top,
   .portal-command,
-  .portal-visual-grid {
+  .portal-visual-grid,
+  .portal-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1069,6 +1054,10 @@ tr:last-child td {
 
   .municipal-facts {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portal-side {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
   }
 }
 
@@ -1112,7 +1101,8 @@ tr:last-child td {
   .municipal-grid,
   .portal-map-panel,
   .municipal-facts,
-  .seat-list.compact {
+  .seat-list.compact,
+  .portal-side {
     grid-template-columns: 1fr;
   }
 
@@ -1131,12 +1121,12 @@ tr:last-child td {
   }
 
   .official-map-frame {
-    min-height: 340px;
+    min-height: 300px;
   }
 
-  .map-focus {
-    left: 8%;
-    top: 28%;
+  .map-meta {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 
