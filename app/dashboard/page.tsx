@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   Archive,
+  BellRing,
   Bot,
   BriefcaseBusiness,
   CalendarClock,
@@ -13,6 +14,7 @@ import {
   FolderKanban,
   Gauge,
   KeyRound,
+  Landmark,
   Megaphone,
   MessageSquareText,
   Network,
@@ -20,6 +22,7 @@ import {
   Search,
   Settings,
   ShieldCheck,
+  Target,
   Users,
   Vote
 } from "lucide-react";
@@ -28,33 +31,6 @@ import municipalProfile from "@/config/municipal-profile.json";
 import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-const metrics = [
-  {
-    label: "Documentos pendientes",
-    value: "12",
-    note: "A la espera de clasificación IA",
-    icon: FileText
-  },
-  {
-    label: "Acciones detectadas",
-    value: "38",
-    note: "Decretos, acuerdos y expedientes",
-    icon: Gauge
-  },
-  {
-    label: "Alertas abiertas",
-    value: "7",
-    note: "Importes, plazos o seguimiento político",
-    icon: AlertTriangle
-  },
-  {
-    label: "Tareas activas",
-    value: "16",
-    note: "Asignadas al equipo municipal",
-    icon: CheckCircle2
-  }
-];
 
 const navigation = [
   { label: "Dashboard", icon: Gauge, active: true },
@@ -71,75 +47,170 @@ const navigation = [
   { label: "Configuración", icon: Settings }
 ];
 
-const actions = [
+const commandMetrics = [
   {
-    title: "Adjudicacion de servicio municipal",
-    area: "Contratacion",
-    source: "Junta de Gobierno Local",
-    date: "Pendiente de validar",
-    risk: "Importe relevante",
-    status: "Revisión"
+    label: "Alertas críticas",
+    value: "7",
+    note: "Plazos, riesgos jurídicos o asuntos sensibles",
+    icon: AlertTriangle,
+    tone: "critical"
   },
   {
-    title: "Modificacion de credito",
-    area: "Hacienda",
-    source: "Pleno",
-    date: "Pendiente de validar",
-    risk: "Seguimiento presupuestario",
-    status: "Analisis"
+    label: "Pleno y comisiones",
+    value: "3",
+    note: "Hitos políticos que preparar esta semana",
+    icon: Vote,
+    tone: "strong"
   },
   {
-    title: "Orden del dia con asuntos urbanisticos",
-    area: "Urbanismo",
-    source: "Comision informativa",
-    date: "Pendiente de validar",
-    risk: "Preparar preguntas",
-    status: "Tarea"
+    label: "Expedientes prioritarios",
+    value: "18",
+    note: "Contratos, decretos y urbanismo en seguimiento",
+    icon: FolderKanban,
+    tone: "neutral"
+  },
+  {
+    label: "Documentos por validar",
+    value: "12",
+    note: "Pendientes de clasificación y revisión humana",
+    icon: FileText,
+    tone: "neutral"
+  },
+  {
+    label: "Mociones vivas",
+    value: "5",
+    note: "Borrador, registro o defensa en pleno",
+    icon: Landmark,
+    tone: "neutral"
+  },
+  {
+    label: "Tareas del equipo",
+    value: "16",
+    note: "Asignadas a concejales, asesores o comunicación",
+    icon: CheckCircle2,
+    tone: "neutral"
   }
 ];
 
-const pipeline = [
+const spokespersonPriorities = [
   {
-    title: "Subida documental",
-    meta: "PDF, DOCX y enlaces a fuentes externas",
-    badge: "MVP",
-    color: "green"
+    title: "Preparar posición para el próximo pleno",
+    area: "Pleno",
+    owner: "Portavoz",
+    deadline: "48 h",
+    status: "Prioridad alta"
   },
   {
-    title: "Extracción de texto",
-    meta: "Parser/OCR con trazabilidad al documento",
-    badge: "Siguiente",
-    color: "blue"
+    title: "Revisar decretos con impacto presupuestario",
+    area: "Decretos",
+    owner: "Hacienda",
+    deadline: "Esta semana",
+    status: "En revisión"
   },
   {
-    title: "Extracción IA",
-    meta: "Acuerdos, importes, órganos, áreas y tareas",
-    badge: "Siguiente",
-    color: "blue"
+    title: "Cerrar argumentario de seguridad y limpieza",
+    area: "Comunicación",
+    owner: "Equipo comunicación",
+    deadline: "Antes del viernes",
+    status: "Pendiente"
   },
   {
-    title: "Revisión humana",
-    meta: "Validación antes de consolidar datos",
-    badge: "Clave",
-    color: "gold"
+    title: "Seleccionar expedientes para solicitud de información",
+    area: "Fiscalización",
+    owner: "Concejales",
+    deadline: "7 días",
+    status: "Planificado"
+  }
+];
+
+const milestones = [
+  {
+    date: "Hoy",
+    title: "Revisión de alertas institucionales",
+    detail: "Contratos, decretos y asuntos con vencimiento próximo"
+  },
+  {
+    date: "24 h",
+    title: "Validación de documentos entrantes",
+    detail: "Clasificar documentación y asignar responsable político"
+  },
+  {
+    date: "Semana",
+    title: "Preparación de comisiones informativas",
+    detail: "Preguntas, ruegos, mociones y solicitudes de expediente"
+  },
+  {
+    date: "Mes",
+    title: "Seguimiento presupuestario",
+    detail: "Ejecución, modificaciones de crédito y compromisos de gasto"
+  }
+];
+
+const oversightRows = [
+  {
+    subject: "Adjudicación de servicio municipal",
+    source: "Junta de Gobierno Local",
+    area: "Contratación",
+    signal: "Importe relevante",
+    status: "Revisar"
+  },
+  {
+    subject: "Modificación de crédito",
+    source: "Pleno",
+    area: "Presupuesto",
+    signal: "Afecta a prioridades políticas",
+    status: "Analizar"
+  },
+  {
+    subject: "Orden del día con asuntos urbanísticos",
+    source: "Comisión informativa",
+    area: "Urbanismo",
+    signal: "Preparar preguntas",
+    status: "Asignar"
+  }
+];
+
+const documentFlow = [
+  {
+    title: "Entrada documental",
+    value: "Subida manual",
+    badge: "Activo"
+  },
+  {
+    title: "Texto y metadatos",
+    value: "OCR / parser",
+    badge: "Siguiente"
+  },
+  {
+    title: "Extracción política",
+    value: "IA con revisión",
+    badge: "Siguiente"
+  },
+  {
+    title: "Tareas y alertas",
+    value: "Asignación al equipo",
+    badge: "Diseñado"
   }
 ];
 
 const sources = [
   {
-    title: "Drive Vox Majadahonda",
-    meta: "Fuente documental conectable con permisos limitados",
-    status: "Pendiente"
+    title: "Supabase",
+    meta: "Usuarios, roles, documentos y datos internos",
+    status: "Conectado",
+    icon: Database
   },
   {
-    title: "Portal de transparencia municipal",
-    meta: "Conector parametrizable por municipio",
-    status: "Pendiente"
+    title: "Vercel",
+    meta: "Aplicación desplegada y entorno de producción",
+    status: "Activo",
+    icon: ShieldCheck
   },
   {
-    title: "BOCM / BOE / INE",
-    meta: "Fuentes públicas para alertas y contexto",
-    status: "Fase 4"
+    title: "n8n y fuentes públicas",
+    meta: "Automatizaciones, BOCM, INE y portal municipal",
+    status: "Pendiente",
+    icon: Network
   }
 ];
 
@@ -167,16 +238,19 @@ export default async function DashboardPage() {
         </nav>
 
         <div className="sidebar-footer">
-          <span>Cloud-first</span>
-          <span>GitHub + Supabase + Vercel + n8n</span>
+          <span>Dirección política interna</span>
+          <span>Supabase · Vercel · automatización documental</span>
         </div>
       </aside>
 
       <main className="main">
         <header className="topbar">
           <div className="page-title">
-            <h1>Panel de seguimiento</h1>
-            <span>Control político, fiscalización documental y coordinación interna</span>
+            <h1>Mesa del portavoz</h1>
+            <span>
+              {municipalProfile.municipality.name} · Mandato{" "}
+              {municipalProfile.municipality.mandate}
+            </span>
           </div>
           <div className="topbar-actions">
             <button className="button" type="button">
@@ -199,10 +273,33 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        <section className="content">
-          <div className="metric-grid">
-            {metrics.map((metric) => (
-              <article className="metric-card" key={metric.label}>
+        <section className="content spokesperson-content">
+          <section className="command-hero">
+            <div className="command-hero-copy">
+              <span className="eyebrow">
+                <Target size={16} />
+                Panel privado de dirección
+              </span>
+              <h2>Lo importante primero: pleno, fiscalización, alertas y equipo.</h2>
+              <p>
+                Esta pantalla debe servir como entrada diaria del portavoz: qué asuntos
+                requieren decisión, qué documentación falta validar y qué hitos políticos
+                llegan en los próximos días.
+              </p>
+            </div>
+            <div className="command-hero-status">
+              <span>Prioridad operativa</span>
+              <strong>Preparar el próximo pleno y revisar expedientes sensibles</strong>
+              <small>
+                Base inicial con datos de ejemplo hasta conectar documentos, calendario y
+                fuentes municipales reales.
+              </small>
+            </div>
+          </section>
+
+          <div className="metric-grid command-metric-grid">
+            {commandMetrics.map((metric) => (
+              <article className="metric-card command-metric-card" data-tone={metric.tone} key={metric.label}>
                 <header>
                   <span>{metric.label}</span>
                   <metric.icon size={18} />
@@ -213,24 +310,28 @@ export default async function DashboardPage() {
             ))}
           </div>
 
-          <div className="dashboard-grid">
-            <section className="panel">
+          <div className="spokesperson-grid">
+            <section className="panel priority-panel">
               <div className="panel-header">
                 <div>
-                  <h2>Pipeline documental</h2>
-                  <p>Estado previsto del flujo de documentos del MVP.</p>
+                  <h2>Prioridades del portavoz</h2>
+                  <p>Asuntos que deberían concentrar la atención política inmediata.</p>
                 </div>
-                <Bot size={20} />
+                <BellRing size={20} />
               </div>
-              <div className="status-list">
-                {pipeline.map((item) => (
-                  <div className="status-item" key={item.title}>
+              <div className="priority-list">
+                {spokespersonPriorities.map((item) => (
+                  <article className="priority-item" key={item.title}>
                     <div>
-                      <div className="status-title">{item.title}</div>
-                      <div className="status-meta">{item.meta}</div>
+                      <span className="priority-area">{item.area}</span>
+                      <h3>{item.title}</h3>
+                      <p>{item.owner}</p>
                     </div>
-                    <span className={`badge ${item.color}`}>{item.badge}</span>
-                  </div>
+                    <div className="priority-meta">
+                      <strong>{item.deadline}</strong>
+                      <span className="badge green">{item.status}</span>
+                    </div>
+                  </article>
                 ))}
               </div>
             </section>
@@ -238,91 +339,121 @@ export default async function DashboardPage() {
             <section className="panel">
               <div className="panel-header">
                 <div>
-                  <h2>Gobierno y seguridad</h2>
-                  <p>Base para credenciales, roles y fuentes.</p>
+                  <h2>Próximos hitos</h2>
+                  <p>Agenda política resumida para decidir y asignar trabajo.</p>
                 </div>
-                <ShieldCheck size={20} />
+                <CalendarClock size={20} />
               </div>
-              <div className="source-list">
-                <div className="source-item">
-                  <div>
-                    <div className="source-title">Roles</div>
-                    <div className="source-meta">Administrador, concejal e integracion API</div>
-                  </div>
-                  <KeyRound size={18} />
-                </div>
-                <div className="source-item">
-                  <div>
-                    <div className="source-title">Base de datos</div>
-                    <div className="source-meta">Supabase PostgreSQL con RLS</div>
-                  </div>
-                  <Database size={18} />
-                </div>
-                <div className="source-item">
-                  <div>
-                    <div className="source-title">Calendario político</div>
-                    <div className="source-meta">Plenos, comisiones y vencimientos</div>
-                  </div>
-                  <CalendarClock size={18} />
-                </div>
+              <div className="timeline-list">
+                {milestones.map((item) => (
+                  <article className="timeline-item" key={item.title}>
+                    <span>{item.date}</span>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.detail}</p>
+                    </div>
+                  </article>
+                ))}
               </div>
             </section>
           </div>
 
-          <section className="table-panel">
-            <div className="table-header">
-              <h2>Acciones de gobierno detectadas</h2>
-              <span className="badge blue">Datos de ejemplo</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Asunto</th>
-                  <th>Area</th>
-                  <th>Fuente</th>
-                  <th>Riesgo</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {actions.map((action) => (
-                  <tr key={action.title}>
-                    <td>
-                      <strong>{action.title}</strong>
-                      <div className="muted">{action.date}</div>
-                    </td>
-                    <td>{action.area}</td>
-                    <td>{action.source}</td>
-                    <td>{action.risk}</td>
-                    <td>
-                      <span className="badge gold">{action.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <h2>Fuentes pendientes de conexión</h2>
-                <p>Se activarán por configuración, no con código fijo del municipio.</p>
+          <div className="dashboard-grid spokesperson-lower-grid">
+            <section className="table-panel">
+              <div className="table-header">
+                <h2>Asuntos de fiscalización</h2>
+                <span className="badge blue">Mesa de control</span>
               </div>
-              <Network size={20} />
-            </div>
-            <div className="source-list">
-              {sources.map((source) => (
-                <div className="source-item" key={source.title}>
-                  <div>
-                    <div className="source-title">{source.title}</div>
-                    <div className="source-meta">{source.meta}</div>
-                  </div>
-                  <span className="badge red">{source.status}</span>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Asunto</th>
+                    <th>Fuente</th>
+                    <th>Área</th>
+                    <th>Señal</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {oversightRows.map((row) => (
+                    <tr key={row.subject}>
+                      <td>
+                        <strong>{row.subject}</strong>
+                      </td>
+                      <td>{row.source}</td>
+                      <td>{row.area}</td>
+                      <td>{row.signal}</td>
+                      <td>
+                        <span className="badge gold">{row.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Flujo documental</h2>
+                  <p>De la entrada de documentos a tareas políticas medibles.</p>
                 </div>
-              ))}
-            </div>
-          </section>
+                <Bot size={20} />
+              </div>
+              <div className="status-list">
+                {documentFlow.map((item) => (
+                  <div className="status-item" key={item.title}>
+                    <div>
+                      <div className="status-title">{item.title}</div>
+                      <div className="status-meta">{item.value}</div>
+                    </div>
+                    <span className="badge green">{item.badge}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="spokesperson-grid compact-grid">
+            <section className="panel quick-actions-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Acciones rápidas</h2>
+                  <p>Entrada directa a tareas habituales del grupo municipal.</p>
+                </div>
+                <FilePlus2 size={20} />
+              </div>
+              <div className="quick-action-grid">
+                <button className="button primary" type="button">Subir documento</button>
+                <button className="button" type="button">Preparar pleno</button>
+                <button className="button" type="button">Crear moción</button>
+                <button className="button" type="button">Revisar alertas</button>
+                <a className="button" href="/admin/users">Gestionar usuarios</a>
+              </div>
+            </section>
+
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Sistema y fuentes</h2>
+                  <p>Estado de la infraestructura y próximas conexiones.</p>
+                </div>
+                <KeyRound size={20} />
+              </div>
+              <div className="source-list">
+                {sources.map((source) => (
+                  <div className="source-item" key={source.title}>
+                    <div>
+                      <div className="source-title">{source.title}</div>
+                      <div className="source-meta">{source.meta}</div>
+                    </div>
+                    <source.icon size={18} />
+                    <span className="badge green">{source.status}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </section>
       </main>
     </div>
