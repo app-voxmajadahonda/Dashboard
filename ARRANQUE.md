@@ -1,17 +1,17 @@
 # Plan de arranque
 
-## Decision inicial
+## Decisión inicial
 
-La aplicacion se construira como proyecto cloud-first:
+La aplicación se construye como proyecto cloud-first:
 
-- El codigo vivira en GitHub.
-- La aplicacion se desplegara en la nube desde el inicio.
-- La base de datos, documentos, secretos y automatizaciones estaran en servicios cloud.
-- Los ordenadores locales solo seran puestos de desarrollo.
+- El código vive en GitHub.
+- La aplicación está desplegada en Vercel.
+- La base de datos, documentos, secretos y automatizaciones estarán en servicios cloud.
+- Los ordenadores locales solo serán puestos de desarrollo.
 
 ## Paso 1: Cuentas
 
-Crear una cuenta tecnica especifica para la aplicacion.
+Crear una cuenta técnica específica para la aplicación.
 
 Nombre recomendado:
 
@@ -23,31 +23,33 @@ Nombre recomendado:
 Esta cuenta debe ser propietaria o administradora de:
 
 - GitHub.
-- Google Cloud.
+- Vercel.
 - Supabase.
 - n8n.
 - OpenAI API.
 - Dominio, si se compra uno.
 
-La cuenta actual de Google/Drive de Vox Majadahonda se conectara despues como fuente documental, con permisos limitados.
+Google Cloud queda como opción futura si se decide mover infraestructura o alojar servicios auxiliares.
+
+La cuenta actual de Google/Drive de Vox Majadahonda se conectará después como fuente documental, con permisos limitados.
 
 ## Paso 2: Stack recomendado para MVP
 
-Para avanzar rapido sin perder seriedad tecnica:
+Para avanzar rápido sin perder seriedad técnica:
 
 - Frontend y backend: Next.js.
 - Base de datos: Supabase PostgreSQL.
-- Autenticacion: Supabase Auth.
+- Autenticación: Supabase Auth.
 - Storage documental: Supabase Storage al inicio.
 - IA: OpenAI API.
 - Automatizaciones: n8n.
-- Despliegue: Google Cloud Run.
+- Despliegue: Vercel.
 
 Motivo:
 
-- Permite tener login, base de datos, ficheros, API, IA y despliegue rapido.
-- Reduce la administracion tecnica inicial.
-- Mantiene la opcion de migrar a Google Cloud mas adelante.
+- Permite tener login, base de datos, ficheros, API, IA y despliegue rápido.
+- Reduce la administración técnica inicial.
+- Mantiene la opción de migrar a Google Cloud más adelante si hiciera falta.
 
 ## Paso 3: Repositorio
 
@@ -59,11 +61,11 @@ Nombre recomendado:
 - dashboard-gm
 - gm-fiscalizacion
 
-Configuracion:
+Configuración:
 
 - Repositorio privado.
 - Rama principal: main.
-- Acceso administrativo para la cuenta tecnica.
+- Acceso administrativo para la cuenta técnica.
 - Acceso de desarrollo para las cuentas que vayan a trabajar con Codex.
 
 ## Paso 4: Primer MVP
@@ -71,15 +73,15 @@ Configuracion:
 El primer MVP debe resolver el nucleo, no todos los modulos:
 
 - Login privado.
-- Roles basicos: administrador, concejal, integracion API.
-- Configuracion de entidad: Vox Majadahonda.
+- Roles básicos: administrador, concejal, integración API.
+- Configuración de entidad: Vox Majadahonda.
 - Subida de documentos PDF.
 - Almacenamiento cloud.
-- Extraccion de texto.
-- Extraccion IA de datos relevantes.
+- Extracción de texto.
+- Extracción IA de datos relevantes.
 - Listado de acciones de gobierno detectadas.
-- Busqueda y filtros.
-- Exportacion simple de informe.
+- Búsqueda y filtros.
+- Exportación simple de informe.
 
 ## Paso 5: Modelo de datos minimo
 
@@ -94,7 +96,7 @@ Tablas iniciales:
 - government_actions.
 - audit_log.
 
-Despues se anadiran:
+Después se añadirán:
 
 - motions.
 - amendments.
@@ -106,19 +108,19 @@ Despues se anadiran:
 - api_clients.
 - reports.
 
-## Paso 6: Primer documento de prueba
+## Paso 6: Primeros documentos de prueba
 
 Seleccionar 3 o 4 documentos reales:
 
 - Un decreto.
 - Un acuerdo de pleno.
-- Un orden del dia.
-- Una mocion o acta.
+- Un orden del día.
+- Una moción o acta.
 
 Objetivo:
 
-- Probar la extraccion de texto.
-- Ver si la IA identifica bien organo, fecha, acuerdos, importes, areas y tareas.
+- Probar la extracción de texto.
+- Ver si la IA identifica bien órgano, fecha, acuerdos, importes, áreas y tareas.
 - Ajustar el modelo de datos a documentos reales.
 
 ## Paso 7: Primeras pantallas
@@ -131,46 +133,48 @@ Pantallas iniciales:
 - Subir documento.
 - Detalle de documento.
 - Acciones de gobierno.
-- Configuracion de entidad.
+- Configuración de entidad.
 - Usuarios y roles.
 
 ## Lo que tiene que hacer el usuario
 
-1. Crear la cuenta tecnica de Google.
+1. Mantener controlada la cuenta técnica de la aplicación.
 2. Crear o autorizar una cuenta de GitHub.
-3. Crear cuenta de Supabase con la cuenta tecnica.
-4. Crear cuenta de OpenAI API con la cuenta tecnica.
-5. Crear proyecto Google Cloud para el primer despliegue.
+3. Mantener Supabase bajo la cuenta técnica o cuenta administradora acordada.
+4. Crear cuenta de OpenAI API con la cuenta técnica.
+5. Mantener Vercel conectado al repositorio.
 6. Elegir 3 o 4 documentos reales de prueba.
 
 ## Lo que puede hacer Codex
 
-1. Crear la estructura inicial de la aplicacion.
+1. Crear la estructura inicial de la aplicación.
 2. Preparar el modelo de base de datos.
 3. Preparar las variables de entorno.
 4. Crear las primeras pantallas.
 5. Crear el sistema de roles.
 6. Preparar el flujo de subida documental.
 7. Preparar el primer extractor IA.
-8. Preparar la documentacion de despliegue.
+8. Preparar la documentación de despliegue.
 
 ## Orden recomendado
 
-1. Crear cuenta tecnica.
+1. Crear cuenta técnica.
 2. Crear repositorio privado en GitHub.
-3. Crear proyecto Supabase. Estado: creado desde movil.
+3. Crear proyecto Supabase. Estado: creado.
 4. Crear app Next.js.
 5. Conectar Supabase Auth.
 6. Crear tablas iniciales.
-7. Desplegar una primera version vacia en Google Cloud Run.
+7. Desplegar una primera versión en Vercel. Estado: desplegado.
 8. Subir primer PDF.
 9. Extraer texto.
 10. Extraer datos con IA.
 
-## Decision pendiente mas importante
+## Situación actual
 
-Para empezar ya, la decision clave es:
+La decisión de despliegue ya está tomada para el MVP:
 
-Usamos Google Cloud Run + Supabase para el primer MVP.
+```text
+Vercel + Supabase
+```
 
-Esta es la opcion recomendada si queremos prescindir de Vercel y mantener la infraestructura principal bajo la cuenta tecnica de Google.
+Google Cloud queda como posible evolución futura, no como requisito para continuar ahora.

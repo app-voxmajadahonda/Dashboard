@@ -136,4 +136,4 @@ Project Settings > Domains
 
 ## Notas
 
-Vercel queda como plataforma de despliegue del frontend/backend Next.js. Si mas adelante se decide volver a Google Cloud Run, el proyecto ya mantiene `Dockerfile` y `cloudbuild.yaml`.
+Vercel queda como plataforma actual de despliegue del frontend/backend Next.js. Si más adelante se decide migrar a Google Cloud Run, el proyecto ya mantiene `Dockerfile` y `cloudbuild.yaml`.

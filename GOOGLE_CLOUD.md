@@ -1,15 +1,19 @@
 # Google Cloud Run
 
-## Objetivo
+## Estado
 
-Desplegar la aplicacion sin Vercel, usando Google Cloud como plataforma principal de ejecucion.
+Este documento queda como referencia para una posible migración futura. El despliegue actual del MVP está en Vercel y no requiere Google Cloud Run para continuar.
 
-Arquitectura:
+## Objetivo histórico
 
-- GitHub: repositorio de codigo.
-- Google Cloud Run: ejecucion de la app Next.js.
+Desplegar la aplicación sin Vercel, usando Google Cloud como plataforma principal de ejecución.
+
+Arquitectura propuesta para esa posible fase:
+
+- GitHub: repositorio de código.
+- Google Cloud Run: ejecución de la app Next.js.
 - Artifact Registry: imagen Docker.
-- Cloud Build: construccion y despliegue desde GitHub.
+- Cloud Build: construcción y despliegue desde GitHub.
 - Secret Manager: secretos.
 - Supabase: base de datos, auth y storage.
 - n8n: automatizaciones.

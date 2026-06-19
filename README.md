@@ -1,8 +1,8 @@
 # Dashboard Grupo Municipal
 
-Aplicacion cloud-first para seguimiento documental, fiscalizacion de accion de gobierno, mociones, comisiones, tareas e informes de un grupo municipal.
+Aplicación cloud-first para seguimiento documental, fiscalización de acción de gobierno, mociones, comisiones, tareas e informes de un grupo municipal.
 
-La primera configuracion sera para Vox Majadahonda, pero el proyecto esta planteado para ser multi-entidad y reutilizable en otros municipios.
+La primera configuración es para Vox Majadahonda, pero el proyecto está planteado para ser multi-entidad y reutilizable en otros municipios.
 
 ## Stack inicial
 
@@ -14,18 +14,23 @@ La primera configuracion sera para Vox Majadahonda, pero el proyecto esta plante
 - Supabase Storage
 - OpenAI API
 - n8n
-- Google Cloud Run como despliegue recomendado
+- Vercel como despliegue actual
 
 ## Estado actual
 
 Base inicial creada:
 
+- Despliegue en Vercel conectado a Supabase.
+- Supabase Auth configurado.
+- Migraciones iniciales ejecutadas.
+- Primer administrador creado.
+- Creación de usuarios funcionando.
 - Pantalla de dashboard.
 - Estructura Next.js.
 - Variables de entorno de ejemplo.
 - Clientes Supabase.
-- Migracion SQL inicial.
-- Documentacion de arquitectura y arranque.
+- Migraciones SQL iniciales.
+- Documentación de arquitectura y arranque.
 
 ## Requisitos locales
 
@@ -34,7 +39,7 @@ Para ejecutar en un ordenador de desarrollo:
 - Node.js 20 o superior.
 - npm.
 
-Instalacion:
+Instalación:
 
 ```bash
 npm install
@@ -46,7 +51,7 @@ Desarrollo:
 npm run dev
 ```
 
-Comprobacion:
+Comprobación:
 
 ```bash
 npm run typecheck
@@ -64,13 +69,13 @@ Endpoints de salud:
 ## Rutas iniciales
 
 ```text
-/           Parte publica
+/           Parte pública
 /login      Login de usuarios
 /dashboard  Dashboard privado
-/admin/users Gestion de usuarios y roles
+/admin/users Gestión de usuarios y roles
 ```
 
-La proteccion usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `councillor` y `api_integration`.
+La protección usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `councillor` y `api_integration`.
 
 ## Variables de entorno
 
@@ -91,18 +96,19 @@ No se deben subir secretos reales al repositorio.
 
 ## Supabase
 
-Cuando el proyecto Supabase este creado:
+El proyecto Supabase está creado y conectado. El flujo de base de datos previsto es:
 
-1. Activar PostgreSQL.
-2. Activar Auth.
-3. Crear un bucket privado para documentos, por ejemplo `documents`.
-4. Ejecutar la migracion:
+1. Mantener Auth activo.
+2. Mantener PostgreSQL activo.
+3. Usar el bucket privado `documents`.
+4. Ejecutar las migraciones, si se crea un entorno nuevo:
 
 ```sql
 supabase/migrations/0001_initial_schema.sql
+supabase/migrations/0002_documents_storage.sql
 ```
 
-La migracion crea:
+Las migraciones crean:
 
 - Organizaciones.
 - Perfiles.
@@ -111,34 +117,33 @@ La migracion crea:
 - Ficheros documentales.
 - Extracciones IA.
 - Acciones de gobierno.
-- Auditoria.
-- Politicas RLS iniciales.
-- Configuracion inicial de Vox Majadahonda.
+- Auditoría.
+- Políticas RLS iniciales.
+- Bucket privado `documents`.
+- Configuración inicial de Vox Majadahonda.
 
-## Despliegue recomendado
+## Despliegue
 
-Primer despliegue:
+El despliegue actual está en Vercel:
 
-1. Crear repositorio privado en GitHub.
-2. Subir este proyecto.
-3. Crear proyecto Google Cloud.
-4. Activar Cloud Run, Cloud Build, Artifact Registry y Secret Manager.
-5. Conectar el repositorio a Cloud Build.
-6. Desplegar con `cloudbuild.yaml`.
+```text
+https://dashboard-app-vox-majadahonda.vercel.app/
+```
 
-Ver [GOOGLE_CLOUD.md](./GOOGLE_CLOUD.md).
+Vercel despliega desde GitHub y usa Supabase para Auth, PostgreSQL y Storage. Ver [VERCEL.md](./VERCEL.md).
 
-## Operacion desde Codex
+Google Cloud queda como opción futura si se decide mover infraestructura o servicios auxiliares. Ver [GOOGLE_CLOUD.md](./GOOGLE_CLOUD.md).
 
-Para centralizar el desarrollo, despliegues y configuracion de servicios desde Codex, ver [CODEX.md](./CODEX.md).
+## Operación desde Codex
 
-## Siguientes pasos tecnicos
+Para centralizar el desarrollo, despliegues y configuración de servicios desde Codex, ver [CODEX.md](./CODEX.md).
 
-1. Conectar Supabase Auth.
-2. Crear pantallas reales de login.
-3. Crear alta de usuarios y roles.
-4. Crear subida documental a Storage.
-5. Extraer texto de PDF.
-6. Enviar texto a OpenAI para clasificacion y extraccion.
-7. Guardar acciones de gobierno detectadas.
-8. Crear revision humana de extracciones.
+## Siguientes pasos técnicos
+
+1. Conectar el dashboard a datos reales.
+2. Crear subida documental a Supabase Storage.
+3. Extraer texto de PDF/DOCX/TXT.
+4. Enviar texto a OpenAI para clasificación y extracción.
+5. Guardar acciones de gobierno detectadas.
+6. Crear revisión humana de extracciones.
+7. Ampliar el modelo para plenos, mociones, decretos, expedientes, presupuesto y alertas.

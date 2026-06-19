@@ -1,17 +1,18 @@
-# Configuracion de Supabase
+# Configuración de Supabase
 
 ## Estado
 
-El proyecto Supabase ya ha sido creado desde el movil porque la red municipal parece bloquear o resolver mal Supabase.
+El proyecto Supabase ya está creado, conectado a la aplicación desplegada en Vercel y con la configuración inicial operativa.
 
-Pendiente:
+Estado actual:
 
-- Obtener `Project URL`. Estado: `https://aylhnlyufejrhzvzkcbr.supabase.co`.
-- Obtener `anon public key` / `publishable key`. Estado: configurada.
-- Guardar `service role key` en gestor de contrasenas.
-- Guardar `database password` en gestor de contrasenas.
-- Crear bucket privado `documents`. Estado: preparado en migracion.
-- Ejecutar migraciones iniciales.
+- `Project URL`: `https://aylhnlyufejrhzvzkcbr.supabase.co`.
+- `anon public key` / `publishable key`: configurada.
+- `service role key`: configurada en Vercel como secreto.
+- Migraciones iniciales: ejecutadas.
+- Primer administrador: creado.
+- Creación de usuarios desde `/admin/users`: funcionando.
+- Bucket privado `documents`: preparado por migración.
 
 ## Datos que se pueden compartir para configurar la app
 
@@ -22,7 +23,7 @@ NEXT_PUBLIC_SUPABASE_URL="https://aylhnlyufejrhzvzkcbr.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bGhubHl1ZmVqcmh6dnprY2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4Mjg2MTAsImV4cCI6MjA5NzQwNDYxMH0.MIQ1hrvo0nCcH--HJIUWd24xo_OsP_mwFDGF_kgSrDs"
 ```
 
-La clave anon es publica en el sentido de que se usa desde el navegador, pero debe ir acompanada de Row Level Security en la base de datos.
+La clave anon es pública en el sentido de que se usa desde el navegador, pero debe ir acompañada de Row Level Security en la base de datos.
 
 ## Datos que no deben compartirse por chat ni guardarse en GitHub
 
@@ -31,17 +32,17 @@ SUPABASE_SERVICE_ROLE_KEY=""
 DATABASE_PASSWORD=""
 ```
 
-La `service role key` permite saltarse politicas RLS y debe tratarse como secreto critico.
+La `service role key` permite saltarse políticas RLS y debe tratarse como secreto crítico.
 
 ## Crear bucket documental
 
-El bucket puede crearse ejecutando la migracion:
+El bucket puede crearse ejecutando la migración:
 
 ```text
 supabase/migrations/0002_documents_storage.sql
 ```
 
-Tambien se puede crear manualmente.
+También se puede crear manualmente.
 
 En Supabase:
 
@@ -55,11 +56,11 @@ documents
 
 4. Tipo: privado.
 
-Este bucket guardara PDFs, DOCX y documentos originales.
+Este bucket guardará PDFs, DOCX y documentos originales.
 
 ## Ejecutar migraciones iniciales
 
-En Supabase:
+En un entorno nuevo de Supabase:
 
 1. Ir a `SQL Editor`.
 2. Crear nueva query.
@@ -82,18 +83,18 @@ Las migraciones crean:
 - Extracciones IA.
 - Acciones de gobierno.
 - Auditoria.
-- Politicas RLS iniciales.
+- Políticas RLS iniciales.
 - Bucket privado `documents`.
-- Politicas de Storage para documentos por organizacion.
+- Políticas de Storage para documentos por organización.
 
-## Despues de ejecutar las migraciones
+## Después de ejecutar las migraciones
 
-Crear el primer usuario administrador:
+El primer usuario administrador ya está creado en el entorno actual. En un entorno nuevo, el flujo sería:
 
 1. Ir a `Authentication > Users`.
 2. Invitar o crear el usuario del portavoz/administrador.
 3. Copiar el `user id`.
-4. Insertar una membresia admin para la organizacion `vox-majadahonda`.
+4. Insertar una membresía admin para la organización `vox-majadahonda`.
 
 Plantilla disponible:
 
@@ -110,19 +111,19 @@ from organizations
 where slug = 'vox-majadahonda';
 ```
 
-Cuando ese primer administrador exista, podra entrar en:
+Cuando ese primer administrador exista, podrá entrar en:
 
 ```text
 /admin/users
 ```
 
-Desde ahi podra crear otros usuarios y asignarles uno de estos roles:
+Desde ahí podrá crear otros usuarios y asignarles uno de estos roles:
 
 - `admin`
 - `councillor`
 - `api_integration`
 
-Para que la creacion de usuarios funcione desde la app, Vercel debe tener configurada la variable secreta:
+Para que la creación de usuarios funcione desde la app, Vercel debe tener configurada la variable secreta:
 
 ```text
 SUPABASE_SERVICE_ROLE_KEY
@@ -138,3 +139,10 @@ Dominios a permitir:
 - `app.supabase.com`
 - `api.supabase.com`
 - `*.supabase.co`
+
+## Próximo trabajo Supabase
+
+1. Usar el bucket `documents` desde la app.
+2. Registrar cada subida en `documents` y `document_files`.
+3. Guardar texto extraído y resultados IA en `document_extractions`.
+4. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.

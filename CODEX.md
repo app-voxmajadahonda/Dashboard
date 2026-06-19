@@ -1,13 +1,13 @@
-# Operacion desde Codex
+# Operación desde Codex
 
 ## Objetivo
 
-Centralizar el desarrollo de la aplicacion en Codex:
+Centralizar el desarrollo de la aplicación en Codex:
 
-- Cambios de codigo en GitHub.
+- Cambios de código en GitHub.
 - Despliegues y variables en Vercel.
 - Migraciones, Auth y Storage en Supabase.
-- Configuracion futura de OpenAI API y n8n.
+- Configuración futura de OpenAI API y n8n.
 
 Este documento no debe contener secretos reales.
 
@@ -21,7 +21,7 @@ Repositorio:
 https://github.com/app-voxmajadahonda/Dashboard
 ```
 
-Accion recomendada:
+Acción recomendada:
 
 1. Instalar el plugin/conector de GitHub en Codex.
 2. Autorizar la cuenta `app-voxmajadahonda`.
@@ -32,7 +32,7 @@ Uso esperado desde Codex:
 - Revisar ramas, commits y cambios.
 - Crear pull requests.
 - Inspeccionar errores de CI o despliegue vinculados al repositorio.
-- Mantener el codigo sincronizado con Vercel.
+- Mantener el código sincronizado con Vercel.
 
 ### Vercel
 
@@ -42,11 +42,11 @@ URL publica:
 https://dashboard-app-vox-majadahonda.vercel.app/
 ```
 
-No hay conector directo disponible en esta sesion. Para centralizar Vercel en Codex, usar una de estas opciones:
+No hay conector directo disponible en esta sesión. Para centralizar Vercel en Codex, usar una de estas opciones:
 
 - Vercel CLI autenticado en el equipo.
 - Token temporal de Vercel configurado como variable local segura.
-- Sesion de navegador controlada por Codex, si el plugin de navegador esta autorizado.
+- Sesión de navegador controlada por Codex, si el plugin de navegador está autorizado.
 
 Variables que deben existir en Vercel:
 
@@ -61,7 +61,7 @@ N8N_WEBHOOK_BASE_URL
 API_CLIENT_SECRET
 ```
 
-Comprobacion publica:
+Comprobación pública:
 
 ```text
 https://dashboard-app-vox-majadahonda.vercel.app/api/health
@@ -76,21 +76,28 @@ Proyecto:
 https://aylhnlyufejrhzvzkcbr.supabase.co
 ```
 
-No hay conector directo disponible en esta sesion. Para centralizar Supabase en Codex, usar una de estas opciones:
+No hay conector directo disponible en esta sesión. Para centralizar Supabase en Codex, usar una de estas opciones:
 
 - Supabase CLI autenticado con access token temporal.
 - Panel web de Supabase usando navegador autorizado.
-- Token temporal solo durante la sesion de configuracion.
+- Token temporal solo durante la sesión de configuración.
 
-Acciones pendientes de Supabase:
+Estado actual de Supabase:
 
-1. Ejecutar `supabase/migrations/0001_initial_schema.sql`.
-2. Crear bucket privado `documents`.
-3. Crear el primer usuario administrador en Auth.
-4. Insertar su membresia `admin` para `vox-majadahonda`.
-5. Verificar login en `/login`.
-6. Verificar acceso a `/dashboard`.
-7. Verificar creacion de usuarios en `/admin/users`.
+1. Proyecto conectado.
+2. Migraciones iniciales ejecutadas.
+3. Bucket privado `documents` preparado.
+4. Primer usuario administrador creado.
+5. Login verificado.
+6. Acceso a `/dashboard` verificado.
+7. Creación de usuarios en `/admin/users` funcionando.
+
+Acciones siguientes:
+
+1. Crear subida documental real a Supabase Storage.
+2. Registrar metadatos en `documents` y `document_files`.
+3. Implementar extracción de texto.
+4. Preparar extracción IA y revisión humana.
 
 ## Credenciales necesarias
 
@@ -98,7 +105,7 @@ No guardar estos valores en GitHub ni en documentos del repositorio.
 
 ### GitHub
 
-- Autorizacion del plugin de GitHub en Codex, o GitHub CLI autenticado.
+- Autorización del plugin de GitHub en Codex, o GitHub CLI autenticado.
 
 ### Vercel
 
@@ -110,19 +117,18 @@ No guardar estos valores en GitHub ni en documentos del repositorio.
 
 - `SUPABASE_SERVICE_ROLE_KEY`.
 - Access token para Supabase CLI, si se usa CLI.
-- Database password solo si se necesita conexion directa a PostgreSQL.
+- Database password solo si se necesita conexión directa a PostgreSQL.
 
-## Primer flujo operativo recomendado
+## Flujo operativo actual recomendado
 
-1. Autorizar GitHub en Codex.
-2. Configurar Vercel con variables de entorno.
-3. Ejecutar la migracion inicial en Supabase.
-4. Crear el bucket `documents`.
-5. Crear el primer admin.
-6. Redeploy en Vercel.
-7. Probar `/api/config-check`, `/login`, `/dashboard` y `/admin/users`.
+1. Mantener GitHub sincronizado con Vercel.
+2. Verificar `/api/config-check` después de cambios de variables.
+3. Construir el módulo documental.
+4. Probar subida, listado y detalle de documentos con usuarios reales.
+5. Conectar extracción de texto e IA.
+6. Validar los resultados antes de consolidarlos como acciones de gobierno.
 
-## Comandos utiles si los CLI estan instalados
+## Comandos útiles si los CLI están instalados
 
 Estos comandos son orientativos. No deben ejecutarse con secretos pegados en el historial si se puede evitar.
 
@@ -140,6 +146,6 @@ supabase db push
 
 ## Politica de secretos
 
-- Los secretos reales viven en Vercel, Supabase, OpenAI, n8n o un gestor de contrasenas.
-- El repositorio solo contiene nombres de variables y valores publicos.
-- Si un token temporal se usa para configurar Codex, se debe revocar o rotar cuando termine la sesion.
+- Los secretos reales viven en Vercel, Supabase, OpenAI, n8n o un gestor de contraseñas.
+- El repositorio solo contiene nombres de variables y valores públicos.
+- Si un token temporal se usa para configurar Codex, se debe revocar o rotar cuando termine la sesión.

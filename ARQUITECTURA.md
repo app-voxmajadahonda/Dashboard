@@ -251,22 +251,24 @@ Automatizaciones previstas:
 
 Herramienta candidata: n8n, desplegada en la nube y conectada a la API interna.
 
-## Arquitectura técnica recomendada
+## Arquitectura técnica actual
 
-### Opción recomendada para empezar
+### Opción actual para el MVP
 
 - Frontend: Next.js.
 - Backend/API: Next.js API routes o NestJS/FastAPI si se quiere separar desde el inicio.
-- Base de datos: PostgreSQL.
-- Autenticación: Supabase Auth, Auth.js o Firebase Auth.
-- Almacenamiento documental: Google Cloud Storage o Supabase Storage.
+- Base de datos: Supabase PostgreSQL.
+- Autenticación: Supabase Auth.
+- Almacenamiento documental: Supabase Storage.
 - IA: API de OpenAI para extracción, clasificación, resúmenes y búsqueda semántica.
 - Vector search: pgvector en PostgreSQL.
 - Automatizaciones: n8n.
-- Cloud: Google Cloud Run para la app y servicios; Cloud SQL para PostgreSQL si no se usa Supabase.
+- Despliegue: Vercel.
 - Observabilidad: logs cloud, alertas y auditoría interna.
 
-### Variante más simple
+Esta es la combinación vigente del proyecto. Permite construir rápido, tener login, base de datos, almacenamiento documental, IA y automatizaciones sin dedicar semanas a infraestructura.
+
+### Variante actual de despliegue
 
 - Vercel para alojar Next.js.
 - Supabase para PostgreSQL, Auth, Storage y pgvector.
@@ -277,7 +279,7 @@ Ventaja: arranque rápido, menos infraestructura.
 
 Riesgo: más dependencia de servicios SaaS externos.
 
-### Variante más institucional en Google Cloud
+### Variante futura en Google Cloud
 
 - Cloud Run para frontend/backend.
 - Cloud SQL PostgreSQL.
@@ -294,17 +296,15 @@ Riesgo: configuración inicial más compleja.
 
 ## Recomendación inicial
 
-Para una primera versión útil, conviene empezar con:
+Para una primera versión útil, la recomendación queda fijada en:
 
 - Next.js.
 - Supabase: Auth, PostgreSQL, Storage y pgvector.
 - n8n Cloud o n8n autohospedado.
 - OpenAI API.
-- Despliegue en Vercel o Google Cloud Run.
+- Despliegue en Vercel.
 
-Esta combinación permite construir rápido, tener login, base de datos, almacenamiento documental, IA y automatizaciones sin dedicar semanas a infraestructura.
-
-Si la prioridad es que todo quede bajo Google Cloud, se puede sustituir Supabase por Cloud SQL + Cloud Storage + Identity Platform, pero el primer desarrollo será más lento.
+Si en una fase posterior la prioridad fuese concentrar infraestructura en Google Cloud, se podría sustituir Vercel/Supabase por Cloud Run, Cloud SQL, Cloud Storage e Identity Platform. No es necesario para continuar el MVP actual.
 
 ## Modelo de datos inicial
 
@@ -422,11 +422,11 @@ Cada fuente debe implementarse como conector configurable, no como lógica fija 
 
 ## Cuentas y servicios necesarios
 
-Inicialmente:
+Actualmente:
 
 - Cuenta de GitHub para repositorio.
-- Cuenta de Vercel o Google Cloud.
-- Cuenta de Supabase o proyecto equivalente en Google Cloud.
+- Cuenta de Vercel.
+- Cuenta de Supabase.
 - Cuenta de OpenAI API.
 - Cuenta de n8n Cloud o servidor para n8n.
 - Dominio web si se quiere una URL propia.
@@ -439,12 +439,11 @@ Recomendado:
 
 ## Primeras decisiones pendientes
 
-1. Elegir entre arranque rápido con Supabase/Vercel o arquitectura más pura en Google Cloud.
-2. Decidir si n8n será cloud o autohospedado.
-3. Definir número inicial de usuarios y roles.
-4. Decidir si la app tendrá dominio propio desde el inicio.
-5. Elegir primera fuente documental a automatizar.
-6. Definir el primer documento real de prueba.
+1. Decidir si n8n será cloud o autohospedado.
+2. Definir número inicial de usuarios y roles.
+3. Decidir si la app tendrá dominio propio desde el inicio.
+4. Elegir primera fuente documental a automatizar.
+5. Definir los primeros documentos reales de prueba.
 
 ## Primer MVP propuesto
 
