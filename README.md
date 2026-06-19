@@ -72,6 +72,7 @@ Endpoints de salud:
 /           Parte pública
 /login      Login de usuarios
 /dashboard  Dashboard privado
+/admin/config Configuración del municipio, fuentes y documentación base
 /admin/users Gestión de usuarios y roles
 ```
 
@@ -106,6 +107,7 @@ El proyecto Supabase está creado y conectado. El flujo de base de datos previst
 ```sql
 supabase/migrations/0001_initial_schema.sql
 supabase/migrations/0002_documents_storage.sql
+supabase/migrations/0003_configuration_documents.sql
 ```
 
 Las migraciones crean:
@@ -121,6 +123,8 @@ Las migraciones crean:
 - Políticas RLS iniciales.
 - Bucket privado `documents`.
 - Configuración inicial de Vox Majadahonda.
+- Documentos base requeridos para configurar un municipio.
+- Tipos documentales para ordenanzas fiscales, ROM y decreto de delegaciones.
 
 ## Despliegue
 
@@ -144,10 +148,10 @@ Las decisiones, ideas y tareas funcionales pendientes se registran en [HOJA_RUTA
 
 ## Siguientes pasos técnicos
 
-1. Conectar el dashboard a datos reales.
-2. Crear subida documental a Supabase Storage.
-3. Extraer texto de PDF/DOCX/TXT.
-4. Enviar texto a OpenAI para clasificación y extracción.
+1. Ejecutar `0003_configuration_documents.sql` en Supabase.
+2. Conectar el dashboard a datos reales.
+3. Completar extracción de texto de PDF/DOCX/TXT.
+4. Enviar texto a OpenAI para clasificación y extracción estructurada.
 5. Guardar acciones de gobierno detectadas.
 6. Crear revisión humana de extracciones.
 7. Ampliar el modelo para plenos, mociones, decretos, expedientes, presupuesto y alertas.

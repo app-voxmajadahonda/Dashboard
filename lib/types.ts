@@ -2,6 +2,9 @@ export type AppRole = "admin" | "councillor" | "api_integration";
 
 export type DocumentKind =
   | "decree"
+  | "fiscal_ordinance"
+  | "delegation_decree"
+  | "rom"
   | "plenary_agreement"
   | "government_board_agreement"
   | "agenda"

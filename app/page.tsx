@@ -4,15 +4,17 @@ import { Suspense } from "react";
 import madridMap from "@/config/geo/madrid-map.json";
 import municipalProfile from "@/config/municipal-profile.json";
 import { LoginForm } from "@/components/auth/login-form";
+import { getVoxPressPosts } from "@/lib/vox/press";
 
 const totalSeats = municipalProfile.councilGroups.reduce(
   (sum, group) => sum + group.seats,
   0
 );
 
-export default function PublicHomePage() {
+export default async function PublicHomePage() {
   const { municipality, mayor } = municipalProfile;
   const { boundarySources } = municipality;
+  const pressPosts = await getVoxPressPosts(municipalProfile.voxMunicipalUrl);
 
   return (
     <main className="portal-page">
@@ -178,6 +180,26 @@ export default function PublicHomePage() {
             <div className="majority-note">
               <span>Mayoría absoluta</span>
               <strong>13</strong>
+            </div>
+          </article>
+
+          <article className="press-card">
+            <div className="section-heading">
+              <div>
+                <h2>Últimas notas de VOX</h2>
+                <span>Actualidad vinculada al municipio</span>
+              </div>
+            </div>
+            <div className="press-link-list">
+              {pressPosts.length ? (
+                pressPosts.map((post) => (
+                  <a href={post.url} key={post.url}>
+                    {post.title}
+                  </a>
+                ))
+              ) : (
+                <span>No hay notas disponibles en este momento.</span>
+              )}
             </div>
           </article>
         </aside>

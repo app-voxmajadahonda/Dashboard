@@ -19,9 +19,15 @@ Estados recomendados para cada punto:
 
 ## 1. Rediseño de la zona privada
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La zona privada tras el login debe cambiar de enfoque visual.
+
+Primera versión implementada:
+
+- Sustituida la barra lateral por navegación superior con menús desplegables.
+- Creada una mesa del portavoz más limpia y distribuida por secciones.
+- Pendiente revisar visualmente con el usuario y ajustar el diseño definitivo.
 
 Decisiones iniciales:
 
@@ -48,9 +54,16 @@ Secciones privadas previstas:
 
 ## 2. Página de configuración
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 Debe existir una página de configuración solo accesible al portavoz y administradores.
+
+Primera versión implementada:
+
+- Ruta `/admin/config`.
+- Acceso limitado a usuarios con rol `admin`.
+- Formularios para fuentes oficiales, redes sociales y documentación base.
+- Carga inicial de documentos base en Supabase Storage.
 
 Esta página será una pieza central de la aplicación y se irá ampliando conforme se definan nuevas fuentes, documentos y variables.
 
@@ -73,9 +86,16 @@ Apartados iniciales:
 
 ## 3. Cambio de municipio
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La primera opción de configuración debe ser "Cambiar de municipio".
+
+Primera versión implementada:
+
+- Formulario crítico en `/admin/config`.
+- Requiere confirmación escribiendo `CAMBIAR MUNICIPIO`.
+- No aplica el cambio automáticamente; registra una solicitud pendiente en configuración.
+- Deja auditoría de la solicitud.
 
 Este cambio se considera crítico porque puede alterar toda la configuración de la aplicación:
 
@@ -109,9 +129,14 @@ Idea pendiente de diseño:
 
 ## 4. Redes sociales y presencia digital
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La configuración debe pedir las redes sociales del grupo municipal o de la organización local:
+
+Primera versión implementada:
+
+- Campos configurables para X, Instagram, Facebook y Telegram.
+- Se guardan en `organizations.settings.socialLinks`.
 
 - X / Twitter.
 - Instagram.
@@ -128,9 +153,16 @@ Uso previsto:
 
 ## 5. Fuentes institucionales del municipio
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La configuración debe recoger URLs principales:
+
+Primera versión implementada:
+
+- Web oficial del Ayuntamiento.
+- Portal de transparencia.
+- Sede electrónica.
+- Página VOX del municipio.
 
 - Web oficial del Ayuntamiento.
 - Portal de transparencia.
@@ -148,7 +180,7 @@ Uso previsto:
 
 ## 6. Fuente pública de VOX por municipio
 
-**Estado:** Pendiente
+**Estado:** En diseño
 
 Existe una fuente interesante en la web de VOX:
 
@@ -177,12 +209,29 @@ Pendiente:
 - Comprobar si la estructura de la página es estable.
 - Decidir si se consume en tiempo real o se sincroniza periódicamente.
 - Valorar scraping, RSS si existe, API o carga manual asistida.
+- La URL ya puede guardarse desde configuración.
 
 ## 7. Ordenanzas fiscales
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La configuración debe incluir un apartado para subir PDFs de ordenanzas fiscales.
+
+Primera versión implementada:
+
+- Subida desde `/admin/config`.
+- Registro en `documents`.
+- Guardado de fichero en bucket privado `documents`.
+- Registro en `document_files`.
+- Clasificación por tipo documental.
+- Creación de extracción pendiente en `document_extractions`.
+- Auditoría de la carga.
+
+Pendiente:
+
+- Extracción real de texto.
+- Extracción estructurada con OpenAI.
+- Revisión humana y consolidación de datos en tablas específicas.
 
 Flujo previsto:
 
@@ -217,9 +266,14 @@ Decisión técnica pendiente:
 
 ## 8. Presupuestos municipales
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La configuración debe permitir incorporar presupuestos municipales.
+
+Primera versión implementada:
+
+- Tipo documental de presupuesto disponible en carga de documentación base.
+- Pendiente modelo específico de datos presupuestarios.
 
 Fuentes posibles:
 
@@ -243,9 +297,15 @@ Pendiente:
 
 ## 9. Decreto de delegaciones
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 Debe cargarse o localizarse el decreto de delegaciones del Ayuntamiento.
+
+Primera versión implementada:
+
+- Tipo documental específico `delegation_decree`.
+- Subida disponible desde configuración.
+- Pendiente extracción estructurada de áreas y competencias.
 
 Uso previsto:
 
@@ -264,9 +324,15 @@ Datos a extraer:
 
 ## 10. ROM municipal y régimen de funcionamiento
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 Debe cargarse el ROM municipal o localizarse en fuente oficial.
+
+Primera versión implementada:
+
+- Tipo documental específico `rom`.
+- Subida disponible desde configuración.
+- Pendiente extracción de régimen de plenos, comisiones y plazos.
 
 Uso previsto:
 
@@ -310,9 +376,16 @@ Uso previsto:
 
 ## 12. Modelo documental inteligente
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 La app debe distinguir entre:
+
+Primera versión implementada:
+
+- Documentos subidos manualmente.
+- Documentos clasificados por tipo.
+- Ficheros originales guardados.
+- Extracciones pendientes con datos esperados y revisión humana obligatoria.
 
 - Documentos subidos manualmente.
 - Documentos obtenidos por fuente oficial.
@@ -342,7 +415,7 @@ Tipos documentales iniciales:
 
 ## 13. Portada pública
 
-**Estado:** Pendiente de ampliación
+**Estado:** En desarrollo
 
 La portada pública se considera aceptable por ahora, pero puede ampliarse con información de VOX por municipio.
 
@@ -352,6 +425,12 @@ Mejoras previstas:
 - Mantener el cuadro de login visible en portada.
 - Mantener datos municipales configurables.
 - Evitar exceso de contenido para que siga siendo una portada limpia.
+
+Primera versión implementada:
+
+- Fuente VOX del municipio configurada en el perfil municipal.
+- La portada intenta mostrar las últimas notas publicadas.
+- Si la fuente externa falla, la portada no se rompe.
 
 ## 14. Criterio de automatización
 
@@ -377,4 +456,3 @@ Antes de implementar, conviene decidir:
 5. Primer flujo de subida y análisis de ordenanzas fiscales.
 6. Qué datos de la web de VOX se incorporan a la portada pública.
 7. Qué documentos son obligatorios para considerar configurado un municipio.
-
