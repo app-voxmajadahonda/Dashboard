@@ -2005,6 +2005,25 @@ tr:last-child td {
   padding: 16px;
 }
 
+.sync-box {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+}
+
+.sync-box strong {
+  color: var(--brand-dark);
+}
+
+.sync-box p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 5px 0 0;
+}
+
 .form-error {
   background: #fbe7e7;
   border: 1px solid #f0b8b8;

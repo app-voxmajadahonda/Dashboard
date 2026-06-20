@@ -517,7 +517,7 @@ Primera versión implementada:
 
 ## 18. Criterio de automatización
 
-**Estado:** Pendiente
+**Estado:** En desarrollo
 
 Criterio general:
 
@@ -525,6 +525,14 @@ Criterio general:
 - Si no existe fuente fiable, la app debe permitir carga documental por el portavoz/admin.
 - Si el dato afecta a análisis político, jurídico o económico, debe existir revisión humana.
 - Si el dato cambia con frecuencia, debe tener fecha de última actualización y fuente.
+
+Primera versión implementada:
+
+- Tabla `data_sources` para configurar fuentes por organización.
+- Tabla `cached_external_data` para guardar datos externos con fecha de caducidad.
+- Sincronización admin de datos públicos iniciales.
+- La portada deja de consultar fuentes externas directamente en cada carga.
+- Índices iniciales de rendimiento para documentos, acciones, auditoría y caché.
 
 ## 19. Próximas decisiones recomendadas
 

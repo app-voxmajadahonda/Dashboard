@@ -109,6 +109,8 @@ supabase/migrations/0001_initial_schema.sql
 supabase/migrations/0002_documents_storage.sql
 supabase/migrations/0003_configuration_documents.sql
 supabase/migrations/0004_seed_base_document_requirements.sql
+supabase/migrations/0005_data_sources_and_cache.sql
+supabase/migrations/0006_performance_indexes.sql
 ```
 
 Las migraciones crean:
@@ -127,6 +129,8 @@ Las migraciones crean:
 - Documentos base requeridos para configurar un municipio.
 - Tipos documentales para ordenanzas fiscales, ROM y decreto de delegaciones.
 - Tipos documentales para programa electoral, plan estratégico y plan de comunicación.
+- Fuentes externas configurables y caché de datos con caducidad.
+- Índices iniciales para acelerar documentos, acciones, auditoría y dashboards.
 
 ## Despliegue
 
@@ -152,7 +156,7 @@ La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
 
 ## Siguientes pasos técnicos
 
-1. Ejecutar `0003_configuration_documents.sql` y `0004_seed_base_document_requirements.sql` en Supabase.
+1. Ejecutar las migraciones `0003`, `0004`, `0005` y `0006` en Supabase.
 2. Conectar el dashboard a datos reales.
 3. Completar extracción de texto de PDF/DOCX/TXT.
 4. Enviar texto a OpenAI para clasificación y extracción estructurada.

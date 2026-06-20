@@ -2,7 +2,7 @@
 
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { AlertTriangle, FileUp, Globe2, Save, ShieldAlert } from "lucide-react";
+import { AlertTriangle, DatabaseZap, FileUp, Globe2, Save, ShieldAlert } from "lucide-react";
 
 type ConfigurationFormsProps = {
   organization: {
@@ -69,9 +69,12 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
   const [municipalityError, setMunicipalityError] = useState<string | null>(null);
   const [documentMessage, setDocumentMessage] = useState<string | null>(null);
   const [documentError, setDocumentError] = useState<string | null>(null);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [isSavingSources, setIsSavingSources] = useState(false);
   const [isRequestingMunicipality, setIsRequestingMunicipality] = useState(false);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   async function handleSources(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,6 +119,37 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
       setDocumentError(error instanceof Error ? error.message : "No se ha podido subir.");
     } finally {
       setIsUploadingDocument(false);
+    }
+  }
+
+  async function handleSyncPublicData() {
+    setSyncMessage(null);
+    setSyncError(null);
+    setIsSyncing(true);
+
+    try {
+      const response = await fetch("/api/admin/sync-public-data", {
+        method: "POST"
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        synced?: string[];
+        skipped?: string[];
+        error?: string;
+      } | null;
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "No se ha podido sincronizar.");
+      }
+
+      setSyncMessage(
+        `Sincronización completada. Actualizado: ${payload?.synced?.join(", ") || "ninguno"}. Pendiente: ${
+          payload?.skipped?.join(", ") || "ninguno"
+        }.`
+      );
+    } catch (error) {
+      setSyncError(error instanceof Error ? error.message : "No se ha podido sincronizar.");
+    } finally {
+      setIsSyncing(false);
     }
   }
 
@@ -255,6 +289,21 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
             {isSavingSources ? "Guardando..." : "Guardar fuentes"}
           </button>
         </form>
+        <div className="sync-box">
+          {syncMessage ? <div className="form-success">{syncMessage}</div> : null}
+          {syncError ? <div className="form-error">{syncError}</div> : null}
+          <div>
+            <strong>Caché de datos públicos</strong>
+            <p>
+              Sincroniza fuentes externas y guarda el resultado en base de datos para acelerar la
+              portada y evitar consultas continuas.
+            </p>
+          </div>
+          <button className="button" disabled={isSyncing} onClick={handleSyncPublicData} type="button">
+            <DatabaseZap size={17} />
+            {isSyncing ? "Sincronizando..." : "Sincronizar datos públicos"}
+          </button>
+        </div>
       </section>
 
       <section className="panel">

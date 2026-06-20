@@ -2,19 +2,18 @@ import { LockKeyhole, ShieldCheck, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import madridMap from "@/config/geo/madrid-map.json";
-import municipalProfile from "@/config/municipal-profile.json";
 import { LoginForm } from "@/components/auth/login-form";
-import { getVoxPressPosts } from "@/lib/vox/press";
-
-const totalSeats = municipalProfile.councilGroups.reduce(
-  (sum, group) => sum + group.seats,
-  0
-);
+import { getFallbackPublicProfile, getPublicDataCache } from "@/lib/cache/public-data";
 
 export default async function PublicHomePage() {
+  const municipalProfile = getFallbackPublicProfile();
   const { municipality, mayor } = municipalProfile;
   const { boundarySources } = municipality;
-  const pressPosts = await getVoxPressPosts(municipalProfile.voxMunicipalUrl);
+  const { pressPosts } = await getPublicDataCache();
+  const totalSeats = municipalProfile.councilGroups.reduce(
+    (sum, group) => sum + group.seats,
+    0
+  );
 
   return (
     <main className="portal-page">

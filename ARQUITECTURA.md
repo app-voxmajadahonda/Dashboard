@@ -359,6 +359,41 @@ Medidas mínimas:
 
 Cada fuente debe implementarse como conector configurable, no como lógica fija de Majadahonda.
 
+## Carga de datos, caché y rendimiento
+
+La aplicación no debe consultar fuentes externas en cada carga de página.
+
+Principio general:
+
+- Las páginas leen primero de PostgreSQL.
+- Las fuentes externas se consultan mediante sincronizaciones controladas.
+- Cada dato externo debe guardar fecha de obtención, fuente, caducidad y estado.
+- Si el dato está vigente, se reutiliza desde base de datos.
+- Si el dato está caducado, se marca para sincronización y no debe bloquear la pantalla.
+- Si una fuente externa falla, la página debe seguir cargando con el último dato disponible o con un respaldo configurado.
+
+Tablas a usar:
+
+- `data_sources`: catálogo de fuentes configurables por organización.
+- `cached_external_data`: resultados cacheados de fuentes externas.
+
+Ejemplos:
+
+- Población INE: caducidad aproximada de 30 días.
+- Notas de prensa VOX: caducidad aproximada de 1 día.
+- Web municipal y portal de transparencia: caducidad aproximada de 30 días.
+- Presupuesto municipal: caducidad larga, salvo aprobación o modificación.
+
+Regla de diseño:
+
+- Una pantalla de dashboard debe cargar datos ya preparados.
+- Los cálculos caros deben precalcularse o resumirse en tablas/materializaciones.
+- La IA documental no debe ejecutarse durante la carga de una página.
+- Los resultados de IA deben guardarse y revisarse antes de alimentar métricas o alertas.
+- Los conectores y automatizaciones deben poder ejecutarse fuera del ciclo de renderizado de Next.js.
+
+Este criterio es clave para que la aplicación siga siendo fluida cuando existan muchas páginas privadas con expedientes, contratos, alertas, documentos y tareas.
+
 ## Fases de construcción
 
 ### Fase 0: Preparación
