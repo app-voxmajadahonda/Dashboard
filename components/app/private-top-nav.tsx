@@ -12,6 +12,7 @@ import {
   ReceiptText,
   Settings,
   ShieldCheck,
+  UserCheck,
   Vote
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -19,37 +20,48 @@ import municipalProfile from "@/config/municipal-profile.json";
 
 const menuGroups = [
   {
-    label: "Dirección",
+    label: "Inicio",
     items: [
-      { label: "Mesa del portavoz", href: "/dashboard", icon: Gauge },
-      { label: "Configuración", href: "/admin/config", icon: Settings },
-      { label: "Usuarios y roles", href: "/admin/users", icon: ShieldCheck }
+      { label: "Panel privado de dirección", href: "/dashboard", icon: Gauge },
+      { label: "Calendario", href: "#", icon: CalendarDays },
+      { label: "Tareas y equipo", href: "#", icon: UserCheck }
     ]
   },
   {
-    label: "Control institucional",
+    label: "Procesos",
     items: [
       { label: "Plenos", href: "#", icon: Vote },
+      { label: "Comisiones", href: "#", icon: Landmark },
       { label: "Mociones", href: "#", icon: FileText },
+      { label: "Programa electoral", href: "#", icon: FileText }
+    ]
+  },
+  {
+    label: "Seguimiento",
+    items: [
       { label: "Expedientes", href: "#", icon: FolderKanban },
-      { label: "Decretos", href: "#", icon: ReceiptText }
-    ]
-  },
-  {
-    label: "Fiscalización",
-    items: [
       { label: "Contratos", href: "#", icon: BriefcaseBusiness },
+      { label: "Decretos", href: "#", icon: ReceiptText },
       { label: "Presupuesto", href: "#", icon: Euro },
-      { label: "Organización municipal", href: "#", icon: Landmark },
-      { label: "Documentos", href: "#", icon: Archive }
+      { label: "Preguntas de vecinos", href: "#", icon: MessageSquareText }
     ]
   },
   {
-    label: "Comunicación",
+    label: "Documentos",
     items: [
+      { label: "Repositorio", href: "#", icon: Archive },
+      { label: "Documentos a validar", href: "#", icon: FileText },
+      { label: "Plan estratégico", href: "/admin/config", icon: FileText },
+      { label: "Plan de comunicación", href: "/admin/config", icon: Megaphone }
+    ]
+  },
+  {
+    label: "Administración",
+    items: [
+      { label: "Configuración", href: "/admin/config", icon: Settings },
+      { label: "Usuarios y roles", href: "/admin/users", icon: ShieldCheck },
       { label: "Campañas", href: "#", icon: Megaphone },
-      { label: "Comunicación", href: "#", icon: MessageSquareText },
-      { label: "Calendario", href: "#", icon: CalendarDays }
+      { label: "Comunicación", href: "#", icon: MessageSquareText }
     ]
   }
 ];

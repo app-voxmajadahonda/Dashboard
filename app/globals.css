@@ -351,6 +351,87 @@ a {
   border-top-color: var(--brand-dark);
 }
 
+.tracking-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tracking-card {
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+}
+
+.tracking-icon {
+  align-items: center;
+  background: #e7f0e2;
+  border-radius: 4px;
+  color: var(--brand-strong);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.tracking-card h2 {
+  color: var(--brand-dark);
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+
+.tracking-card strong {
+  color: var(--brand-strong);
+  display: block;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.tracking-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.process-list {
+  display: grid;
+  gap: 10px;
+}
+
+.process-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.process-card div {
+  align-items: center;
+  color: var(--brand-dark);
+  display: flex;
+  gap: 8px;
+}
+
+.process-card strong {
+  font-size: 15px;
+}
+
+.process-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
 .topbar {
   align-items: center;
   background: rgba(255, 255, 255, 0.88);
@@ -1551,6 +1632,7 @@ tr:last-child td {
   .spokesperson-lower-grid,
   .compact-grid,
   .section-strip,
+  .tracking-grid,
   .private-metric-grid,
   .private-dashboard-grid,
   .config-layout {

@@ -108,6 +108,7 @@ El proyecto Supabase está creado y conectado. El flujo de base de datos previst
 supabase/migrations/0001_initial_schema.sql
 supabase/migrations/0002_documents_storage.sql
 supabase/migrations/0003_configuration_documents.sql
+supabase/migrations/0004_seed_base_document_requirements.sql
 ```
 
 Las migraciones crean:
@@ -125,6 +126,7 @@ Las migraciones crean:
 - Configuración inicial de Vox Majadahonda.
 - Documentos base requeridos para configurar un municipio.
 - Tipos documentales para ordenanzas fiscales, ROM y decreto de delegaciones.
+- Tipos documentales para programa electoral, plan estratégico y plan de comunicación.
 
 ## Despliegue
 
@@ -146,9 +148,11 @@ Para centralizar el desarrollo, despliegues y configuración de servicios desde 
 
 Las decisiones, ideas y tareas funcionales pendientes se registran en [HOJA_RUTA.md](./HOJA_RUTA.md).
 
+La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
+
 ## Siguientes pasos técnicos
 
-1. Ejecutar `0003_configuration_documents.sql` en Supabase.
+1. Ejecutar `0003_configuration_documents.sql` y `0004_seed_base_document_requirements.sql` en Supabase.
 2. Conectar el dashboard a datos reales.
 3. Completar extracción de texto de PDF/DOCX/TXT.
 4. Enviar texto a OpenAI para clasificación y extracción estructurada.

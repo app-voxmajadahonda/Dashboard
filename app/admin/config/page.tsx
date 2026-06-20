@@ -28,7 +28,16 @@ export default async function AdminConfigPage() {
       .from("documents")
       .select("id, title, kind, processing_status, created_at")
       .eq("organization_id", context.organization.id)
-      .in("kind", ["fiscal_ordinance", "budget", "delegation_decree", "rom", "report"])
+      .in("kind", [
+        "fiscal_ordinance",
+        "budget",
+        "delegation_decree",
+        "rom",
+        "electoral_program",
+        "strategic_plan",
+        "communication_plan",
+        "report"
+      ])
       .order("created_at", { ascending: false })
       .limit(8)
   ]);

@@ -1,6 +1,9 @@
 alter type document_kind add value if not exists 'fiscal_ordinance';
 alter type document_kind add value if not exists 'delegation_decree';
 alter type document_kind add value if not exists 'rom';
+alter type document_kind add value if not exists 'electoral_program';
+alter type document_kind add value if not exists 'strategic_plan';
+alter type document_kind add value if not exists 'communication_plan';
 
 create table if not exists base_document_requirements (
   id uuid primary key default uuid_generate_v4(),
@@ -28,46 +31,3 @@ create policy "Admins can manage base document requirements"
   on base_document_requirements for all
   using (is_org_admin(organization_id))
   with check (is_org_admin(organization_id));
-
-insert into base_document_requirements (
-  organization_id,
-  document_kind,
-  title,
-  description,
-  source_preference
-)
-select
-  id,
-  item.document_kind::document_kind,
-  item.title,
-  item.description,
-  item.source_preference
-from organizations
-cross join (
-  values
-    (
-      'fiscal_ordinance',
-      'Ordenanzas fiscales',
-      'PDFs oficiales de tasas, impuestos, bonificaciones, exenciones y precios publicos.',
-      'upload'
-    ),
-    (
-      'budget',
-      'Presupuesto municipal',
-      'Presupuesto vigente y documentacion economica asociada.',
-      'official_source_or_upload'
-    ),
-    (
-      'delegation_decree',
-      'Decreto de delegaciones',
-      'Delegaciones, areas de gobierno, concejalias y competencias.',
-      'official_source_or_upload'
-    ),
-    (
-      'rom',
-      'ROM municipal',
-      'Reglamento organico municipal, regimen de plenos, comisiones y plazos.',
-      'official_source_or_upload'
-    )
-) as item(document_kind, title, description, source_preference)
-on conflict (organization_id, document_kind, title) do nothing;

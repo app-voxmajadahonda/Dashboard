@@ -70,6 +70,7 @@ En un entorno nuevo de Supabase:
 supabase/migrations/0001_initial_schema.sql
 supabase/migrations/0002_documents_storage.sql
 supabase/migrations/0003_configuration_documents.sql
+supabase/migrations/0004_seed_base_document_requirements.sql
 ```
 
 4. Ejecutar.
@@ -88,6 +89,7 @@ Las migraciones crean:
 - Bucket privado `documents`.
 - Políticas de Storage para documentos por organización.
 - Tipos documentales para ordenanzas fiscales, ROM y decreto de delegaciones.
+- Tipos documentales para programa electoral, plan estratégico y plan de comunicación.
 - Tabla `base_document_requirements` para documentación base del municipio.
 
 ## Después de ejecutar las migraciones
@@ -145,7 +147,7 @@ Dominios a permitir:
 
 ## Próximo trabajo Supabase
 
-1. Ejecutar `0003_configuration_documents.sql` en el proyecto ya desplegado.
+1. Ejecutar `0003_configuration_documents.sql` y `0004_seed_base_document_requirements.sql` en el proyecto ya desplegado.
 2. Completar extracción real de texto desde PDF/DOCX/TXT.
 3. Guardar texto extraído y resultados IA en `document_extractions`.
 4. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.

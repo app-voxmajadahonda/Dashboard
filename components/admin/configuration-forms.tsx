@@ -275,6 +275,9 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
               <option value="budget">Presupuesto municipal</option>
               <option value="delegation_decree">Decreto de delegaciones</option>
               <option value="rom">ROM municipal</option>
+              <option value="electoral_program">Programa electoral</option>
+              <option value="strategic_plan">Plan estratégico</option>
+              <option value="communication_plan">Plan de comunicación</option>
               <option value="report">Informe u otra documentación base</option>
             </select>
           </label>

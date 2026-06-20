@@ -6,6 +6,8 @@ Este documento recoge decisiones, ideas, tareas y dudas funcionales de la aplica
 
 La aplicación nace para el Grupo Municipal VOX Majadahonda, pero debe diseñarse como una herramienta exportable a otros grupos municipales. Por tanto, siempre que sea razonable, los datos específicos del municipio deben ser configurables y no quedar fijados en código.
 
+La definición operativa de procesos se desarrolla en [PROCESOS.md](./PROCESOS.md).
+
 ## Estado de decisión
 
 Estados recomendados para cada punto:
@@ -26,7 +28,7 @@ La zona privada tras el login debe cambiar de enfoque visual.
 Primera versión implementada:
 
 - Sustituida la barra lateral por navegación superior con menús desplegables.
-- Creada una mesa del portavoz más limpia y distribuida por secciones.
+- Creado un panel privado de dirección más limpio y distribuido por bloques operativos.
 - Pendiente revisar visualmente con el usuario y ajustar el diseño definitivo.
 
 Decisiones iniciales:
@@ -39,13 +41,16 @@ Decisiones iniciales:
 
 Secciones privadas previstas:
 
-- Inicio / Mesa del portavoz.
+- Inicio / Panel privado de dirección.
 - Plenos.
+- Comisiones.
 - Mociones.
+- Programa electoral.
 - Expedientes.
 - Decretos.
 - Contratos.
 - Presupuesto.
+- Preguntas de vecinos.
 - Campañas.
 - Comunicación.
 - Documentos.
@@ -374,7 +379,82 @@ Uso previsto:
 - Seguimiento de expedientes.
 - Alertas por orden del día.
 
-## 12. Modelo documental inteligente
+## 12. Tareas y equipo
+
+**Estado:** En diseño
+
+Debe existir una sección donde el portavoz pueda asignar tareas a concejales, asesores y responsables de comunicación.
+
+Datos iniciales:
+
+- Título.
+- Descripción.
+- Responsable.
+- Área.
+- Prioridad.
+- Fecha límite.
+- Documento, expediente, pleno o comisión relacionada.
+- Estado.
+
+Uso previsto:
+
+- Convertir alertas en trabajo asignado.
+- Repartir preparación de plenos y comisiones.
+- Seguir compromisos políticos.
+- Controlar carga de trabajo del equipo.
+
+## 13. Mociones, iniciativas y votaciones
+
+**Estado:** En diseño
+
+Debe registrarse toda iniciativa presentada por el grupo municipal, incluyendo mociones, preguntas, ruegos y propuestas.
+
+Datos iniciales:
+
+- Título.
+- Tipo de iniciativa.
+- Texto presentado.
+- Pleno o comisión.
+- Fecha de registro.
+- Área política.
+- Relación con programa electoral.
+- Votación de cada grupo.
+- Resultado.
+- Seguimiento posterior.
+
+## 14. Programa electoral
+
+**Estado:** En desarrollo
+
+Debe poder cargarse el programa electoral completo y extraer sus medidas para hacer seguimiento político.
+
+Primera versión implementada:
+
+- Tipo documental `electoral_program`.
+- Subida disponible desde configuración.
+- Extracción pendiente preparada con campos esperados.
+
+Alertas futuras:
+
+- Medidas sin iniciativa asociada.
+- Medidas relevantes sin actividad reciente.
+- Medidas aprobadas sin seguimiento.
+- Medidas incumplidas si el grupo está en gobierno.
+
+## 15. Preguntas de vecinos
+
+**Estado:** En diseño
+
+Debe existir una sección para registrar preguntas, quejas o asuntos trasladados por vecinos.
+
+Uso previsto:
+
+- Convertir asuntos vecinales en preguntas al pleno o comisiones.
+- Asociarlos a expedientes o áreas municipales.
+- Dar seguimiento a respuestas.
+- Detectar temas recurrentes por barrio o materia.
+
+## 16. Modelo documental inteligente
 
 **Estado:** En desarrollo
 
@@ -412,8 +492,11 @@ Tipos documentales iniciales:
 - Decretos.
 - Expedientes.
 - Contratos.
+- Programa electoral.
+- Plan estratégico.
+- Plan de comunicación.
 
-## 13. Portada pública
+## 17. Portada pública
 
 **Estado:** En desarrollo
 
@@ -432,7 +515,7 @@ Primera versión implementada:
 - La portada intenta mostrar las últimas notas publicadas.
 - Si la fuente externa falla, la portada no se rompe.
 
-## 14. Criterio de automatización
+## 18. Criterio de automatización
 
 **Estado:** Pendiente
 
@@ -443,7 +526,7 @@ Criterio general:
 - Si el dato afecta a análisis político, jurídico o económico, debe existir revisión humana.
 - Si el dato cambia con frecuencia, debe tener fecha de última actualización y fuente.
 
-## 15. Próximas decisiones recomendadas
+## 19. Próximas decisiones recomendadas
 
 **Estado:** Pendiente
 

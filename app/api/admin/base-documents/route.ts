@@ -8,6 +8,9 @@ const allowedKinds = new Set<DocumentKind>([
   "budget",
   "delegation_decree",
   "rom",
+  "electoral_program",
+  "strategic_plan",
+  "communication_plan",
   "minutes",
   "agenda",
   "contract",
@@ -28,7 +31,10 @@ const extractionSchemas: Record<string, string[]> = {
   ],
   budget: ["ejercicio", "ingresos", "gastos", "areas", "partidas_relevantes", "modificaciones_credito"],
   delegation_decree: ["alcaldia", "tenencias_alcaldia", "concejalias", "competencias", "fechas"],
-  rom: ["plenos", "comisiones", "convocatorias", "plazos", "derechos_informacion"]
+  rom: ["plenos", "comisiones", "convocatorias", "plazos", "derechos_informacion"],
+  electoral_program: ["medidas", "areas", "compromisos", "indicadores", "prioridades", "estado_cumplimiento"],
+  strategic_plan: ["objetivos", "ejes", "acciones", "responsables", "plazos", "indicadores"],
+  communication_plan: ["mensajes", "campanas", "canales", "calendario", "publicos", "indicadores"]
 };
 
 function textValue(formData: FormData, key: string) {
