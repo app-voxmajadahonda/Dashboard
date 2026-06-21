@@ -403,7 +403,26 @@ Uso previsto:
 - Seguir compromisos políticos.
 - Controlar carga de trabajo del equipo.
 
-## 13. Mociones, iniciativas y votaciones
+## 13. Panel de concejales
+
+**Estado:** En desarrollo
+
+Debe existir una vista privada para concejales, coherente con el panel del portavoz, pero orientada a trabajo asignado y seguimiento por áreas.
+
+Primera versión implementada:
+
+- Ruta `/concejal`.
+- Pestañas principales: datos más relevantes, análisis fiscal y presupuestario, seguimiento institucional, contratación y programa electoral.
+- Bloques iniciales de tareas, documentos, alertas e hitos.
+- Los datos mostrados están planteados para que también sean visibles por el portavoz.
+
+Pendiente:
+
+- Definir qué métricas son por concejal, por área y por grupo municipal.
+- Definir qué acciones puede hacer un concejal sin aprobación del portavoz.
+- Conectar esta vista a tareas y datos reales.
+
+## 14. Mociones, iniciativas y votaciones
 
 **Estado:** En diseño
 
@@ -422,7 +441,7 @@ Datos iniciales:
 - Resultado.
 - Seguimiento posterior.
 
-## 14. Programa electoral
+## 15. Programa electoral
 
 **Estado:** En desarrollo
 
@@ -441,7 +460,7 @@ Alertas futuras:
 - Medidas aprobadas sin seguimiento.
 - Medidas incumplidas si el grupo está en gobierno.
 
-## 15. Preguntas de vecinos
+## 16. Preguntas de vecinos
 
 **Estado:** En diseño
 
@@ -454,7 +473,7 @@ Uso previsto:
 - Dar seguimiento a respuestas.
 - Detectar temas recurrentes por barrio o materia.
 
-## 16. Modelo documental inteligente
+## 17. Modelo documental inteligente
 
 **Estado:** En desarrollo
 
@@ -496,7 +515,7 @@ Tipos documentales iniciales:
 - Plan estratégico.
 - Plan de comunicación.
 
-## 17. Portada pública
+## 18. Portada pública
 
 **Estado:** En desarrollo
 
@@ -515,7 +534,7 @@ Primera versión implementada:
 - La portada intenta mostrar las últimas notas publicadas.
 - Si la fuente externa falla, la portada no se rompe.
 
-## 18. Criterio de automatización
+## 19. Criterio de automatización
 
 **Estado:** En desarrollo
 
@@ -534,7 +553,26 @@ Primera versión implementada:
 - La portada deja de consultar fuentes externas directamente en cada carga.
 - Índices iniciales de rendimiento para documentos, acciones, auditoría y caché.
 
-## 19. Próximas decisiones recomendadas
+## 20. Configuración de usuario
+
+**Estado:** En desarrollo
+
+Debe existir una ficha de usuario para cada concejal y usuario interno.
+
+Primera versión implementada:
+
+- Ruta `/perfil`.
+- Cada usuario puede editar su ficha.
+- El portavoz/admin ve un primer directorio del equipo.
+- Campos iniciales: nombre, email, teléfono, WhatsApp, cargo, redes sociales, comisiones, responsabilidades y notas.
+
+Pendiente:
+
+- Definir si el portavoz/admin podrá editar todas las fichas desde una pantalla específica.
+- Definir datos obligatorios para concejales.
+- Definir visibilidad interna/externa de redes y contacto.
+
+## 21. Próximas decisiones recomendadas
 
 **Estado:** Pendiente
 

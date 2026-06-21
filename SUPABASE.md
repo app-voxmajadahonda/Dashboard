@@ -73,6 +73,7 @@ supabase/migrations/0003_configuration_documents.sql
 supabase/migrations/0004_seed_base_document_requirements.sql
 supabase/migrations/0005_data_sources_and_cache.sql
 supabase/migrations/0006_performance_indexes.sql
+supabase/migrations/0007_user_profile_settings.sql
 ```
 
 4. Ejecutar.
@@ -95,6 +96,7 @@ Las migraciones crean:
 - Tabla `base_document_requirements` para documentación base del municipio.
 - Tablas `data_sources` y `cached_external_data` para fuentes externas y caché con caducidad.
 - Índices de rendimiento para documentos, acciones, auditoría, membresías y datos cacheados.
+- Campos de perfil para teléfono, WhatsApp, cargo, redes, comisiones y responsabilidades.
 
 ## Después de ejecutar las migraciones
 
@@ -151,7 +153,7 @@ Dominios a permitir:
 
 ## Próximo trabajo Supabase
 
-1. Ejecutar las migraciones `0003`, `0004`, `0005` y `0006` en el proyecto ya desplegado.
+1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006` y `0007` en el proyecto ya desplegado.
 2. Completar extracción real de texto desde PDF/DOCX/TXT.
 3. Guardar texto extraído y resultados IA en `document_extractions`.
 4. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.

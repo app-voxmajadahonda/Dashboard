@@ -183,7 +183,7 @@ Las áreas principales deben compartir la misma lógica visual:
 
 - Parte pública: presentación y acceso.
 - Panel privado de dirección: control operativo diario.
-- Panel de concejales: tareas, documentos, iniciativas y seguimiento asignado.
+- Panel de concejales: trabajo asignado, seguimiento por área y datos relevantes.
 - Administración/configuración: fuentes, documentación base, usuarios y municipio.
 
 Todas deben usar la misma identidad:
@@ -194,3 +194,51 @@ Todas deben usar la misma identidad:
 - Tarjetas sobrias.
 - Menús superiores.
 - Información priorizada por acción, alerta y seguimiento.
+
+## 10. Panel de concejales
+
+Objetivo: que cada concejal tenga una vista clara de su trabajo, datos relevantes y procesos asignados.
+
+Pestañas principales:
+
+- Datos más relevantes.
+- Análisis fiscal y presupuestario.
+- Seguimiento institucional.
+- Contratación.
+- Programa electoral.
+
+Principio de permisos:
+
+- Todo dato visible para un concejal debe estar disponible también para el portavoz.
+- El concejal ve su trabajo asignado y sus áreas.
+- El portavoz ve todos los datos, puede tomar decisiones y puede validar/cargar información.
+
+Procesos compartidos con portavoz:
+
+- Tareas: el portavoz puede asignar; el concejal puede ejecutar o informar.
+- Documentos: el portavoz/admin puede configurar y validar; el concejal puede consultar o proponer.
+- Programa electoral: el portavoz valida estado y estrategia; el concejal trabaja iniciativas asociadas.
+- Plenos/comisiones: el portavoz coordina; cada concejal prepara su parte.
+
+## 11. Configuración de usuario
+
+Objetivo: mantener una ficha interna útil de cada usuario/concejal.
+
+Datos iniciales:
+
+- Nombre.
+- Email.
+- Teléfono.
+- WhatsApp.
+- Cargo interno.
+- Cargo público o responsabilidad.
+- Redes sociales.
+- Comisiones.
+- Responsabilidades o áreas de seguimiento.
+- Notas internas.
+
+Permisos:
+
+- Cada usuario puede acceder a su propia ficha.
+- El portavoz/admin debe poder acceder a las fichas de todos.
+- La edición por parte del portavoz/admin podrá ampliarse cuando se cierre el modelo de datos definitivo.

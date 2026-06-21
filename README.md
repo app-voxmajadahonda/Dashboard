@@ -72,6 +72,8 @@ Endpoints de salud:
 /           Parte pública
 /login      Login de usuarios
 /dashboard  Dashboard privado
+/concejal   Panel privado de concejales
+/perfil     Configuración de usuario y ficha personal
 /admin/config Configuración del municipio, fuentes y documentación base
 /admin/users Gestión de usuarios y roles
 ```
@@ -111,6 +113,7 @@ supabase/migrations/0003_configuration_documents.sql
 supabase/migrations/0004_seed_base_document_requirements.sql
 supabase/migrations/0005_data_sources_and_cache.sql
 supabase/migrations/0006_performance_indexes.sql
+supabase/migrations/0007_user_profile_settings.sql
 ```
 
 Las migraciones crean:
@@ -131,6 +134,7 @@ Las migraciones crean:
 - Tipos documentales para programa electoral, plan estratégico y plan de comunicación.
 - Fuentes externas configurables y caché de datos con caducidad.
 - Índices iniciales para acelerar documentos, acciones, auditoría y dashboards.
+- Campos ampliados de ficha de usuario/concejal.
 
 ## Despliegue
 
@@ -156,7 +160,7 @@ La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
 
 ## Siguientes pasos técnicos
 
-1. Ejecutar las migraciones `0003`, `0004`, `0005` y `0006` en Supabase.
+1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006` y `0007` en Supabase.
 2. Conectar el dashboard a datos reales.
 3. Completar extracción de texto de PDF/DOCX/TXT.
 4. Enviar texto a OpenAI para clasificación y extracción estructurada.

@@ -13,6 +13,7 @@ import {
   Settings,
   ShieldCheck,
   UserCheck,
+  UserRound,
   Vote
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -23,6 +24,7 @@ const menuGroups = [
     label: "Inicio",
     items: [
       { label: "Panel privado de dirección", href: "/dashboard", icon: Gauge },
+      { label: "Panel de concejales", href: "/concejal", icon: UserCheck },
       { label: "Calendario", href: "#", icon: CalendarDays },
       { label: "Tareas y equipo", href: "#", icon: UserCheck }
     ]
@@ -60,6 +62,7 @@ const menuGroups = [
     items: [
       { label: "Configuración", href: "/admin/config", icon: Settings },
       { label: "Usuarios y roles", href: "/admin/users", icon: ShieldCheck },
+      { label: "Mi ficha", href: "/perfil", icon: UserRound },
       { label: "Campañas", href: "#", icon: Megaphone },
       { label: "Comunicación", href: "#", icon: MessageSquareText }
     ]
@@ -94,6 +97,10 @@ export function PrivateTopNav() {
       </nav>
 
       <div className="private-session">
+        <a className="button" href="/perfil">
+          <UserRound size={17} />
+          Mi ficha
+        </a>
         <a className="button" href="/admin/config">
           <Settings size={17} />
           Configuración
