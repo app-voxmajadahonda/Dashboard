@@ -259,7 +259,7 @@ export const sidebarSections = [
   { href: "#informacion-general", label: "Información general", icon: Users },
   { href: "#institucional", label: "Institucional", icon: Vote },
   { href: "#seguridad", label: "Seguridad", icon: Car },
-  { href: "#presupuesto", label: "Presupuesto y fiscalidad", icon: Euro },
+  { href: "#presupuesto-y-fiscalidad", label: "Presupuesto y fiscalidad", icon: Euro },
   { href: "#documentos", label: "Documentos y fuentes", icon: FileText },
   { href: "#observaciones", label: "Observaciones", icon: BriefcaseBusiness }
 ];

@@ -20,29 +20,11 @@ import {
   KPICard,
   SourceBadge
 } from "@/components/dashboard/dashboard-components";
+import { CouncillorObservationForm } from "@/components/dashboard/councillor-observation-form";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import municipalProfile from "@/config/municipal-profile.json";
-import {
-  ageStructure,
-  budgetEvolution,
-  budgetKpis,
-  comparisonRows,
-  crimeEvolution,
-  demographicEvolution,
-  fiscalOrdinances,
-  generalKpis,
-  institutionalEvents,
-  motions,
-  politicalProfile,
-  questions,
-  securityIssues,
-  securityKpis,
-  serviceRows,
-  sidebarSections,
-  sources,
-  votePatterns
-} from "@/lib/mock/councillor-dashboard";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
+import { getCouncillorDashboardData } from "@/lib/data/councillor-dashboard";
 import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +40,7 @@ export default async function CouncillorPage() {
   const user = await requireUser();
   const context = await getOrganizationContextForUser(user.id);
   const roleLabel = context?.membership.role === "admin" ? "Vista ampliada portavoz/admin" : "Rol concejal";
+  const dashboard = await getCouncillorDashboardData(context);
 
   return (
     <div className="private-shell">
@@ -71,7 +54,7 @@ export default async function CouncillorPage() {
             <small>{municipalProfile.municipality.name}</small>
           </div>
           <nav aria-label="Secciones del dashboard de concejal">
-            {sidebarSections.map((section) => (
+            {dashboard.sidebarSections.map((section) => (
               <a href={section.href} key={section.href}>
                 <section.icon size={17} />
                 <span>{section.label}</span>
@@ -80,7 +63,11 @@ export default async function CouncillorPage() {
           </nav>
           <footer>
             <span>{roleLabel}</span>
-            <span>Datos visibles también para el portavoz.</span>
+            <span>
+              {dashboard.sourceMode === "database"
+                ? "Datos conectados a base municipal."
+                : "Datos base hasta completar cargas reales."}
+            </span>
           </footer>
         </aside>
 
@@ -103,10 +90,10 @@ export default async function CouncillorPage() {
                 <Download size={17} />
                 Exportar
               </button>
-              <button className="button primary" type="button">
+              <a className="button primary" href="#observaciones">
                 <MessageSquarePlus size={17} />
                 Añadir observación
-              </button>
+              </a>
             </div>
           </header>
 
@@ -131,21 +118,21 @@ export default async function CouncillorPage() {
             </div>
 
             <div className="dashboard-kpi-grid">
-              {generalKpis.map((kpi) => (
+              {dashboard.generalKpis.map((kpi) => (
                 <KPICard key={kpi.label} {...kpi} />
               ))}
             </div>
 
             <div className="dashboard-two-columns">
               <ChartCard
-                data={demographicEvolution}
-                source={sources.ine}
+                data={dashboard.demographicEvolution}
+                source={dashboard.sources.ine}
                 subtitle="Estructura preparada para serie INE por años."
                 title="Evolución de población"
               />
               <ChartCard
-                data={ageStructure}
-                source={sources.madridStats}
+                data={dashboard.ageStructure}
+                source={dashboard.sources.madridStats}
                 subtitle="Tramos de edad para seguimiento demográfico."
                 title="Población por edad"
               />
@@ -161,7 +148,7 @@ export default async function CouncillorPage() {
                   ["Población extranjera", "Pendiente", "INE", "Pendiente validación"],
                   ["Altas y bajas padronales", "Pendiente", "Ayuntamiento", "Manual si no hay API"]
                 ]}
-                source={sources.ine}
+                source={dashboard.sources.ine}
                 subtitle="Datos demográficos esenciales."
                 title="Demografía detallada"
               />
@@ -174,7 +161,7 @@ export default async function CouncillorPage() {
                   ["Precio medio vivienda", "Pendiente", "Carga manual / fuente externa", "Estimado"],
                   ["Empresas y comercios", "Pendiente", "Ayuntamiento / CAM", "Pendiente"]
                 ]}
-                source={sources.officialPending}
+                source={dashboard.sources.officialPending}
                 subtitle="Renta, empleo y actividad económica."
                 title="Datos socioeconómicos"
               />
@@ -183,15 +170,15 @@ export default async function CouncillorPage() {
             <div className="dashboard-two-columns">
               <DataTable
                 columns={["Servicio", "Dato", "Fuente", "Estado"]}
-                rows={serviceRows}
-                source={sources.internal}
+                rows={dashboard.serviceRows}
+                source={dashboard.sources.internal}
                 subtitle="Equipamientos y servicios con carga manual inicial."
                 title="Servicios e infraestructuras"
               />
               <DataTable
                 columns={["Campo", "Valor", "Detalle", "Estado"]}
-                rows={politicalProfile}
-                source={sources.internal}
+                rows={dashboard.politicalProfile}
+                source={dashboard.sources.internal}
                 subtitle="Datos políticos básicos del municipio."
                 title="Ficha política municipal"
               />
@@ -218,21 +205,21 @@ export default async function CouncillorPage() {
                     <p>Plenos, comisiones, juntas y vencimientos.</p>
                   </div>
                 </header>
-                <CalendarView events={institutionalEvents} />
-                <SourceBadge source={sources.internal} />
+                <CalendarView events={dashboard.institutionalEvents} />
+                <SourceBadge source={dashboard.sources.internal} />
               </article>
 
               <div className="alert-stack">
                 <AlertCard
                   detail="Configurar fecha límite de mociones y preguntas cuando se cargue el ROM."
                   priority="alta"
-                  source={sources.internal}
+                  source={dashboard.sources.internal}
                   title="Pendiente régimen de plazos"
                 />
                 <AlertCard
                   detail="Las fichas individuales por pleno quedarán conectadas a órdenes del día, actas y votaciones."
                   priority="media"
-                  source={sources.internal}
+                  source={dashboard.sources.internal}
                   title="Ficha de pleno preparada"
                 />
               </div>
@@ -241,24 +228,24 @@ export default async function CouncillorPage() {
             <div className="dashboard-two-columns">
               <DataTable
                 columns={["Título", "Fecha", "Eje", "Responsable", "Estado"]}
-                rows={motions}
-                source={sources.internal}
+                rows={dashboard.motions}
+                source={dashboard.sources.internal}
                 subtitle="Listado filtrable por año, eje, estado, concejal y resultado."
                 title="Mociones"
               />
               <DataTable
                 columns={["Iniciativa", "Área", "Plazo", "Estado"]}
-                rows={questions}
-                source={sources.internal}
+                rows={dashboard.questions}
+                source={dashboard.sources.internal}
                 subtitle="Preguntas, ruegos, solicitudes y vencimientos."
                 title="Preguntas, ruegos y solicitudes"
               />
             </div>
 
             <DataTable
-              columns={votePatterns[0]}
-              rows={votePatterns.slice(1)}
-              source={sources.internal}
+              columns={dashboard.votePatterns[0]}
+              rows={dashboard.votePatterns.slice(1)}
+              source={dashboard.sources.internal}
               subtitle="Base preparada para detectar patrones políticos de votación."
               title="Votaciones por grupo"
             />
@@ -277,22 +264,22 @@ export default async function CouncillorPage() {
             </div>
 
             <div className="dashboard-kpi-grid">
-              {securityKpis.map((kpi) => (
+              {dashboard.securityKpis.map((kpi) => (
                 <KPICard key={kpi.label} {...kpi} />
               ))}
             </div>
 
             <div className="dashboard-two-columns">
               <ChartCard
-                data={crimeEvolution}
-                source={sources.officialPending}
+                data={dashboard.crimeEvolution}
+                source={dashboard.sources.officialPending}
                 subtitle="Carga manual de informes trimestrales del Ministerio del Interior."
                 title="Evolución criminalidad trimestral"
               />
               <DataTable
                 columns={["Asunto", "Prioridad", "Próxima acción", "Estado"]}
-                rows={securityIssues}
-                source={sources.internal}
+                rows={dashboard.securityIssues}
+                source={dashboard.sources.internal}
                 subtitle="Indicadores políticos y seguimiento de asuntos abiertos."
                 title="Asuntos de seguridad abiertos"
               />
@@ -333,22 +320,22 @@ export default async function CouncillorPage() {
             </div>
 
             <div className="dashboard-kpi-grid">
-              {budgetKpis.map((kpi) => (
+              {dashboard.budgetKpis.map((kpi) => (
                 <KPICard key={kpi.label} {...kpi} />
               ))}
             </div>
 
             <div className="dashboard-two-columns">
               <ChartCard
-                data={budgetEvolution}
-                source={sources.internal}
+                data={dashboard.budgetEvolution}
+                source={dashboard.sources.internal}
                 subtitle="Evolución anual 2023-2027 cuando se carguen presupuestos."
                 title="Evolución presupuestaria"
               />
               <DataTable
                 columns={["Ordenanza", "Tipo actual", "Mínimo legal", "Máximo legal", "Acción"]}
-                rows={fiscalOrdinances}
-                source={sources.internal}
+                rows={dashboard.fiscalOrdinances}
+                source={dashboard.sources.internal}
                 subtitle="Base de ordenanzas fiscales preparada para extracción documental."
                 title="Fiscalidad municipal"
               />
@@ -365,7 +352,7 @@ export default async function CouncillorPage() {
                 ]}
                 title="Comparativa con Haciendas Locales"
               />
-              <ComparisonTable rows={comparisonRows} title="Comparativa con municipios cercanos" />
+              <ComparisonTable rows={dashboard.comparisonRows} title="Comparativa con municipios cercanos" />
             </div>
           </section>
 
@@ -380,30 +367,9 @@ export default async function CouncillorPage() {
               </div>
             </div>
             <div className="document-grid">
-              <DocumentCard
-                source={sources.internal}
-                status="Pendiente de carga por portavoz/admin"
-                title="Informe trimestral de criminalidad"
-                type="Seguridad"
-              />
-              <DocumentCard
-                source={sources.internal}
-                status="Pendiente de extracción y validación"
-                title="Ordenanzas fiscales"
-                type="Fiscalidad"
-              />
-              <DocumentCard
-                source={sources.internal}
-                status="Pendiente de carga estructurada"
-                title="Presupuesto municipal"
-                type="Presupuesto"
-              />
-              <DocumentCard
-                source={sources.internal}
-                status="Pendiente de extracción de medidas"
-                title="Programa electoral"
-                type="Programa electoral"
-              />
+              {dashboard.documentCards.map((document) => (
+                <DocumentCard key={`${document.type}-${document.title}`} {...document} />
+              ))}
             </div>
           </section>
 
@@ -434,6 +400,7 @@ export default async function CouncillorPage() {
                 </article>
               ))}
             </div>
+            <CouncillorObservationForm />
           </section>
         </main>
       </div>

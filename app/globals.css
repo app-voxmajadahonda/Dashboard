@@ -969,6 +969,72 @@ a {
   font-weight: 750;
 }
 
+.observation-form {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.observation-form-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.observation-form-title svg {
+  color: var(--brand-strong);
+}
+
+.observation-form-title strong {
+  color: var(--brand-dark);
+  display: block;
+}
+
+.observation-form-title span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.observation-form label {
+  color: var(--brand-dark);
+  display: grid;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 6px;
+}
+
+.observation-form input,
+.observation-form textarea {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.observation-form textarea {
+  resize: vertical;
+}
+
+.form-status {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+  margin: 0;
+}
+
+.form-status.saved {
+  color: var(--brand-dark);
+}
+
+.form-status.error {
+  color: #9f1d1d;
+}
+
 .topbar {
   align-items: center;
   background: rgba(255, 255, 255, 0.88);

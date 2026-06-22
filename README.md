@@ -76,6 +76,7 @@ Endpoints de salud:
 /perfil     Configuración de usuario y ficha personal
 /admin/config Configuración del municipio, fuentes y documentación base
 /admin/users Gestión de usuarios y roles
+/api/concejal/observations Observaciones internas de concejales
 ```
 
 La protección usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `spokesperson`, `councillor`, `communications_manager`, `advisor` y `api_integration`.

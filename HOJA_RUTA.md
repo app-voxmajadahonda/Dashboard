@@ -418,12 +418,15 @@ Primera versión implementada:
 - Componentes reutilizables: KPICard, DataTable, ChartCard, AlertCard, DocumentCard, CalendarView, EntityDetailView, FilterBar, StatusBadge, SourceBadge y ComparisonTable.
 - Base de datos preparada con `municipal_indicators`, observaciones y marcados relevantes.
 - Los datos mostrados están planteados para que también sean visibles por el portavoz.
+- Capa de datos `getCouncillorDashboardData` preparada para leer indicadores y documentos reales desde Supabase, manteniendo datos base cuando todavía no hay cargas.
+- Primera acción real del concejal: formulario para guardar observaciones internas en `councillor_observations`.
 
 Pendiente:
 
 - Definir qué métricas son por concejal, por área y por grupo municipal.
-- Definir qué acciones puede hacer un concejal sin aprobación del portavoz.
-- Conectar esta vista a tareas y datos reales.
+- Conectar observaciones con una bandeja de revisión del portavoz.
+- Convertir observaciones relevantes en tareas, preguntas o solicitudes de expediente.
+- Conectar esta vista a más tablas reales de tareas, plenos, mociones y expedientes.
 - Crear pantallas de ficha individual de pleno, comisión, moción, expediente y ordenanza.
 
 ## 14. Mociones, iniciativas y votaciones
@@ -585,10 +588,10 @@ Pendiente:
 
 Antes de implementar, conviene decidir:
 
-1. Nueva estructura de navegación privada sin barra lateral.
-2. Primer diseño de la página de configuración.
-3. Modelo de datos para configuración municipal.
-4. Modelo de datos para documentos base.
-5. Primer flujo de subida y análisis de ordenanzas fiscales.
-6. Qué datos de la web de VOX se incorporan a la portada pública.
-7. Qué documentos son obligatorios para considerar configurado un municipio.
+1. Modelo de tareas internas: responsables, prioridad, vencimiento, relación con pleno/comisión/documento y estado.
+2. Bandeja del portavoz para revisar observaciones de concejales y convertirlas en tareas o iniciativas.
+3. Primeras tablas reales para plenos, comisiones, mociones, preguntas y votaciones.
+4. Flujo de carga y extracción de ordenanzas fiscales con revisión humana.
+5. Catálogo de indicadores municipales prioritarios para cargar en `municipal_indicators`.
+6. Qué documentos son obligatorios para considerar configurado un municipio.
+7. Qué datos deben mostrarse primero en el panel del portavoz frente al panel del concejal.
