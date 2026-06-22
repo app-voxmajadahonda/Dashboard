@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireOrganizationAdmin } from "@/lib/auth/organization";
-import { getSupabaseAdminClient, getSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdminContextJson } from "@/lib/server/api-auth";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getVoxPressPosts } from "@/lib/vox/press";
 
 function daysFromNow(days: number) {
@@ -10,23 +10,10 @@ function daysFromNow(days: number) {
 }
 
 export async function POST() {
-  const authClient = await getSupabaseServerClient();
-  const {
-    data: { user }
-  } = await authClient.auth.getUser();
+  const { user, context, response } = await requireAdminContextJson();
 
-  if (!user) {
-    return NextResponse.json({ error: "No autenticado." }, { status: 401 });
-  }
-
-  let context: Awaited<ReturnType<typeof requireOrganizationAdmin>>;
-  try {
-    context = await requireOrganizationAdmin(user.id);
-  } catch {
-    return NextResponse.json(
-      { error: "Solo el portavoz o un administrador puede sincronizar datos publicos." },
-      { status: 403 }
-    );
+  if (response || !user || !context) {
+    return response ?? NextResponse.json({ error: "No autenticado." }, { status: 401 });
   }
 
   const adminClient = getSupabaseAdminClient();

@@ -134,7 +134,10 @@ Cuando ese primer administrador exista, podrá entrar en:
 Desde ahí podrá crear otros usuarios y asignarles uno de estos roles:
 
 - `admin`
+- `spokesperson`
 - `councillor`
+- `communications_manager`
+- `advisor`
 - `api_integration`
 
 Para que la creación de usuarios funcione desde la app, Vercel debe tener configurada la variable secreta:

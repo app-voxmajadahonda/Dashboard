@@ -1,41 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireOrganizationAdmin } from "@/lib/auth/organization";
-import { getSupabaseAdminClient, getSupabaseServerClient } from "@/lib/supabase/server";
-
-function textValue(formData: FormData, key: string) {
-  return String(formData.get(key) ?? "").trim();
-}
-
-function optionalUrl(value: string) {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    return new URL(value).toString();
-  } catch {
-    return value;
-  }
-}
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { requireAdminContextJson } from "@/lib/server/api-auth";
+import { optionalUrl, textValue } from "@/lib/server/form";
 
 export async function POST(request: NextRequest) {
-  const authClient = await getSupabaseServerClient();
-  const {
-    data: { user }
-  } = await authClient.auth.getUser();
+  const { user, context, response } = await requireAdminContextJson();
 
-  if (!user) {
-    return NextResponse.json({ error: "No autenticado." }, { status: 401 });
-  }
-
-  let context: Awaited<ReturnType<typeof requireOrganizationAdmin>>;
-  try {
-    context = await requireOrganizationAdmin(user.id);
-  } catch {
-    return NextResponse.json(
-      { error: "Solo el portavoz o un administrador puede cambiar la configuracion." },
-      { status: 403 }
-    );
+  if (response || !user || !context) {
+    return response ?? NextResponse.json({ error: "No autenticado." }, { status: 401 });
   }
 
   const formData = await request.formData();

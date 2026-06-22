@@ -78,7 +78,7 @@ Endpoints de salud:
 /admin/users Gestión de usuarios y roles
 ```
 
-La protección usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `councillor` y `api_integration`.
+La protección usa Supabase Auth. Los permisos se asignan con la tabla `memberships` y los roles `admin`, `spokesperson`, `councillor`, `communications_manager`, `advisor` y `api_integration`.
 
 ## Variables de entorno
 
@@ -159,6 +159,12 @@ Para centralizar el desarrollo, despliegues y configuración de servicios desde 
 Las decisiones, ideas y tareas funcionales pendientes se registran en [HOJA_RUTA.md](./HOJA_RUTA.md).
 
 La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
+
+## Rendimiento y carga de datos
+
+La portada pública se revalida periódicamente y lee datos ya cacheados en PostgreSQL, no fuentes externas en cada carga. Las páginas privadas se mantienen dinámicas porque dependen del usuario autenticado y de sus permisos.
+
+Las rutas de servidor comparten helpers de autenticación y lectura de formularios para reducir duplicidades y evitar diferencias de permisos entre módulos.
 
 ## Siguientes pasos técnicos
 

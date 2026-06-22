@@ -5,6 +5,8 @@ import madridMap from "@/config/geo/madrid-map.json";
 import { LoginForm } from "@/components/auth/login-form";
 import { getFallbackPublicProfile, getPublicDataCache } from "@/lib/cache/public-data";
 
+export const revalidate = 900;
+
 export default async function PublicHomePage() {
   const municipalProfile = getFallbackPublicProfile();
   const { municipality, mayor } = municipalProfile;

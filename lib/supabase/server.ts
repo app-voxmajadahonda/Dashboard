@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let adminClient: SupabaseClient | null = null;
 
 export async function getSupabaseServerClient() {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -42,10 +43,12 @@ export function getSupabaseAdminClient() {
     throw new Error("Missing Supabase admin environment variables.");
   }
 
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+  adminClient ??= createClient(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
   });
+
+  return adminClient;
 }

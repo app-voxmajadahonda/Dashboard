@@ -4,13 +4,7 @@ const standaloneOutput = process.env.NEXT_STANDALONE === "true";
 
 const nextConfig: NextConfig = {
   output: standaloneOutput ? "standalone" : undefined,
-  poweredByHeader: false,
-  eslint: {
-    ignoreDuringBuilds: true
-  },
-  typescript: {
-    ignoreBuildErrors: true
-  }
+  poweredByHeader: false
 };
 
 export default nextConfig;

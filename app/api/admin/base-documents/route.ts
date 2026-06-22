@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { requireOrganizationAdmin } from "@/lib/auth/organization";
-import { getSupabaseAdminClient, getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { requireAdminContextJson } from "@/lib/server/api-auth";
+import { safeFilename, textValue } from "@/lib/server/form";
 import type { DocumentKind } from "@/lib/types";
 
 const allowedKinds = new Set<DocumentKind>([
@@ -37,38 +38,11 @@ const extractionSchemas: Record<string, string[]> = {
   communication_plan: ["mensajes", "campanas", "canales", "calendario", "publicos", "indicadores"]
 };
 
-function textValue(formData: FormData, key: string) {
-  return String(formData.get(key) ?? "").trim();
-}
-
-function safeFilename(filename: string) {
-  return filename
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9._-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
-}
-
 export async function POST(request: Request) {
-  const authClient = await getSupabaseServerClient();
-  const {
-    data: { user }
-  } = await authClient.auth.getUser();
+  const { user, context, response } = await requireAdminContextJson();
 
-  if (!user) {
-    return NextResponse.json({ error: "No autenticado." }, { status: 401 });
-  }
-
-  let context: Awaited<ReturnType<typeof requireOrganizationAdmin>>;
-  try {
-    context = await requireOrganizationAdmin(user.id);
-  } catch {
-    return NextResponse.json(
-      { error: "Solo el portavoz o un administrador puede subir documentacion base." },
-      { status: 403 }
-    );
+  if (response || !user || !context) {
+    return response ?? NextResponse.json({ error: "No autenticado." }, { status: 401 });
   }
 
   const formData = await request.formData();

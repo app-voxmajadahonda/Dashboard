@@ -1,34 +1,25 @@
 import { NextResponse } from "next/server";
-import { getOrganizationContextForUser } from "@/lib/auth/organization";
-import { getSupabaseAdminClient, getSupabaseServerClient } from "@/lib/supabase/server";
-
-function textValue(formData: FormData, key: string) {
-  return String(formData.get(key) ?? "").trim();
-}
-
-function listValue(value: string) {
-  return value
-    .split("\n")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
+import { getRequestOrganizationContextJson, requireRequestUserJson } from "@/lib/server/api-auth";
+import { listValue, textValue } from "@/lib/server/form";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
-  const authClient = await getSupabaseServerClient();
-  const {
-    data: { user }
-  } = await authClient.auth.getUser();
+  const { user, response } = await requireRequestUserJson();
 
-  if (!user) {
-    return NextResponse.json({ error: "No autenticado." }, { status: 401 });
+  if (response || !user) {
+    return response ?? NextResponse.json({ error: "No autenticado." }, { status: 401 });
   }
 
   const formData = await request.formData();
   const targetUserId = textValue(formData, "targetUserId") || user.id;
-  const context = await getOrganizationContextForUser(user.id);
-  const isAdmin = context?.membership.role === "admin";
+  const { context, response: contextResponse } = await getRequestOrganizationContextJson(user.id);
+  const isPrivilegedRole = ["admin", "spokesperson"].includes(context?.membership.role ?? "");
 
-  if (targetUserId !== user.id && !isAdmin) {
+  if (contextResponse || !context) {
+    return contextResponse ?? NextResponse.json({ error: "No existe una organizacion activa." }, { status: 403 });
+  }
+
+  if (targetUserId !== user.id && !isPrivilegedRole) {
     return NextResponse.json({ error: "No puedes modificar la ficha de otro usuario." }, { status: 403 });
   }
 

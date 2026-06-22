@@ -66,7 +66,7 @@ Debe existir una página de configuración solo accesible al portavoz y administ
 Primera versión implementada:
 
 - Ruta `/admin/config`.
-- Acceso limitado a usuarios con rol `admin`.
+- Acceso limitado a usuarios con rol `admin` o `spokesperson`.
 - Formularios para fuentes oficiales, redes sociales y documentación base.
 - Carga inicial de documentos base en Supabase Storage.
 
@@ -537,6 +537,7 @@ Primera versión implementada:
 - Fuente VOX del municipio configurada en el perfil municipal.
 - La portada intenta mostrar las últimas notas publicadas.
 - Si la fuente externa falla, la portada no se rompe.
+- La portada lee datos cacheados y se revalida periódicamente para evitar consultas externas en cada carga.
 
 ## 19. Criterio de automatización
 
@@ -556,6 +557,8 @@ Primera versión implementada:
 - Sincronización admin de datos públicos iniciales.
 - La portada deja de consultar fuentes externas directamente en cada carga.
 - Índices iniciales de rendimiento para documentos, acciones, auditoría y caché.
+- Refactorizadas rutas de servidor para compartir autenticación, permisos y lectura de formularios.
+- Cliente administrativo de Supabase reutilizado en servidor para reducir trabajo repetido.
 
 ## 20. Configuración de usuario
 
