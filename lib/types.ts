@@ -1,4 +1,17 @@
-export type AppRole = "admin" | "councillor" | "api_integration";
+export type AppRole =
+  | "admin"
+  | "councillor"
+  | "api_integration"
+  | "spokesperson"
+  | "communications_manager"
+  | "advisor";
+
+export type DataStatus =
+  | "oficial"
+  | "pendiente_validacion"
+  | "estimado"
+  | "interno"
+  | "desactualizado";
 
 export type DocumentKind =
   | "decree"

@@ -412,8 +412,11 @@ Debe existir una vista privada para concejales, coherente con el panel del porta
 Primera versión implementada:
 
 - Ruta `/concejal`.
-- Pestañas principales: datos más relevantes, análisis fiscal y presupuestario, seguimiento institucional, contratación y programa electoral.
-- Bloques iniciales de tareas, documentos, alertas e hitos.
+- Dashboard completo por rol concejal con sidebar interno y pestañas principales.
+- Pestañas: información general del municipio, institucional, seguridad, presupuesto y fiscalidad.
+- KPIs, gráficos básicos, tablas, calendario, alertas, documentos, comparativas y estados de dato.
+- Componentes reutilizables: KPICard, DataTable, ChartCard, AlertCard, DocumentCard, CalendarView, EntityDetailView, FilterBar, StatusBadge, SourceBadge y ComparisonTable.
+- Base de datos preparada con `municipal_indicators`, observaciones y marcados relevantes.
 - Los datos mostrados están planteados para que también sean visibles por el portavoz.
 
 Pendiente:
@@ -421,6 +424,7 @@ Pendiente:
 - Definir qué métricas son por concejal, por área y por grupo municipal.
 - Definir qué acciones puede hacer un concejal sin aprobación del portavoz.
 - Conectar esta vista a tareas y datos reales.
+- Crear pantallas de ficha individual de pleno, comisión, moción, expediente y ordenanza.
 
 ## 14. Mociones, iniciativas y votaciones
 

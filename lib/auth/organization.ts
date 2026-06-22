@@ -51,7 +51,7 @@ export async function getOrganizationContextForUser(userId: string): Promise<Org
 export async function requireOrganizationAdmin(userId: string): Promise<OrganizationContext> {
   const context = await getOrganizationContextForUser(userId);
 
-  if (!context || context.membership.role !== "admin") {
+  if (!context || !["admin", "spokesperson"].includes(context.membership.role)) {
     throw new Error("ADMIN_REQUIRED");
   }
 

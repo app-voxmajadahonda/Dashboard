@@ -201,11 +201,10 @@ Objetivo: que cada concejal tenga una vista clara de su trabajo, datos relevante
 
 Pestañas principales:
 
-- Datos más relevantes.
-- Análisis fiscal y presupuestario.
-- Seguimiento institucional.
-- Contratación.
-- Programa electoral.
+- Información general del municipio.
+- Institucional.
+- Seguridad.
+- Presupuesto y fiscalidad.
 
 Principio de permisos:
 
@@ -219,6 +218,19 @@ Procesos compartidos con portavoz:
 - Documentos: el portavoz/admin puede configurar y validar; el concejal puede consultar o proponer.
 - Programa electoral: el portavoz valida estado y estrategia; el concejal trabaja iniciativas asociadas.
 - Plenos/comisiones: el portavoz coordina; cada concejal prepara su parte.
+
+Bloques de la primera versión funcional:
+
+- KPIs con fuente, fecha de actualización, confianza y estado.
+- Datos demográficos y socioeconómicos.
+- Ficha política municipal.
+- Servicios e infraestructuras.
+- Calendario institucional.
+- Mociones, preguntas, ruegos, solicitudes y votaciones.
+- Policía Local, Guardia Civil, criminalidad e indicadores políticos de seguridad.
+- Presupuesto municipal, ordenanzas fiscales, comparativa con Haciendas Locales y municipios cercanos.
+- Documentos disponibles y pendientes de carga por portavoz/admin.
+- Observaciones y marcado de asuntos relevantes por concejal.
 
 ## 11. Configuración de usuario
 

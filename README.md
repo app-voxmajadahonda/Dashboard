@@ -114,6 +114,7 @@ supabase/migrations/0004_seed_base_document_requirements.sql
 supabase/migrations/0005_data_sources_and_cache.sql
 supabase/migrations/0006_performance_indexes.sql
 supabase/migrations/0007_user_profile_settings.sql
+supabase/migrations/0008_councillor_dashboard_foundation.sql
 ```
 
 Las migraciones crean:
@@ -135,6 +136,7 @@ Las migraciones crean:
 - Fuentes externas configurables y caché de datos con caducidad.
 - Índices iniciales para acelerar documentos, acciones, auditoría y dashboards.
 - Campos ampliados de ficha de usuario/concejal.
+- Base de indicadores municipales, observaciones y marcados relevantes del concejal.
 
 ## Despliegue
 
@@ -160,7 +162,7 @@ La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
 
 ## Siguientes pasos técnicos
 
-1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006` y `0007` en Supabase.
+1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006`, `0007` y `0008` en Supabase.
 2. Conectar el dashboard a datos reales.
 3. Completar extracción de texto de PDF/DOCX/TXT.
 4. Enviar texto a OpenAI para clasificación y extracción estructurada.
