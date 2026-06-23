@@ -74,3 +74,15 @@ API_CLIENT_SECRET
 4. Implementar extracción de texto e IA documental.
 5. Crear revisión humana de extracciones.
 6. Consolidar acciones de gobierno y preparar tablas específicas para plenos, mociones, decretos, expedientes, presupuesto y alertas.
+## Documento vivo de auditoria
+
+Mantener actualizado `PLATAFORMA_VOX_MAJADAHONDA_AUDITORIA.md` cuando haya cambios relevantes en:
+
+- arquitectura general;
+- modelo de datos, migraciones o tablas Supabase;
+- roles, permisos o vistas disponibles;
+- dashboards, procesos y modulos funcionales;
+- sistema documental, integraciones, automatizaciones o fuentes de datos;
+- estado real del proyecto, problemas conocidos, roadmap o recomendaciones.
+
+Este fichero debe servir para que un arquitecto externo pueda revisar el estado de la plataforma sin acceder al codigo fuente. Si una actualizacion cambia significativamente lo que funciona, lo que esta parcialmente implementado, lo que solo esta disenado o lo que queda pendiente, actualizar tambien este documento antes de cerrar el trabajo.
