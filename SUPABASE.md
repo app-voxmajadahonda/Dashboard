@@ -81,6 +81,19 @@ supabase/migrations/0010_data_catalog.sql
 
 4. Ejecutar.
 
+Para actualizar el proyecto ya existente sin pegar todas las migraciones una a una, usar la guía:
+
+```text
+SUPABASE_ACTUALIZACION.md
+```
+
+Y ejecutar estos dos scripts en orden:
+
+```text
+supabase/apply_step_1_0003.sql
+supabase/apply_step_2_0004_0010.sql
+```
+
 Las migraciones crean:
 
 - Organizacion inicial Vox Majadahonda.

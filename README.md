@@ -143,6 +143,8 @@ Las migraciones crean:
 - Controles de fuente y caducidad para indicadores municipales.
 - Catálogo inicial de datos, fuentes, rutas, automatización, caducidad y destino en base de datos.
 
+Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
+
 ## Despliegue
 
 El despliegue actual está en Vercel:
