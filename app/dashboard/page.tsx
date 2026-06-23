@@ -14,7 +14,9 @@ import {
   Users,
   Vote
 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
+import { getOrganizationContextForUser } from "@/lib/auth/organization";
 import municipalProfile from "@/config/municipal-profile.json";
 import { requireUser } from "@/lib/supabase/server";
 
@@ -119,7 +121,12 @@ const currentTasks = [
 ];
 
 export default async function DashboardPage() {
-  await requireUser();
+  const user = await requireUser();
+  const context = await getOrganizationContextForUser(user.id);
+
+  if (!["admin", "spokesperson"].includes(context?.membership.role ?? "")) {
+    redirect("/concejal");
+  }
 
   return (
     <div className="private-shell">

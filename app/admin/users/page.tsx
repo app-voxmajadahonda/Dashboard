@@ -1,13 +1,21 @@
 import { ShieldCheck, Users } from "lucide-react";
+import { redirect } from "next/navigation";
 import { CreateUserForm } from "@/components/admin/create-user-form";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
+import { requireOrganizationAdmin } from "@/lib/auth/organization";
 import { appRoles } from "@/lib/auth/roles";
 import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
-  await requireUser();
+  const user = await requireUser();
+
+  try {
+    await requireOrganizationAdmin(user.id);
+  } catch {
+    redirect("/concejal");
+  }
 
   return (
     <div className="private-shell">

@@ -163,6 +163,8 @@ Las decisiones, ideas y tareas funcionales pendientes se registran en [HOJA_RUTA
 
 La definición de procesos de trabajo se recoge en [PROCESOS.md](./PROCESOS.md).
 
+El catálogo inicial de datos, fuentes, caducidades y responsables de validación se recoge en [CATALOGO_DATOS.md](./CATALOGO_DATOS.md).
+
 ## Rendimiento y carga de datos
 
 La portada pública se revalida periódicamente y lee datos ya cacheados en PostgreSQL, no fuentes externas en cada carga. Las páginas privadas se mantienen dinámicas porque dependen del usuario autenticado y de sus permisos.

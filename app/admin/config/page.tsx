@@ -14,7 +14,7 @@ export default async function AdminConfigPage() {
   try {
     context = await requireOrganizationAdmin(user.id);
   } catch {
-    redirect("/dashboard");
+    redirect("/concejal");
   }
 
   const adminClient = getSupabaseAdminClient();

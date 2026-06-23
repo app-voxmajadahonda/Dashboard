@@ -139,7 +139,8 @@ a {
   border-bottom: 1px solid var(--border);
   display: grid;
   gap: 18px;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
   min-height: 72px;
   padding: 12px 28px;
   position: sticky;
@@ -445,8 +446,11 @@ a {
 .dashboard-tabs a {
   border-radius: 4px;
   color: var(--brand-dark);
+  align-items: center;
+  display: flex;
   font-size: 13px;
   font-weight: 850;
+  gap: 7px;
   padding: 9px 11px;
 }
 
@@ -461,6 +465,22 @@ a {
   display: grid;
   gap: 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.councillor-workspace {
+  max-width: 1480px;
+}
+
+.shared-dashboard-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.8fr) minmax(300px, 0.95fr);
+}
+
+.operational-tabs {
+  position: sticky;
+  top: 72px;
+  z-index: 1;
 }
 
 .councillor-panel {
@@ -2240,6 +2260,7 @@ tr:last-child td {
   }
 
   .metric-grid,
+  .shared-dashboard-grid,
   .dashboard-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -2307,6 +2328,10 @@ tr:last-child td {
   .alert-card {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .shared-dashboard-grid {
+    grid-template-columns: 1fr;
   }
 
   .filter-bar {

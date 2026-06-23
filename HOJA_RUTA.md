@@ -412,14 +412,17 @@ Debe existir una vista privada para concejales, coherente con el panel del porta
 Primera versión implementada:
 
 - Ruta `/concejal`.
-- Dashboard completo por rol concejal con sidebar interno y pestañas principales.
-- Pestañas: información general del municipio, institucional, seguridad, presupuesto y fiscalidad.
+- Dashboard completo por rol concejal con navegación operativa dentro de la pantalla.
+- La barra superior queda limitada a sesión, mi ficha, configuración si el rol lo permite y salir.
+- Pestañas operativas iniciales: datos generales, fiscalidad y presupuesto, seguimiento de contratos, seguimiento de proyectos y análisis electoral.
+- Bloque común superior con calendario, alertas y tareas pendientes.
 - KPIs, gráficos básicos, tablas, calendario, alertas, documentos, comparativas y estados de dato.
 - Componentes reutilizables: KPICard, DataTable, ChartCard, AlertCard, DocumentCard, CalendarView, EntityDetailView, FilterBar, StatusBadge, SourceBadge y ComparisonTable.
 - Base de datos preparada con `municipal_indicators`, observaciones y marcados relevantes.
 - Los datos mostrados están planteados para que también sean visibles por el portavoz.
 - Capa de datos `getCouncillorDashboardData` preparada para leer indicadores y documentos reales desde Supabase, manteniendo datos base cuando todavía no hay cargas.
 - Primera acción real del concejal: formulario para guardar observaciones internas en `councillor_observations`.
+- Rutas de administración y panel de dirección protegidas para que el concejal sea redirigido a `/concejal`.
 
 Pendiente:
 
@@ -564,6 +567,7 @@ Primera versión implementada:
 - Cliente administrativo de Supabase reutilizado en servidor para reducir trabajo repetido.
 - Pantalla de configuración ampliada para revisar fuentes, proveedor, URL/API, estado activo y caducidad de cada dato.
 - Indicadores municipales preparados con `source_key` y `expires_at` para marcar datos caducados en dashboards.
+- Creado [CATALOGO_DATOS.md](./CATALOGO_DATOS.md) para identificar datos, fuente preferente, alternativa documental, caducidad y responsable de validación.
 
 Pendiente:
 
