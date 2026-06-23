@@ -2332,7 +2332,8 @@ tr:last-child td {
   }
 
   .two-column-form,
-  .requirement-grid {
+  .requirement-grid,
+  .data-source-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2665,6 +2666,65 @@ tr:last-child td {
   font-size: 13px;
   line-height: 1.45;
   margin: 5px 0 0;
+}
+
+.data-source-form {
+  display: grid;
+  gap: 14px;
+}
+
+.data-source-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.data-source-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.data-source-card label,
+.checkbox-row {
+  color: var(--brand-dark);
+  display: grid;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 6px;
+}
+
+.data-source-card input,
+.data-source-card select {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.checkbox-row {
+  align-items: center;
+  display: flex;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.freshness-panel {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.freshness-panel > strong {
+  color: var(--brand-dark);
 }
 
 .form-error {

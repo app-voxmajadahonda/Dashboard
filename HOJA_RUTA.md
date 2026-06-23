@@ -562,6 +562,14 @@ Primera versión implementada:
 - Índices iniciales de rendimiento para documentos, acciones, auditoría y caché.
 - Refactorizadas rutas de servidor para compartir autenticación, permisos y lectura de formularios.
 - Cliente administrativo de Supabase reutilizado en servidor para reducir trabajo repetido.
+- Pantalla de configuración ampliada para revisar fuentes, proveedor, URL/API, estado activo y caducidad de cada dato.
+- Indicadores municipales preparados con `source_key` y `expires_at` para marcar datos caducados en dashboards.
+
+Pendiente:
+
+- Definir conectores reales por fuente: INE, Comunidad de Madrid, Ayuntamiento, portal de transparencia y documentos oficiales.
+- Crear proceso de carga manual de indicadores cuando no exista API oficial.
+- Crear panel de revisión del portavoz para aceptar datos extraídos antes de usarlos como oficiales.
 
 ## 20. Configuración de usuario
 

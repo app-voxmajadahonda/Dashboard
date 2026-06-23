@@ -116,6 +116,7 @@ supabase/migrations/0005_data_sources_and_cache.sql
 supabase/migrations/0006_performance_indexes.sql
 supabase/migrations/0007_user_profile_settings.sql
 supabase/migrations/0008_councillor_dashboard_foundation.sql
+supabase/migrations/0009_data_freshness_controls.sql
 ```
 
 Las migraciones crean:
@@ -138,6 +139,7 @@ Las migraciones crean:
 - Índices iniciales para acelerar documentos, acciones, auditoría y dashboards.
 - Campos ampliados de ficha de usuario/concejal.
 - Base de indicadores municipales, observaciones y marcados relevantes del concejal.
+- Controles de fuente y caducidad para indicadores municipales.
 
 ## Despliegue
 
@@ -169,8 +171,8 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 
 ## Siguientes pasos técnicos
 
-1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006`, `0007` y `0008` en Supabase.
-2. Conectar el dashboard a datos reales.
+1. Ejecutar las migraciones `0003` a `0009` en Supabase.
+2. Cargar los primeros indicadores reales en `municipal_indicators` con fuente, caducidad y estado.
 3. Completar extracción de texto de PDF/DOCX/TXT.
 4. Enviar texto a OpenAI para clasificación y extracción estructurada.
 5. Guardar acciones de gobierno detectadas.

@@ -18,7 +18,7 @@ export default async function AdminConfigPage() {
   }
 
   const adminClient = getSupabaseAdminClient();
-  const [{ data: requirements }, { data: documents }] = await Promise.all([
+  const [{ data: requirements }, { data: documents }, { data: dataSources }, { data: indicators }] = await Promise.all([
     adminClient
       .from("base_document_requirements")
       .select("id, title, description, document_kind, source_preference")
@@ -39,6 +39,17 @@ export default async function AdminConfigPage() {
         "report"
       ])
       .order("created_at", { ascending: false })
+      .limit(8),
+    adminClient
+      .from("data_sources")
+      .select("id, source_key, label, provider, source_url, refresh_interval_days, enabled, updated_at")
+      .eq("organization_id", context.organization.id)
+      .order("label", { ascending: true }),
+    adminClient
+      .from("municipal_indicators")
+      .select("id, label, source_key, data_status, updated_at, expires_at")
+      .eq("organization_id", context.organization.id)
+      .order("updated_at", { ascending: false })
       .limit(8)
   ]);
 
@@ -67,6 +78,8 @@ export default async function AdminConfigPage() {
 
         <ConfigurationForms
           documents={documents ?? []}
+          dataSources={dataSources ?? []}
+          indicators={indicators ?? []}
           organization={context.organization}
           requirements={requirements ?? []}
         />

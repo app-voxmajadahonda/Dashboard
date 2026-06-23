@@ -45,6 +45,48 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, message: "Configuracion actualizada." });
   }
 
+  if (action === "data-sources") {
+    const sourceCount = Number(textValue(formData, "sourceCount") || "0");
+    const updates = Array.from({ length: sourceCount }, (_, index) => {
+      const refreshIntervalDays = Number(textValue(formData, `refreshIntervalDays-${index}`) || "30");
+
+      return {
+        organization_id: context.organization.id,
+        source_key: textValue(formData, `sourceKey-${index}`),
+        label: textValue(formData, `label-${index}`),
+        provider: textValue(formData, `provider-${index}`),
+        source_url: optionalUrl(textValue(formData, `sourceUrl-${index}`)),
+        refresh_interval_days: Number.isFinite(refreshIntervalDays) ? refreshIntervalDays : 30,
+        enabled: formData.get(`enabled-${index}`) === "on",
+        updated_at: new Date().toISOString()
+      };
+    }).filter((source) => source.source_key && source.label && source.provider);
+
+    if (!updates.length) {
+      return NextResponse.json({ error: "No hay fuentes de datos que actualizar." }, { status: 400 });
+    }
+
+    const { error } = await adminClient.from("data_sources").upsert(updates, {
+      onConflict: "organization_id,source_key"
+    });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    await adminClient.from("audit_log").insert({
+      organization_id: context.organization.id,
+      actor_user_id: user.id,
+      action: "data_sources_updated",
+      target_table: "data_sources",
+      metadata: {
+        sourceKeys: updates.map((source) => source.source_key)
+      }
+    });
+
+    return NextResponse.json({ ok: true, message: "Fuentes de datos y caducidades actualizadas." });
+  }
+
   if (action === "municipality-change") {
     const nextMunicipality = textValue(formData, "nextMunicipality");
     const nextProvince = textValue(formData, "nextProvince");

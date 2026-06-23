@@ -28,6 +28,24 @@ type ConfigurationFormsProps = {
     processing_status: string;
     created_at: string;
   }[];
+  dataSources: {
+    id: string;
+    source_key: string;
+    label: string;
+    provider: string;
+    source_url: string | null;
+    refresh_interval_days: number;
+    enabled: boolean;
+    updated_at: string;
+  }[];
+  indicators: {
+    id: string;
+    label: string;
+    source_key: string | null;
+    data_status: string;
+    updated_at: string;
+    expires_at: string | null;
+  }[];
 };
 
 function getNestedString(settings: Record<string, unknown> | undefined, key: string, subKey?: string) {
@@ -62,7 +80,29 @@ async function submitForm(endpoint: string, form: HTMLFormElement) {
   return payload?.message ?? "Guardado correctamente.";
 }
 
-export function ConfigurationForms({ organization, requirements, documents }: ConfigurationFormsProps) {
+function formatDate(value: string | null) {
+  if (!value) {
+    return "Sin fecha";
+  }
+
+  return new Date(value).toLocaleDateString("es-ES");
+}
+
+function freshnessLabel(expiresAt: string | null) {
+  if (!expiresAt) {
+    return "Sin caducidad";
+  }
+
+  return new Date(expiresAt).getTime() < Date.now() ? "Caducado" : `Vigente hasta ${formatDate(expiresAt)}`;
+}
+
+export function ConfigurationForms({
+  organization,
+  requirements,
+  documents,
+  dataSources,
+  indicators
+}: ConfigurationFormsProps) {
   const [sourcesMessage, setSourcesMessage] = useState<string | null>(null);
   const [sourcesError, setSourcesError] = useState<string | null>(null);
   const [municipalityMessage, setMunicipalityMessage] = useState<string | null>(null);
@@ -71,7 +111,10 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
   const [documentError, setDocumentError] = useState<string | null>(null);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [dataSourcesMessage, setDataSourcesMessage] = useState<string | null>(null);
+  const [dataSourcesError, setDataSourcesError] = useState<string | null>(null);
   const [isSavingSources, setIsSavingSources] = useState(false);
+  const [isSavingDataSources, setIsSavingDataSources] = useState(false);
   const [isRequestingMunicipality, setIsRequestingMunicipality] = useState(false);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -103,6 +146,21 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
       setMunicipalityError(error instanceof Error ? error.message : "No se ha podido registrar.");
     } finally {
       setIsRequestingMunicipality(false);
+    }
+  }
+
+  async function handleDataSources(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setDataSourcesMessage(null);
+    setDataSourcesError(null);
+    setIsSavingDataSources(true);
+
+    try {
+      setDataSourcesMessage(await submitForm("/api/admin/config", event.currentTarget));
+    } catch (error) {
+      setDataSourcesError(error instanceof Error ? error.message : "No se han podido guardar las fuentes.");
+    } finally {
+      setIsSavingDataSources(false);
     }
   }
 
@@ -197,6 +255,79 @@ export function ConfigurationForms({ organization, requirements, documents }: Co
             {isRequestingMunicipality ? "Registrando..." : "Abrir proceso crítico"}
           </button>
         </form>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Fuentes de datos y caducidad</h2>
+            <p>Controla de dónde sale cada dato y cada cuánto debe revisarse o sincronizarse.</p>
+          </div>
+          <DatabaseZap size={22} />
+        </div>
+        <form className="data-source-form" onSubmit={handleDataSources}>
+          {dataSourcesMessage ? <div className="form-success">{dataSourcesMessage}</div> : null}
+          {dataSourcesError ? <div className="form-error">{dataSourcesError}</div> : null}
+          <input name="action" type="hidden" value="data-sources" />
+          <input name="sourceCount" type="hidden" value={dataSources.length} />
+          <div className="data-source-grid">
+            {dataSources.map((source, index) => (
+              <article className="data-source-card" key={source.id}>
+                <input name={`sourceKey-${index}`} type="hidden" value={source.source_key} />
+                <label>
+                  Fuente
+                  <input defaultValue={source.label} name={`label-${index}`} required />
+                </label>
+                <label>
+                  Proveedor
+                  <input defaultValue={source.provider} name={`provider-${index}`} required />
+                </label>
+                <label>
+                  URL o API oficial
+                  <input defaultValue={source.source_url ?? ""} name={`sourceUrl-${index}`} placeholder="https://..." />
+                </label>
+                <label>
+                  Caducidad del dato
+                  <select defaultValue={source.refresh_interval_days} name={`refreshIntervalDays-${index}`}>
+                    <option value="1">1 día</option>
+                    <option value="7">7 días</option>
+                    <option value="30">30 días</option>
+                    <option value="90">90 días</option>
+                    <option value="365">1 año</option>
+                  </select>
+                </label>
+                <label className="checkbox-row">
+                  <input defaultChecked={source.enabled} name={`enabled-${index}`} type="checkbox" />
+                  Fuente activa
+                </label>
+              </article>
+            ))}
+          </div>
+          <button className="button primary form-fit" disabled={isSavingDataSources} type="submit">
+            <Save size={17} />
+            {isSavingDataSources ? "Guardando..." : "Guardar caducidades"}
+          </button>
+        </form>
+        <div className="freshness-panel">
+          <strong>Últimos indicadores cargados</strong>
+          {indicators.length ? (
+            <div className="status-list">
+              {indicators.map((indicator) => (
+                <div className="status-item" key={indicator.id}>
+                  <div>
+                    <div className="status-title">{indicator.label}</div>
+                    <div className="status-meta">
+                      {indicator.source_key ?? "Sin fuente vinculada"} · actualizado {formatDate(indicator.updated_at)}
+                    </div>
+                  </div>
+                  <span className="badge green">{freshnessLabel(indicator.expires_at)}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">Todavía no hay indicadores reales cargados.</div>
+          )}
+        </div>
       </section>
 
       <section className="panel">

@@ -42,9 +42,11 @@ type MunicipalIndicatorRow = {
   period: string | null;
   source_name: string | null;
   source_url: string | null;
+  source_key: string | null;
   data_status: DataStatus;
   confidence: DataSource["confidence"];
   updated_at: string | null;
+  expires_at: string | null;
 };
 
 type DocumentRow = {
@@ -111,11 +113,17 @@ function detailValue(row: MunicipalIndicatorRow) {
 }
 
 function sourceFromIndicator(row: MunicipalIndicatorRow): DataSource {
+  const isExpired = row.expires_at ? new Date(row.expires_at).getTime() < Date.now() : false;
+
   return {
     label: row.source_name ?? "Dato municipal cargado",
-    updatedAt: row.updated_at ? new Date(row.updated_at).toLocaleDateString("es-ES") : "Pendiente",
+    updatedAt: isExpired
+      ? `Caducado el ${new Date(row.expires_at as string).toLocaleDateString("es-ES")}`
+      : row.updated_at
+        ? new Date(row.updated_at).toLocaleDateString("es-ES")
+        : "Pendiente",
     confidence: row.confidence,
-    status: row.data_status,
+    status: isExpired ? "desactualizado" : row.data_status,
     href: row.source_url ?? undefined
   };
 }
@@ -138,7 +146,7 @@ function applyIndicatorOverrides(kpis: {
       value: displayValue(indicator),
       detail: detailValue(indicator),
       source: sourceFromIndicator(indicator),
-      tone: indicator.data_status === "desactualizado" ? "critical" : kpis[override.group][override.index].tone
+      tone: sourceFromIndicator(indicator).status === "desactualizado" ? "critical" : kpis[override.group][override.index].tone
     };
   });
 }
@@ -225,7 +233,7 @@ export async function getCouncillorDashboardData(context: OrganizationContext | 
     const [{ data: indicatorRows }, { data: documentRows }] = await Promise.all([
       adminClient
         .from("municipal_indicators")
-        .select("category, indicator_key, label, value, unit, period, source_name, source_url, data_status, confidence, updated_at")
+        .select("category, indicator_key, label, value, unit, period, source_name, source_url, source_key, data_status, confidence, updated_at, expires_at")
         .eq("organization_id", context.organization.id),
       adminClient
         .from("documents")

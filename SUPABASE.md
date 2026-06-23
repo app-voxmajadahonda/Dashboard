@@ -75,6 +75,7 @@ supabase/migrations/0005_data_sources_and_cache.sql
 supabase/migrations/0006_performance_indexes.sql
 supabase/migrations/0007_user_profile_settings.sql
 supabase/migrations/0008_councillor_dashboard_foundation.sql
+supabase/migrations/0009_data_freshness_controls.sql
 ```
 
 4. Ejecutar.
@@ -100,6 +101,7 @@ Las migraciones crean:
 - Campos de perfil para teléfono, WhatsApp, cargo, redes, comisiones y responsabilidades.
 - Tabla `municipal_indicators` para datos mostrables en dashboards.
 - Tablas de observaciones y marcados relevantes del concejal.
+- Columnas `source_key` y `expires_at` en indicadores para controlar fuente y caducidad.
 
 ## Después de ejecutar las migraciones
 
@@ -159,7 +161,8 @@ Dominios a permitir:
 
 ## Próximo trabajo Supabase
 
-1. Ejecutar las migraciones `0003`, `0004`, `0005`, `0006`, `0007` y `0008` en el proyecto ya desplegado.
-2. Completar extracción real de texto desde PDF/DOCX/TXT.
-3. Guardar texto extraído y resultados IA en `document_extractions`.
-4. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.
+1. Ejecutar las migraciones `0003` a `0009` en el proyecto ya desplegado.
+2. Cargar los primeros indicadores reales con `source_key`, `data_status`, `updated_at` y `expires_at`.
+3. Completar extracción real de texto desde PDF/DOCX/TXT.
+4. Guardar texto extraído y resultados IA en `document_extractions`.
+5. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.
