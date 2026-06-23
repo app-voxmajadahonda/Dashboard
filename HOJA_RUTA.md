@@ -574,12 +574,16 @@ Primera versión implementada:
 - Verificado el dato de población total en INE: tabla 2881, municipio Majadahonda código 28080, JSON disponible y total 2025 localizado.
 - Configuración ampliada para consultar el catálogo y cargar indicadores reales manualmente en `municipal_indicators`.
 - La carga manual calcula `expires_at` usando la caducidad definida en el catálogo.
+- `CATALOGO_DATOS.md` pasa a ser modelo de información política municipal: separa entidades, indicadores, fuentes, alertas, insights políticos, documentos, estados, caducidad y prioridades.
+- Añadidas al modelo las futuras pestañas Sala de Situación, Vivienda, Control del Gobierno, Comunicación y Programa 2027.
 
 Pendiente:
 
 - Definir conectores reales por fuente: INE, Comunidad de Madrid, Ayuntamiento, portal de transparencia y documentos oficiales.
 - Crear panel de revisión del portavoz para aceptar datos extraídos antes de usarlos como oficiales.
 - Automatizar el primer dato real desde INE: población total.
+- Crear tablas `alerts` y `political_insights`.
+- Evolucionar `data_catalog_items` con importancia política, impacto mediático, impacto electoral, uso preferente y política de caducidad.
 
 ## 20. Configuración de usuario
 
