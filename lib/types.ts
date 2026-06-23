@@ -114,6 +114,19 @@ export type InstitutionalRequestStatus =
 
 export type VoteItemType = "motion" | "amendment" | "agreement" | "ordinance" | "budget" | "other";
 
+export type GuidedProcessType =
+  | "import_plenary_agenda"
+  | "import_committee_call"
+  | "register_motion"
+  | "register_institutional_request"
+  | "import_minutes"
+  | "import_budget"
+  | "import_fiscal_ordinance"
+  | "import_crime_report"
+  | "import_contract";
+
+export type GuidedProcessStatus = "started" | "pending_review" | "completed" | "failed" | "cancelled";
+
 export type Alert = {
   id: string;
   organization_id: string;
@@ -258,6 +271,21 @@ export type Vote = {
   mas_madrid_vote: string | null;
   result: string | null;
   notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProcessRun = {
+  id: string;
+  organization_id: string;
+  process_type: GuidedProcessType;
+  title: string;
+  status: GuidedProcessStatus;
+  started_by: string | null;
+  related_entity_type: string | null;
+  related_entity_id: string | null;
+  source_document_id: string | null;
+  metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 };

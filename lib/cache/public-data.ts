@@ -11,6 +11,13 @@ type CacheRow = {
 
 type PublicDataCache = {
   pressPosts: VoxPressPost[];
+  publicEvents: {
+    id: string;
+    title: string;
+    event_type: string;
+    starts_at: string;
+    status: string;
+  }[];
   cacheStatus: {
     source: "database" | "fallback";
     staleKeys: string[];
@@ -66,15 +73,26 @@ export async function getPublicDataCache(): Promise<PublicDataCache> {
     if (!organization) {
       return {
         pressPosts: [],
+        publicEvents: [],
         cacheStatus: { source: "fallback", staleKeys: ["organization"] }
       };
     }
 
-    const { data: cacheRows } = await adminClient
-      .from("cached_external_data")
-      .select("cache_key, payload, expires_at")
-      .eq("organization_id", organization.id)
-      .in("cache_key", ["vox_press_posts", "public_profile"]);
+    const [{ data: cacheRows }, { data: eventRows }] = await Promise.all([
+      adminClient
+        .from("cached_external_data")
+        .select("cache_key, payload, expires_at")
+        .eq("organization_id", organization.id)
+        .in("cache_key", ["vox_press_posts", "public_profile"]),
+      adminClient
+        .from("calendar_events")
+        .select("id, title, event_type, starts_at, status")
+        .eq("organization_id", organization.id)
+        .in("event_type", ["pleno", "comision", "junta_portavoces", "consejo"])
+        .gte("starts_at", new Date().toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(5)
+    ]);
 
     const rows = ((cacheRows ?? []) as CacheRow[]).reduce<Record<string, CacheRow>>((acc, row) => {
       acc[row.cache_key] = row;
@@ -89,6 +107,7 @@ export async function getPublicDataCache(): Promise<PublicDataCache> {
       pressPosts: isFresh(rows.vox_press_posts?.expires_at ?? null)
         ? asPressPosts(rows.vox_press_posts.payload)
         : [],
+      publicEvents: (eventRows ?? []) as PublicDataCache["publicEvents"],
       cacheStatus: {
         source: "database",
         staleKeys
@@ -97,6 +116,7 @@ export async function getPublicDataCache(): Promise<PublicDataCache> {
   } catch {
     return {
       pressPosts: [],
+      publicEvents: [],
       cacheStatus: {
         source: "fallback",
         staleKeys: ["database"]

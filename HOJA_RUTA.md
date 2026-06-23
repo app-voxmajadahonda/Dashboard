@@ -642,3 +642,29 @@ Pendiente:
 - Sustituir los bloques mock restantes por datos reales.
 - Crear acciones de cierre/cambio de estado de alertas y tareas.
 - Conectar observaciones de concejales con tareas o alertas revisables por el portavoz.
+
+## 23. Procesos guiados
+
+**Estado:** En desarrollo
+
+La aplicación debe priorizar procesos políticos naturales frente a carga manual genérica. La regla funcional queda fijada así: una acción del portavoz debe generar automáticamente documento, expediente interno, calendario, alerta y tareas.
+
+Primera versión implementada:
+
+- Migración `0012_guided_process_runs.sql`.
+- Tabla `process_runs` con tipos iniciales de proceso guiado.
+- Subida de logo del grupo municipal desde configuración y almacenamiento en Supabase Storage.
+- Uso del logo en portada pública y barra privada, con fallback `VOX Majadahonda`.
+- Bloque principal `Procesos guiados` en `/dashboard`.
+- Proceso `Importar orden del dia de Pleno`: crea documento, fichero, extracción pendiente, `plenary_session`, evento, alerta, tareas base y `process_run`.
+- Proceso `Importar convocatoria de comision`: crea documento, comisión/sesión, evento, alerta, tareas base y `process_run`.
+- Portada pública con bloque de próximos eventos institucionales básicos.
+- Dashboard de dirección simplificado y herramientas manuales relegadas a bloque avanzado.
+
+Pendiente:
+
+- Aplicar la migración `0012` en Supabase.
+- Mejorar los procesos con detección automática de fecha, órgano y puntos del orden del día.
+- Crear procesos guiados para registrar moción, registrar solicitud/pregunta/ruego, importar acta, importar presupuesto, importar ordenanza fiscal, importar informe de criminalidad e importar contrato.
+- Crear vistas de historial de `process_runs`.
+- Permitir asignar tareas generadas a distintos responsables por tarea.

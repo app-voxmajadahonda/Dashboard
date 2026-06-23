@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Settings, ShieldCheck } from "lucide-react";
 import { ConfigurationForms } from "@/components/admin/configuration-forms";
+import { LogoUploadForm } from "@/components/admin/logo-upload-form";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { requireOrganizationAdmin } from "@/lib/auth/organization";
 import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
@@ -94,6 +95,17 @@ export default async function AdminConfigPage() {
           organization={context.organization}
           requirements={requirements ?? []}
         />
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Identidad visual</h2>
+              <p>Logo del grupo municipal para portada publica y barra privada.</p>
+            </div>
+            <Settings size={20} />
+          </div>
+          <LogoUploadForm />
+        </section>
       </main>
     </div>
   );

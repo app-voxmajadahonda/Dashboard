@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
+import { GuidedProcessForms } from "@/components/admin/guided-process-forms";
 import { OperationalForms } from "@/components/admin/operational-forms";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
 import { getSituationRoomData } from "@/lib/data/operational";
@@ -186,14 +187,10 @@ export default async function DashboardPage() {
           <div>
             <span className="eyebrow">
               <Target size={16} />
-              Panel privado de dirección
+              Direccion operativa
             </span>
-            <h1>Panel privado de dirección</h1>
-            <p>
-              Vista de trabajo para {municipalProfile.groupName}: alertas, calendario, tareas,
-              equipo y seguimiento de los procesos políticos e institucionales del mandato{" "}
-              {municipalProfile.municipality.mandate}.
-            </p>
+            <h1>{municipalProfile.groupName}</h1>
+            <p>Alertas, calendario, tareas y procesos activos del mandato {municipalProfile.municipality.mandate}.</p>
           </div>
           <div className="private-header-actions">
             <button className="button" type="button">
@@ -233,6 +230,17 @@ export default async function DashboardPage() {
               </div>
             </article>
           ))}
+        </section>
+
+        <section className="panel guided-process-panel">
+          <div className="panel-header">
+            <div>
+              <h2>Procesos guiados</h2>
+              <p>Una accion natural del portavoz crea documento, expediente interno, calendario, alerta y tareas.</p>
+            </div>
+            <FilePlus2 size={20} />
+          </div>
+          <GuidedProcessForms team={team} />
         </section>
 
         <section className="private-dashboard-grid">
@@ -285,10 +293,9 @@ export default async function DashboardPage() {
         <section className="panel">
           <div className="panel-header">
             <div>
-              <h2>Crear trabajo operativo</h2>
+              <h2>Herramientas avanzadas</h2>
               <p>
-                Alta rapida de alertas, tareas y eventos para alimentar la Sala de Situacion,
-                la barra derecha del concejal y el calendario institucional con datos reales.
+                Alta manual de alertas, tareas y eventos cuando no proceda iniciar un proceso guiado.
               </p>
             </div>
             <FilePlus2 size={20} />

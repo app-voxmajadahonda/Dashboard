@@ -2,7 +2,7 @@
 
 ## Estado
 
-La aplicación necesita tener aplicadas las migraciones `0003` a `0011` para que funcionen correctamente:
+La aplicación necesita tener aplicadas las migraciones `0003` a `0012` para que funcionen correctamente:
 
 - configuración documental;
 - documentos base requeridos;
@@ -13,6 +13,7 @@ La aplicación necesita tener aplicadas las migraciones `0003` a `0011` para que
 - caducidad de indicadores;
 - catálogo de datos;
 - núcleo operativo de alertas, tareas, calendario institucional y procesos.
+- procesos guiados y registro en `process_runs`.
 
 ## Cómo ejecutarlo
 
@@ -44,6 +45,14 @@ supabase/migrations/0011_operational_core.sql
 ```
 
 11. Ejecutar y esperar confirmación correcta.
+12. Crear otra query nueva.
+13. Abrir y copiar el contenido de:
+
+```text
+supabase/migrations/0012_guided_process_runs.sql
+```
+
+14. Ejecutar y esperar confirmación correcta.
 
 ## Por qué son dos pasos
 
@@ -71,6 +80,7 @@ Comprobar en Supabase que existen estas tablas o columnas:
 - `motions`
 - `institutional_requests`
 - `votes`
+- `process_runs`
 - columnas `source_key` y `expires_at` en `municipal_indicators`
 
 Después, la aplicación podrá usar el catálogo de datos, fuentes, caducidades y el núcleo operativo persistente.

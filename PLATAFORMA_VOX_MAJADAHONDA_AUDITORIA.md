@@ -6,6 +6,8 @@ Este documento describe el estado actual de la plataforma sin exigir acceso al c
 
 Actualizacion operativa incorporada el 23 de junio de 2026: se ha iniciado la conversion del MVP visual en herramienta operativa persistente mediante la migracion `0011_operational_core.sql`, tipos TypeScript, capa de datos operacional, Sala de Situacion, barra derecha conectada a Supabase y formularios minimos para crear alertas, tareas y eventos desde el panel de direccion.
 
+Actualizacion de procesos guiados incorporada el 23 de junio de 2026: se anade `0012_guided_process_runs.sql`, carga de logo desde configuracion, uso de logo en portada/barra privada, bloque principal de procesos guiados en `/dashboard`, procesos completos para importar orden del dia de Pleno y convocatoria de comision, y bloque publico de proximos eventos institucionales.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -53,6 +55,9 @@ La plataforma ya tiene una base funcional desplegable:
 - Sala de Situacion inicial en el dashboard del concejal.
 - Barra derecha del concejal conectada a `alerts`, `tasks` y `calendar_events`.
 - Formularios minimos para crear alertas, tareas y eventos desde `/dashboard`.
+- Carga configurable del logo del grupo municipal en Supabase Storage.
+- Procesos guiados iniciales para Pleno y comision, registrados en `process_runs`.
+- Portada publica con proximos eventos institucionales basicos.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -293,6 +298,7 @@ Supabase
   |     |-- motions
   |     |-- institutional_requests
   |     |-- votes
+  |     |-- process_runs
   |     |-- data_sources
   |     |-- cached_external_data
   |     |-- audit_log
@@ -1596,6 +1602,8 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Sala de Situacion inicial con estados vacios cuando aun no hay datos reales.
 - Barra derecha del concejal alimentada por Supabase para alertas, tareas y calendario.
 - Generacion basica de alertas por vencimientos y proximidad de hitos.
+- Procesos guiados de importacion de orden del dia de Pleno y convocatoria de comision.
+- Subida de logo y uso del logo en portada/barra privada.
 - Auditoria basica de acciones.
 - RLS inicial.
 
@@ -1612,6 +1620,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Portada: datos configurados/cacheados, pero parte del contenido no esta sincronizado automaticamente.
 - Observaciones: concejal puede crearlas, pero no hay circuito de revision.
 - Formularios operativos: permiten crear alertas, tareas y eventos, pero aun no cubren plenos, mociones, solicitudes y votaciones.
+- Procesos guiados: cubren Pleno y comision, pero falta historial visible y resto de procesos politicos.
 
 ### Solo disenado
 

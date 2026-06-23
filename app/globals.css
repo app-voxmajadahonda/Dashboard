@@ -154,6 +154,13 @@ a {
   gap: 12px;
 }
 
+.private-brand-logo {
+  display: block;
+  max-height: 42px;
+  max-width: 190px;
+  object-fit: contain;
+}
+
 .private-brand span:last-child {
   display: grid;
   gap: 2px;
@@ -2028,6 +2035,13 @@ tr:last-child td {
   min-height: 34px;
 }
 
+.public-brand-logo {
+  display: block;
+  max-height: 46px;
+  max-width: 220px;
+  object-fit: contain;
+}
+
 .portal-layout {
   display: grid;
   gap: 18px;
@@ -2079,13 +2093,12 @@ tr:last-child td {
   align-content: space-between;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-top: 4px solid var(--brand);
+  border-left: 3px solid var(--brand);
   border-radius: 6px;
-  box-shadow: var(--shadow);
   display: grid;
   gap: 4px;
-  min-height: 84px;
-  padding: 12px;
+  min-height: 70px;
+  padding: 9px 10px;
   min-width: 0;
 }
 
@@ -2100,7 +2113,7 @@ tr:last-child td {
   align-items: center;
   color: var(--brand-dark);
   display: flex;
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 900;
   gap: 8px;
   line-height: 1.05;
@@ -2184,18 +2197,18 @@ tr:last-child td {
   background: transparent;
   border-radius: 6px;
   color: var(--text);
-  min-height: clamp(240px, 34vh, 330px);
+  min-height: clamp(330px, 46vh, 470px);
   overflow: hidden;
   position: relative;
 }
 
 .official-boundary-map {
-  height: 82%;
+  height: 92%;
   left: 50%;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 54%;
+  width: 68%;
 }
 
 .official-boundary-map path {
@@ -2207,9 +2220,9 @@ tr:last-child td {
 
 .official-boundary-map path.is-selected {
   fill: var(--brand);
-  filter: drop-shadow(0 0 8px rgba(115, 163, 93, 0.55));
+  filter: drop-shadow(0 0 12px rgba(115, 163, 93, 0.7));
   stroke: var(--brand-dark);
-  stroke-width: 2.4;
+  stroke-width: 3.2;
 }
 
 .map-badge {
@@ -2475,6 +2488,7 @@ tr:last-child td {
   .command-hero,
   .spokesperson-grid,
   .spokesperson-lower-grid,
+  .guided-process-grid,
   .compact-grid,
   .section-strip,
   .tracking-grid,
@@ -2980,6 +2994,62 @@ tr:last-child td {
   display: grid;
   gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.guided-process-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.guided-process-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--brand);
+  border-radius: 6px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.guided-process-title {
+  align-items: flex-start;
+  color: var(--brand-dark);
+  display: flex;
+  gap: 10px;
+}
+
+.guided-process-title strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.guided-process-title span {
+  color: var(--muted);
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.guided-process-card label {
+  color: var(--brand-dark);
+  display: grid;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 7px;
+}
+
+.guided-process-card input,
+.guided-process-card select {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  min-height: 42px;
+  padding: 10px 12px;
+  width: 100%;
 }
 
 .operational-form {

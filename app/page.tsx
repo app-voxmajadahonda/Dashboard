@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import madridMap from "@/config/geo/madrid-map.json";
 import { LoginForm } from "@/components/auth/login-form";
 import { getFallbackPublicProfile, getPublicDataCache } from "@/lib/cache/public-data";
+import { getOrganizationBrandAsset } from "@/lib/organization-assets";
 
 export const revalidate = 900;
 
@@ -11,7 +12,10 @@ export default async function PublicHomePage() {
   const municipalProfile = getFallbackPublicProfile();
   const { municipality, mayor } = municipalProfile;
   const { boundarySources } = municipality;
-  const { pressPosts } = await getPublicDataCache();
+  const [{ pressPosts, publicEvents }, brand] = await Promise.all([
+    getPublicDataCache(),
+    getOrganizationBrandAsset()
+  ]);
   const totalSeats = municipalProfile.councilGroups.reduce(
     (sum, group) => sum + group.seats,
     0
@@ -21,8 +25,13 @@ export default async function PublicHomePage() {
     <main className="portal-page">
       <header className="portal-top">
         <Link className="portal-brand" href="/">
-          <span className="brand-mark">VOX</span>
-          <span>{municipalProfile.portalTitle}</span>
+          {brand.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt={brand.logoAlt} className="public-brand-logo" src={brand.logoUrl} />
+          ) : (
+            <span className="brand-mark">VOX</span>
+          )}
+          <span>{brand.logoUrl ? "Mandato 2023-2027" : brand.fallbackText}</span>
         </Link>
       </header>
 
@@ -34,7 +43,7 @@ export default async function PublicHomePage() {
                 <ShieldCheck size={16} />
                 Mandato {municipality.mandate} · {municipality.name}
               </div>
-              <h1>{municipalProfile.portalTitle}</h1>
+              <h1>Portal interno del Grupo Municipal</h1>
               <p>
                 Herramienta de dirección política para controlar documentación,
                 acción de gobierno, expedientes y seguimiento estratégico.
@@ -200,6 +209,30 @@ export default async function PublicHomePage() {
                 ))
               ) : (
                 <span>No hay notas disponibles en este momento.</span>
+              )}
+            </div>
+          </article>
+
+          <article className="press-card public-events-card">
+            <div className="section-heading">
+              <div>
+                <h2>Próximos eventos institucionales</h2>
+                <span>Información pública básica</span>
+              </div>
+            </div>
+            <div className="press-link-list">
+              {publicEvents.length ? (
+                publicEvents.map((event) => (
+                  <span key={event.id}>
+                    {event.title} · {event.event_type} ·{" "}
+                    {new Intl.DateTimeFormat("es-ES", {
+                      dateStyle: "short",
+                      timeStyle: "short"
+                    }).format(new Date(event.starts_at))}
+                  </span>
+                ))
+              ) : (
+                <span>Aún no hay eventos institucionales públicos cargados.</span>
               )}
             </div>
           </article>
