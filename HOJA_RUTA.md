@@ -617,3 +617,28 @@ Antes de implementar, conviene decidir:
 5. Catálogo de indicadores municipales prioritarios para cargar en `municipal_indicators`.
 6. Qué documentos son obligatorios para considerar configurado un municipio.
 7. Qué datos deben mostrarse primero en el panel del portavoz frente al panel del concejal.
+
+## 22. Núcleo operativo persistente
+
+**Estado:** En desarrollo
+
+Primera versión implementada:
+
+- Migración `0011_operational_core.sql`.
+- Tablas reales para `alerts`, `tasks`, `calendar_events`, `plenary_sessions`, `committees`, `committee_sessions`, `motions`, `institutional_requests` y `votes`.
+- RLS inicial: miembros leen, portavoz/admin gestionan, concejales pueden crear/actualizar tareas propias según política.
+- Tipos TypeScript operativos para alertas, tareas, calendario, plenos, comisiones, mociones, solicitudes y votaciones.
+- Capa `lib/data/operational.ts` para leer datos reales desde Supabase y devolver listas vacías si aún no hay datos.
+- Generación básica de alertas por solicitudes vencidas, tareas próximas a vencer, plenos en menos de 7 días y mociones aprobadas pendientes de seguimiento.
+- Sala de Situación como primera sección del dashboard de concejal.
+- Barra derecha del dashboard del concejal conectada a `alerts`, `tasks` y `calendar_events`.
+- Formularios mínimos para portavoz/admin para crear alertas, tareas y eventos desde `/dashboard`.
+
+Pendiente:
+
+- Aplicar la migración `0011` en Supabase.
+- Crear formularios o importadores para plenos, comisiones, mociones, solicitudes y votaciones.
+- Crear fichas individuales de cada proceso.
+- Sustituir los bloques mock restantes por datos reales.
+- Crear acciones de cierre/cambio de estado de alertas y tareas.
+- Conectar observaciones de concejales con tareas o alertas revisables por el portavoz.

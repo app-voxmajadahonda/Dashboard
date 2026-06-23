@@ -2566,6 +2566,7 @@ tr:last-child td {
   }
 
   .two-column-form,
+  .operational-forms-grid,
   .requirement-grid,
   .data-source-grid {
     grid-template-columns: 1fr;
@@ -2973,6 +2974,61 @@ tr:last-child td {
   color: var(--muted);
   font-size: 13px;
   margin: 0;
+}
+
+.operational-forms-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.operational-form {
+  align-content: start;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.operational-form-title {
+  align-items: flex-start;
+  color: var(--brand-dark);
+  display: flex;
+  gap: 10px;
+}
+
+.operational-form-title strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.operational-form-title span {
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.rail-event-link {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+}
+
+.rail-event-link strong {
+  color: var(--brand-dark);
+  font-size: 13px;
+}
+
+.rail-event-link span,
+.rail-event-link small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .form-error {

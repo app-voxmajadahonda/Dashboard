@@ -16,42 +16,13 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
+import { OperationalForms } from "@/components/admin/operational-forms";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
+import { getSituationRoomData } from "@/lib/data/operational";
 import municipalProfile from "@/config/municipal-profile.json";
-import { requireUser } from "@/lib/supabase/server";
+import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-const commandBlocks = [
-  {
-    title: "Alertas",
-    value: "7",
-    detail: "Plazos, programa electoral, expedientes sensibles y riesgos jurídicos.",
-    icon: AlertTriangle,
-    tone: "critical"
-  },
-  {
-    title: "Calendario",
-    value: "3",
-    detail: "Pleno, comisiones y vencimientos políticos de la semana.",
-    icon: CalendarClock,
-    tone: "strong"
-  },
-  {
-    title: "Tareas pendientes",
-    value: "16",
-    detail: "Asignadas a concejales, asesores y comunicación.",
-    icon: CheckCircle2,
-    tone: "neutral"
-  },
-  {
-    title: "Equipo",
-    value: "4",
-    detail: "Concejales del grupo municipal y responsabilidades abiertas.",
-    icon: Users,
-    tone: "neutral"
-  }
-];
 
 const trackingBlocks = [
   {
@@ -124,9 +95,87 @@ export default async function DashboardPage() {
   const user = await requireUser();
   const context = await getOrganizationContextForUser(user.id);
 
-  if (!["admin", "spokesperson"].includes(context?.membership.role ?? "")) {
+  if (!context || !["admin", "spokesperson"].includes(context.membership.role)) {
     redirect("/concejal");
   }
+
+  const adminClient = getSupabaseAdminClient();
+  const [situation, { data: teamMemberships }] = await Promise.all([
+    getSituationRoomData(context.organization.id),
+    adminClient
+      .from("memberships")
+      .select("role, profiles(id, full_name, email)")
+      .eq("organization_id", context.organization.id)
+      .eq("active", true)
+  ]);
+
+  const teamRows = (teamMemberships ?? []) as unknown as {
+    role: string;
+    profiles:
+      | {
+          id: string;
+          full_name: string | null;
+          email: string | null;
+        }
+      | {
+          id: string;
+          full_name: string | null;
+          email: string | null;
+        }[]
+      | null;
+  }[];
+
+  const team = teamRows
+    .map((member) => ({
+      role: member.role,
+      profile: Array.isArray(member.profiles) ? member.profiles[0] : member.profiles
+    }))
+    .filter(
+      (member): member is {
+        role: string;
+        profile: {
+          id: string;
+          full_name: string | null;
+          email: string | null;
+        };
+      } => Boolean(member.profile)
+    )
+    .map((member) => ({
+      id: member.profile.id,
+      label: member.profile.full_name || member.profile.email || "Usuario sin nombre",
+      role: member.role
+    }));
+
+  const liveCommandBlocks = [
+    {
+      title: "Alertas",
+      value: String(situation.alerts.length),
+      detail: "Alertas abiertas reales generadas o creadas por el portavoz.",
+      icon: AlertTriangle,
+      tone: situation.alerts.length ? "critical" : "neutral"
+    },
+    {
+      title: "Calendario",
+      value: String(situation.upcomingEvents.length),
+      detail: "Eventos institucionales y plazos de los proximos 30 dias.",
+      icon: CalendarClock,
+      tone: "strong"
+    },
+    {
+      title: "Tareas pendientes",
+      value: String(situation.assignedTasks.length),
+      detail: "Tareas abiertas registradas en la base operativa.",
+      icon: CheckCircle2,
+      tone: "neutral"
+    },
+    {
+      title: "Equipo",
+      value: String(team.length),
+      detail: "Usuarios activos del grupo municipal configurados en Supabase.",
+      icon: Users,
+      tone: "neutral"
+    }
+  ];
 
   return (
     <div className="private-shell">
@@ -159,7 +208,7 @@ export default async function DashboardPage() {
         </header>
 
         <section className="metric-grid private-metric-grid">
-          {commandBlocks.map((block) => (
+          {liveCommandBlocks.map((block) => (
             <article className="metric-card command-metric-card" data-tone={block.tone} key={block.title}>
               <header>
                 <span>{block.title}</span>
@@ -231,6 +280,20 @@ export default async function DashboardPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Crear trabajo operativo</h2>
+              <p>
+                Alta rapida de alertas, tareas y eventos para alimentar la Sala de Situacion,
+                la barra derecha del concejal y el calendario institucional con datos reales.
+              </p>
+            </div>
+            <FilePlus2 size={20} />
+          </div>
+          <OperationalForms team={team} />
         </section>
       </main>
     </div>

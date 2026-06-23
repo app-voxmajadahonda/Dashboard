@@ -2,7 +2,7 @@
 
 ## Estado
 
-La aplicación necesita tener aplicadas las migraciones `0003` a `0010` para que funcionen correctamente:
+La aplicación necesita tener aplicadas las migraciones `0003` a `0011` para que funcionen correctamente:
 
 - configuración documental;
 - documentos base requeridos;
@@ -11,7 +11,8 @@ La aplicación necesita tener aplicadas las migraciones `0003` a `0010` para que
 - ficha ampliada de usuario;
 - dashboard de concejal;
 - caducidad de indicadores;
-- catálogo de datos.
+- catálogo de datos;
+- núcleo operativo de alertas, tareas, calendario institucional y procesos.
 
 ## Cómo ejecutarlo
 
@@ -35,6 +36,14 @@ supabase/apply_step_2_0004_0010.sql
 ```
 
 8. Ejecutar y esperar confirmación correcta.
+9. Crear otra query nueva.
+10. Abrir y copiar el contenido de:
+
+```text
+supabase/migrations/0011_operational_core.sql
+```
+
+11. Ejecutar y esperar confirmación correcta.
 
 ## Por qué son dos pasos
 
@@ -53,6 +62,15 @@ Comprobar en Supabase que existen estas tablas o columnas:
 - `councillor_observations`
 - `councillor_relevance_marks`
 - `data_catalog_items`
+- `alerts`
+- `tasks`
+- `calendar_events`
+- `plenary_sessions`
+- `committees`
+- `committee_sessions`
+- `motions`
+- `institutional_requests`
+- `votes`
 - columnas `source_key` y `expires_at` en `municipal_indicators`
 
-Después, la aplicación podrá usar el catálogo de datos, fuentes y caducidades.
+Después, la aplicación podrá usar el catálogo de datos, fuentes, caducidades y el núcleo operativo persistente.

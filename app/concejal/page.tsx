@@ -25,85 +25,69 @@ import { CouncillorObservationForm } from "@/components/dashboard/councillor-obs
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
 import { getCouncillorDashboardData } from "@/lib/data/councillor-dashboard";
+import { getSituationRoomData } from "@/lib/data/operational";
 import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-const sideAlerts = [
-  {
-    title: "Datos caducados",
-    origin: "Indicadores municipales",
-    importance: "Alta",
-    deadline: "Revisión pendiente",
-    detail: "Los indicadores que superen su fecha de caducidad deben revisarse antes de usarse como dato oficial."
-  },
-  {
-    title: "ROM pendiente",
-    origin: "Documentación base",
-    importance: "Media",
-    deadline: "Antes de calendario definitivo",
-    detail: "Sin ROM validado, los plazos de mociones, preguntas y comisiones quedan como estimación interna."
+function formatDateTime(value: string | null) {
+  if (!value) {
+    return "Sin fecha";
   }
-];
 
-const sideTasks = [
-  {
-    title: "Revisar documentación pendiente",
-    startsAt: "Sin fecha",
-    endsAt: "Esta semana",
-    detail: "Comprobar qué documentos base siguen sin cargarse para completar la configuración del municipio."
-  },
-  {
-    title: "Preparar observaciones para pleno",
-    startsAt: "Pendiente",
-    endsAt: "Pendiente",
-    detail: "Recoger asuntos relevantes detectados por el concejal y convertirlos en preguntas, ruegos o tareas."
-  },
-  {
-    title: "Validar fuentes de datos",
-    startsAt: "Pendiente",
-    endsAt: "Sin fecha",
-    detail: "Revisar qué datos salen de API oficial y cuáles requieren carga manual por el portavoz."
+  return new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
+function formatDate(value: string | null) {
+  if (!value) {
+    return "Sin fecha";
   }
-];
 
-const calendarDays = [
-  { day: "1" },
-  { day: "2" },
-  { day: "3", label: "Comisión" },
-  { day: "4" },
-  { day: "5" },
-  { day: "6" },
-  { day: "7" },
-  { day: "8" },
-  { day: "9" },
-  { day: "10", label: "Pleno" },
-  { day: "11" },
-  { day: "12" },
-  { day: "13" },
-  { day: "14" },
-  { day: "15" },
-  { day: "16" },
-  { day: "17" },
-  { day: "18", label: "Plazo" },
-  { day: "19" },
-  { day: "20" },
-  { day: "21" },
-  { day: "22" },
-  { day: "23" },
-  { day: "24" },
-  { day: "25" },
-  { day: "26" },
-  { day: "27" },
-  { day: "28" },
-  { day: "29" },
-  { day: "30" }
-];
+  return new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "short"
+  }).format(new Date(value));
+}
+
+function emptyRows(message: string, columns: number) {
+  return [[message, ...Array.from({ length: columns - 1 }, () => "")]];
+}
 
 export default async function CouncillorPage() {
   const user = await requireUser();
   const context = await getOrganizationContextForUser(user.id);
-  const dashboard = await getCouncillorDashboardData(context);
+  const [dashboard, situation] = await Promise.all([
+    getCouncillorDashboardData(context),
+    context
+      ? getSituationRoomData(context.organization.id, user.id)
+      : Promise.resolve({
+          alerts: [],
+          assignedTasks: [],
+          upcomingEvents: [],
+          nextPlenary: null,
+          upcomingCommittees: [],
+          pendingMotions: [],
+          institutionalRequests: [],
+          overdueRequests: [],
+          votes: []
+        })
+  ]);
+
+  const strategicIndicators =
+    dashboard.sourceMode === "database"
+      ? [...dashboard.generalKpis, ...dashboard.budgetKpis].filter((kpi) =>
+          [
+            "PoblaciÃ³n total",
+            "Presupuesto por habitante",
+            "Presupuesto total",
+            "Gasto corriente / hab.",
+            "Deuda por habitante",
+            "Ordenanzas cargadas"
+          ].includes(kpi.label)
+        )
+      : [];
 
   return (
     <div className="private-shell">
@@ -112,6 +96,162 @@ export default async function CouncillorPage() {
       <main className="private-main councillor-workspace">
         <div className="councillor-control-layout">
           <section className="councillor-content-frame" aria-label="Contenido operativo del concejal">
+            <details className="workspace-accordion" id="sala-situacion" open>
+              <summary>
+                <span>
+                  <Bell size={18} />
+                  Sala de Situacion
+                </span>
+                <small>Que esta pasando ahora y que hay que hacer antes del proximo pleno</small>
+              </summary>
+              <div className="accordion-content">
+                <div className="section-title-row">
+                  <div>
+                    <span className="eyebrow">Sala de Situacion</span>
+                    <h2>Prioridades operativas del grupo municipal</h2>
+                  </div>
+                  <FilterBar filters={["Hoy", "7 dias", "30 dias", "Pendiente"]} />
+                </div>
+
+                <div className="dashboard-two-columns">
+                  <EntityDetailView
+                    details={[
+                      {
+                        label: "Proximo pleno",
+                        value: situation.nextPlenary
+                          ? `${situation.nextPlenary.title} · ${formatDateTime(situation.nextPlenary.session_date)} · ${situation.nextPlenary.status}`
+                          : "No hay pleno registrado en la base operativa."
+                      },
+                      {
+                        label: "Proximas comisiones",
+                        value: situation.upcomingCommittees.length
+                          ? situation.upcomingCommittees
+                              .map((session) => `${session.title} (${formatDate(session.session_date)})`)
+                              .join(" | ")
+                          : "No hay comisiones proximas registradas."
+                      },
+                      {
+                        label: "Solicitudes vencidas",
+                        value: situation.overdueRequests.length
+                          ? `${situation.overdueRequests.length} solicitudes requieren revision.`
+                          : "No hay solicitudes vencidas registradas."
+                      }
+                    ]}
+                    title="Estado institucional inmediato"
+                  />
+                  <DataTable
+                    columns={["Indicador", "Valor", "Estado", "Fuente"]}
+                    rows={
+                      strategicIndicators.length
+                        ? strategicIndicators.map((kpi) => [
+                            kpi.label,
+                            kpi.value,
+                            kpi.source.status,
+                            kpi.source.label
+                          ])
+                        : emptyRows("No hay indicadores estrategicos reales cargados todavia.", 4)
+                    }
+                    subtitle="Solo se muestran indicadores reales cargados en Supabase."
+                    title="Indicadores estrategicos"
+                  />
+                </div>
+
+                <div className="dashboard-two-columns">
+                  <DataTable
+                    columns={["Alerta", "Prioridad", "Vencimiento", "Accion"]}
+                    rows={
+                      situation.alerts.length
+                        ? situation.alerts.slice(0, 6).map((alert) => [
+                            alert.title,
+                            alert.priority,
+                            formatDateTime(alert.due_at),
+                            alert.recommended_action ?? "Revisar"
+                          ])
+                        : emptyRows("No hay alertas abiertas.", 4)
+                    }
+                    title="Alertas abiertas"
+                  />
+                  <DataTable
+                    columns={["Tarea", "Prioridad", "Vencimiento", "Estado"]}
+                    rows={
+                      situation.assignedTasks.length
+                        ? situation.assignedTasks.slice(0, 6).map((task) => [
+                            task.title,
+                            task.priority,
+                            formatDateTime(task.due_at),
+                            task.status
+                          ])
+                        : emptyRows("No tienes tareas pendientes asignadas.", 4)
+                    }
+                    title="Mis tareas pendientes"
+                  />
+                </div>
+
+                <div className="dashboard-two-columns">
+                  <DataTable
+                    columns={["Solicitud", "Tipo", "Plazo", "Estado"]}
+                    rows={
+                      situation.institutionalRequests.length
+                        ? situation.institutionalRequests.slice(0, 8).map((request) => [
+                            request.title,
+                            request.request_type,
+                            formatDateTime(request.due_at),
+                            request.status
+                          ])
+                        : emptyRows("No hay preguntas, ruegos o solicitudes registradas.", 4)
+                    }
+                    title="Solicitudes y preguntas"
+                  />
+                  <DataTable
+                    columns={["Mocion", "Eje", "Estado", "Seguimiento"]}
+                    rows={
+                      situation.pendingMotions.length
+                        ? situation.pendingMotions.slice(0, 8).map((motion) => [
+                            motion.title,
+                            motion.strategic_axis ?? "Sin eje",
+                            motion.status,
+                            motion.follow_up_status ?? "Sin seguimiento"
+                          ])
+                        : emptyRows("No hay mociones en preparacion o seguimiento.", 4)
+                    }
+                    title="Mociones en preparacion o seguimiento"
+                  />
+                </div>
+                <div className="dashboard-two-columns">
+                  <DataTable
+                    columns={["Pleno", "Fecha", "Tipo", "Estado"]}
+                    rows={
+                      situation.nextPlenary
+                        ? [[
+                            situation.nextPlenary.title,
+                            formatDateTime(situation.nextPlenary.session_date),
+                            situation.nextPlenary.session_type,
+                            situation.nextPlenary.status
+                          ]]
+                        : emptyRows("No hay plenos registrados.", 4)
+                    }
+                    title="Plenos"
+                  />
+                  <DataTable
+                    columns={["Asunto", "Tipo", "VOX", "PP", "PSOE", "Resultado"]}
+                    rows={
+                      situation.votes.length
+                        ? situation.votes.map((vote) => [
+                            vote.item_title,
+                            vote.item_type,
+                            vote.vox_vote ?? "-",
+                            vote.pp_vote ?? "-",
+                            vote.psoe_vote ?? "-",
+                            vote.result ?? "Pendiente"
+                          ])
+                        : emptyRows("No hay votaciones registradas.", 6)
+                    }
+                    title="Votaciones"
+                  />
+                </div>
+              </div>
+            </details>
+
             <details className="workspace-accordion" id="datos-generales" open>
               <summary>
                 <span>
@@ -337,14 +477,33 @@ export default async function CouncillorPage() {
                 <div className="dashboard-two-columns">
                   <DataTable
                     columns={["Título", "Fecha", "Eje", "Responsable", "Estado"]}
-                    rows={dashboard.motions}
+                    rows={
+                      situation.pendingMotions.length
+                        ? situation.pendingMotions.map((motion) => [
+                            motion.title,
+                            formatDate(motion.registered_at),
+                            motion.strategic_axis ?? "Sin eje",
+                            motion.responsible_councillor_id ?? "Sin asignar",
+                            motion.status
+                          ])
+                        : emptyRows("No hay mociones registradas.", 5)
+                    }
                     source={dashboard.sources.internal}
                     subtitle="Listado filtrable por año, eje, estado, concejal y resultado."
                     title="Mociones"
                   />
                   <DataTable
                     columns={["Iniciativa", "Área", "Plazo", "Estado"]}
-                    rows={dashboard.questions}
+                    rows={
+                      situation.institutionalRequests.length
+                        ? situation.institutionalRequests.map((request) => [
+                            request.title,
+                            request.area ?? "Sin area",
+                            formatDate(request.due_at),
+                            request.status
+                          ])
+                        : emptyRows("No hay preguntas, ruegos o solicitudes registradas.", 4)
+                    }
                     source={dashboard.sources.internal}
                     subtitle="Preguntas, ruegos, solicitudes y vencimientos."
                     title="Preguntas, ruegos y solicitudes"
@@ -408,28 +567,36 @@ export default async function CouncillorPage() {
                 <h2>Alertas pendientes</h2>
               </header>
               <div className="rail-stack">
-                {sideAlerts.map((alert) => (
-                  <details className="rail-disclosure" key={alert.title}>
+                {situation.alerts.length ? (
+                  situation.alerts.slice(0, 5).map((alert) => (
+                  <details className="rail-disclosure" key={alert.id}>
                     <summary>
                       <strong>{alert.title}</strong>
-                      <span>{alert.importance}</span>
+                      <span>{alert.priority}</span>
                     </summary>
                     <dl>
                       <div>
                         <dt>Origen</dt>
-                        <dd>{alert.origin}</dd>
+                        <dd>{alert.source ?? alert.category}</dd>
                       </div>
                       <div>
                         <dt>Fecha límite</dt>
-                        <dd>{alert.deadline}</dd>
+                        <dd>{formatDateTime(alert.due_at)}</dd>
                       </div>
                       <div>
                         <dt>Detalle</dt>
-                        <dd>{alert.detail}</dd>
+                        <dd>{alert.description ?? "Sin descripcion."}</dd>
+                      </div>
+                      <div>
+                        <dt>Accion</dt>
+                        <dd>{alert.recommended_action ?? "Revisar con el portavoz."}</dd>
                       </div>
                     </dl>
                   </details>
-                ))}
+                  ))
+                ) : (
+                  <div className="empty-state">No hay alertas abiertas.</div>
+                )}
               </div>
             </section>
 
@@ -439,28 +606,32 @@ export default async function CouncillorPage() {
                 <h2>Tareas pendientes</h2>
               </header>
               <div className="rail-stack">
-                {sideTasks.map((task) => (
-                  <details className="rail-disclosure" key={task.title}>
+                {situation.assignedTasks.length ? (
+                  situation.assignedTasks.slice(0, 5).map((task) => (
+                  <details className="rail-disclosure" key={task.id}>
                     <summary>
                       <strong>{task.title}</strong>
-                      <span>{task.endsAt}</span>
+                      <span>{formatDate(task.due_at)}</span>
                     </summary>
                     <dl>
                       <div>
-                        <dt>Inicio</dt>
-                        <dd>{task.startsAt}</dd>
+                        <dt>Prioridad</dt>
+                        <dd>{task.priority}</dd>
                       </div>
                       <div>
-                        <dt>Fin</dt>
-                        <dd>{task.endsAt}</dd>
+                        <dt>Estado</dt>
+                        <dd>{task.status}</dd>
                       </div>
                       <div>
                         <dt>Descripción</dt>
-                        <dd>{task.detail}</dd>
+                        <dd>{task.description ?? "Sin descripcion."}</dd>
                       </div>
                     </dl>
                   </details>
-                ))}
+                  ))
+                ) : (
+                  <div className="empty-state">No tienes tareas asignadas.</div>
+                )}
               </div>
             </section>
 
@@ -470,22 +641,20 @@ export default async function CouncillorPage() {
                 <h2>Calendario</h2>
               </header>
               <details className="calendar-disclosure" open>
-                <summary>Junio 2026</summary>
-                <div className="mini-calendar">
-                  {["L", "M", "X", "J", "V", "S", "D"].map((day) => (
-                    <strong key={day}>{day}</strong>
-                  ))}
-                  {calendarDays.map((day) => (
-                    <a className={day.label ? "has-event" : undefined} href="#control-institucional" key={day.day}>
-                      <span>{day.day}</span>
-                      {day.label ? <small>{day.label}</small> : null}
-                    </a>
-                  ))}
+                <summary>Proximos 30 dias</summary>
+                <div className="rail-stack">
+                  {situation.upcomingEvents.length ? (
+                    situation.upcomingEvents.slice(0, 8).map((event) => (
+                      <a className="rail-event-link" href="#control-institucional" key={event.id}>
+                        <strong>{event.title}</strong>
+                        <span>{formatDateTime(event.starts_at)}</span>
+                        <small>{event.event_type} · {event.status}</small>
+                      </a>
+                    ))
+                  ) : (
+                    <div className="empty-state">No hay eventos registrados.</div>
+                  )}
                 </div>
-                <p>
-                  Al seleccionar una fecha se abrirá el calendario ampliado cuando construyamos la
-                  pantalla específica de calendario.
-                </p>
               </details>
             </section>
           </aside>

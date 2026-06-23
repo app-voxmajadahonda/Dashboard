@@ -118,6 +118,7 @@ supabase/migrations/0007_user_profile_settings.sql
 supabase/migrations/0008_councillor_dashboard_foundation.sql
 supabase/migrations/0009_data_freshness_controls.sql
 supabase/migrations/0010_data_catalog.sql
+supabase/migrations/0011_operational_core.sql
 ```
 
 Las migraciones crean:
@@ -143,6 +144,7 @@ Las migraciones crean:
 - Controles de fuente y caducidad para indicadores municipales.
 - Catálogo inicial de datos, fuentes, rutas, automatización, caducidad y destino en base de datos.
 - Vista del catálogo y carga manual de indicadores reales desde configuración.
+- Núcleo operativo real: alertas, tareas, calendario institucional, plenos, comisiones, mociones, solicitudes y votaciones.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 

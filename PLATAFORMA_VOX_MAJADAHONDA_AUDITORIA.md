@@ -4,6 +4,8 @@ Fecha de referencia: 23 de junio de 2026.
 
 Este documento describe el estado actual de la plataforma sin exigir acceso al codigo fuente. Su objetivo es permitir que un arquitecto de software externo pueda auditar la aplicacion desde una perspectiva funcional, tecnica, de datos, seguridad, escalabilidad y estrategia de producto.
 
+Actualizacion operativa incorporada el 23 de junio de 2026: se ha iniciado la conversion del MVP visual en herramienta operativa persistente mediante la migracion `0011_operational_core.sql`, tipos TypeScript, capa de datos operacional, Sala de Situacion, barra derecha conectada a Supabase y formularios minimos para crear alertas, tareas y eventos desde el panel de direccion.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -47,6 +49,10 @@ La plataforma ya tiene una base funcional desplegable:
 - Carga manual de indicadores reales desde configuracion.
 - Cache inicial para datos publicos.
 - Proteccion de rutas segun rol.
+- Nucleo operativo inicial persistente: alertas, tareas, calendario institucional, plenos, comisiones, mociones, solicitudes institucionales y votaciones.
+- Sala de Situacion inicial en el dashboard del concejal.
+- Barra derecha del concejal conectada a `alerts`, `tasks` y `calendar_events`.
+- Formularios minimos para crear alertas, tareas y eventos desde `/dashboard`.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -278,6 +284,15 @@ Supabase
   |     |-- document_extractions
   |     |-- municipal_indicators
   |     |-- data_catalog_items
+  |     |-- alerts
+  |     |-- tasks
+  |     |-- calendar_events
+  |     |-- plenary_sessions
+  |     |-- committees
+  |     |-- committee_sessions
+  |     |-- motions
+  |     |-- institutional_requests
+  |     |-- votes
   |     |-- data_sources
   |     |-- cached_external_data
   |     |-- audit_log
@@ -1541,6 +1556,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 | --- | --- |
 | `ConfigurationForms` | Configuracion municipal, fuentes, catalogo, documentos e indicadores. |
 | `CreateUserForm` | Alta de usuarios. |
+| `OperationalForms` | Formularios minimos para crear alertas, tareas y eventos de calendario desde el panel de direccion. |
 
 ### Componentes de aplicacion
 
@@ -1575,6 +1591,11 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Carga manual de indicadores.
 - Catalogo de datos en base.
 - Lectura de indicadores para sobrescribir KPIs.
+- Tablas operativas reales para alertas, tareas, calendario y primeros procesos institucionales.
+- Lectura server-side de alertas, tareas, eventos, plenos, comisiones, mociones, solicitudes y votaciones.
+- Sala de Situacion inicial con estados vacios cuando aun no hay datos reales.
+- Barra derecha del concejal alimentada por Supabase para alertas, tareas y calendario.
+- Generacion basica de alertas por vencimientos y proximidad de hitos.
 - Auditoria basica de acciones.
 - RLS inicial.
 
@@ -1590,6 +1611,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Dashboard de portavoz: vista inicial con datos estaticos.
 - Portada: datos configurados/cacheados, pero parte del contenido no esta sincronizado automaticamente.
 - Observaciones: concejal puede crearlas, pero no hay circuito de revision.
+- Formularios operativos: permiten crear alertas, tareas y eventos, pero aun no cubren plenos, mociones, solicitudes y votaciones.
 
 ### Solo disenado
 
@@ -1598,9 +1620,8 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Gestion de comisiones.
 - Gestion de expedientes.
 - Seguimiento real de contratos.
-- Sistema real de tareas.
-- Sistema real de alertas.
-- Calendario institucional editable.
+- Acciones completas de cambio de estado/cierre de tareas y alertas.
+- Calendario institucional editable avanzado.
 - Seguridad municipal completa.
 - Analisis de criminalidad.
 - Vivienda.
@@ -1617,12 +1638,13 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 - Normalizar entidades politicas y administrativas.
 - Implementar conectores oficiales.
-- Crear tablas de procesos reales.
+- Aplicar en Supabase la migracion `0011_operational_core.sql`.
+- Completar formularios/importadores de procesos reales.
 - Sustituir datos mock por datos reales.
 - Disenar flujos de validacion.
 - Crear formularios de alta/edicion por proceso.
 - Crear fichas individuales.
-- Crear motor de alertas/tareas/calendario.
+- Completar motor de alertas/tareas/calendario.
 - Crear pruebas automatizadas.
 - Resolver encoding/mojibake en algunos documentos si es real y no solo salida de consola.
 - Revisar seguridad de service role en rutas API.
@@ -1631,12 +1653,12 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 Prioridad recomendada:
 
-1. Consolidar permisos y matriz de roles.
-2. Crear tablas reales de alertas, tareas y calendario.
-3. Conectar la barra derecha del dashboard a esas tablas.
-4. Automatizar primer dato real: poblacion INE.
-5. Crear motor de caducidad/sincronizacion no bloqueante.
-6. Crear tablas de plenos, comisiones, mociones, preguntas, ruegos y votaciones.
+1. Aplicar la migracion `0011_operational_core.sql` en Supabase.
+2. Consolidar permisos y matriz de roles.
+3. Crear acciones de cambio de estado y cierre de alertas/tareas.
+4. Crear formularios o importadores para plenos, comisiones, mociones, solicitudes y votaciones.
+5. Automatizar primer dato real: poblacion INE.
+6. Crear motor de caducidad/sincronizacion no bloqueante.
 7. Crear fichas individuales de pleno, mocion, comision y solicitud.
 8. Crear bandeja del portavoz para validar observaciones de concejales.
 9. Completar carga y extraccion de texto documental.
