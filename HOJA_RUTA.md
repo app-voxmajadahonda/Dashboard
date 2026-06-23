@@ -414,8 +414,10 @@ Primera versión implementada:
 - Ruta `/concejal`.
 - Dashboard completo por rol concejal con navegación operativa dentro de la pantalla.
 - La barra superior queda limitada a sesión, mi ficha, configuración si el rol lo permite y salir.
-- Pestañas operativas iniciales: datos generales, fiscalidad y presupuesto, seguimiento de contratos, seguimiento de proyectos y análisis electoral.
-- Bloque común superior con calendario, alertas y tareas pendientes.
+- La ficha de concejal queda organizada en un área central de trabajo y una barra lateral derecha fija.
+- Barra lateral derecha: alertas pendientes, tareas pendientes y calendario, en ese orden.
+- El contenido central se organiza por menús desplegables para evitar una pantalla de scroll infinito.
+- Menús operativos iniciales: datos generales, fiscalidad y presupuesto, seguimiento de contratos, seguimiento de proyectos especiales, análisis electoral, promesas electorales y control institucional.
 - KPIs, gráficos básicos, tablas, calendario, alertas, documentos, comparativas y estados de dato.
 - Componentes reutilizables: KPICard, DataTable, ChartCard, AlertCard, DocumentCard, CalendarView, EntityDetailView, FilterBar, StatusBadge, SourceBadge y ComparisonTable.
 - Base de datos preparada con `municipal_indicators`, observaciones y marcados relevantes.
