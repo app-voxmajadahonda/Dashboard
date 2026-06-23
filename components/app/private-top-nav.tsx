@@ -38,6 +38,12 @@ export async function PrivateTopNav() {
           </a>
         ) : null}
         {canConfigure ? (
+          <a className="button" href="/admin/legislature">
+            <Settings size={17} />
+            Legislatura
+          </a>
+        ) : null}
+        {canConfigure ? (
           <a className="button" href="/admin/users">
             <UserRound size={17} />
             Usuarios

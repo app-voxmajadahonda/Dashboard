@@ -127,6 +127,25 @@ export type GuidedProcessType =
 
 export type GuidedProcessStatus = "started" | "pending_review" | "completed" | "failed" | "cancelled";
 
+export type LegislatureStatus = "draft" | "active" | "archived";
+
+export type LegislatureConfigurationStatus = "pending" | "in_progress" | "needs_review" | "validated";
+
+export type LegislatureDocumentRole =
+  | "organization_plenary"
+  | "delegation_decree"
+  | "committee_creation"
+  | "municipal_rom"
+  | "municipal_group_composition"
+  | "logo"
+  | "other";
+
+export type LegislatureDocumentStatus = "uploaded" | "extracting" | "extracted" | "needs_review" | "validated" | "failed";
+
+export type StandingCommitteeType = "standing" | "special" | "accounts" | "other";
+
+export type CommitteeMembershipRole = "chair" | "vice_chair" | "member" | "substitute";
+
 export type Alert = {
   id: string;
   organization_id: string;
@@ -286,6 +305,167 @@ export type ProcessRun = {
   related_entity_id: string | null;
   source_document_id: string | null;
   metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Legislature = {
+  id: string;
+  organization_id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  status: LegislatureStatus;
+  configuration_status: LegislatureConfigurationStatus;
+  created_by: string | null;
+  validated_by: string | null;
+  validated_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LegislatureDocument = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  document_id: string;
+  document_role: LegislatureDocumentRole;
+  status: LegislatureDocumentStatus;
+  extracted_data: Record<string, unknown>;
+  reviewed_data: Record<string, unknown>;
+  confidence: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MunicipalCorporationMember = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  full_name: string;
+  political_group: string | null;
+  party: string | null;
+  role: string | null;
+  is_mayor: boolean;
+  is_government_member: boolean;
+  order_number: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  active: boolean;
+  source_document_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MunicipalGroup = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  name: string;
+  party: string | null;
+  spokesperson_name: string | null;
+  deputy_spokesperson_name: string | null;
+  councillors_count: number | null;
+  votes: number | null;
+  vote_percentage: number | null;
+  seats: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GovernmentArea = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  name: string;
+  description: string | null;
+  delegated_councillor_id: string | null;
+  competencies: unknown[];
+  source_document_id: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DelegatedCouncillor = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  councillor_id: string | null;
+  area_id: string | null;
+  delegation_title: string;
+  competencies: unknown[];
+  decree_reference: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  active: boolean;
+  source_document_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type StandingCommittee = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  name: string;
+  description: string | null;
+  committee_type: StandingCommitteeType;
+  ordinary_schedule_rule: string | null;
+  active: boolean;
+  source_document_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommitteeMembership = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  committee_id: string;
+  councillor_id: string | null;
+  political_group: string | null;
+  role: CommitteeMembershipRole;
+  is_primary: boolean;
+  substitute_for_id: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  active: boolean;
+  source_document_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PlenaryRegularSchedule = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  rule_description: string;
+  frequency: string | null;
+  weekday: string | null;
+  week_of_month: number | null;
+  time: string | null;
+  exceptions: unknown[];
+  source_document_id: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommitteeRegularSchedule = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  committee_id: string | null;
+  rule_description: string;
+  frequency: string | null;
+  weekday: string | null;
+  week_of_month: number | null;
+  time: string | null;
+  exceptions: unknown[];
+  source_document_id: string | null;
+  active: boolean;
   created_at: string;
   updated_at: string;
 };

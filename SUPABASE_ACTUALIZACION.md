@@ -2,7 +2,7 @@
 
 ## Estado
 
-La aplicación necesita tener aplicadas las migraciones `0003` a `0012` para que funcionen correctamente:
+La aplicación necesita tener aplicadas las migraciones `0003` a `0013` para que funcionen correctamente:
 
 - configuración documental;
 - documentos base requeridos;
@@ -14,6 +14,7 @@ La aplicación necesita tener aplicadas las migraciones `0003` a `0012` para que
 - catálogo de datos;
 - núcleo operativo de alertas, tareas, calendario institucional y procesos.
 - procesos guiados y registro en `process_runs`.
+- configuración de legislatura, documentos iniciales, composición municipal, grupos, áreas, comisiones y calendario ordinario base.
 
 ## Cómo ejecutarlo
 
@@ -53,6 +54,14 @@ supabase/migrations/0012_guided_process_runs.sql
 ```
 
 14. Ejecutar y esperar confirmación correcta.
+15. Crear otra query nueva.
+16. Abrir y copiar el contenido de:
+
+```text
+supabase/migrations/0013_legislature_configuration.sql
+```
+
+17. Ejecutar y esperar confirmación correcta.
 
 ## Por qué son dos pasos
 
@@ -81,6 +90,16 @@ Comprobar en Supabase que existen estas tablas o columnas:
 - `institutional_requests`
 - `votes`
 - `process_runs`
+- `legislatures`
+- `legislature_documents`
+- `municipal_corporation_members`
+- `municipal_groups`
+- `government_areas`
+- `delegated_councillors`
+- `standing_committees`
+- `committee_memberships`
+- `plenary_regular_schedule`
+- `committee_regular_schedule`
 - columnas `source_key` y `expires_at` en `municipal_indicators`
 
 Después, la aplicación podrá usar el catálogo de datos, fuentes, caducidades y el núcleo operativo persistente.

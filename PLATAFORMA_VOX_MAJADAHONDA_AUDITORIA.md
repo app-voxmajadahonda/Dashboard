@@ -8,6 +8,8 @@ Actualizacion operativa incorporada el 23 de junio de 2026: se ha iniciado la co
 
 Actualizacion de procesos guiados incorporada el 23 de junio de 2026: se anade `0012_guided_process_runs.sql`, carga de logo desde configuracion, uso de logo en portada/barra privada, bloque principal de procesos guiados en `/dashboard`, procesos completos para importar orden del dia de Pleno y convocatoria de comision, y bloque publico de proximos eventos institucionales.
 
+Actualizacion de configuracion de legislatura incorporada el 23 de junio de 2026: se anade `0013_legislature_configuration.sql`, la ruta protegida `/admin/legislature`, tablas para mandato, documentos de legislatura, corporacion municipal, grupos, areas, delegaciones, comisiones y reglas ordinarias de calendario. La validacion de un documento revisado consolida datos en tablas definitivas y deja auditoria.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -58,6 +60,7 @@ La plataforma ya tiene una base funcional desplegable:
 - Carga configurable del logo del grupo municipal en Supabase Storage.
 - Procesos guiados iniciales para Pleno y comision, registrados en `process_runs`.
 - Portada publica con proximos eventos institucionales basicos.
+- Modulo inicial de configuracion de legislatura para portavoz/admin, con subida documental, revision humana, consolidacion de datos institucionales y calendario ordinario base.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -150,6 +153,7 @@ Rutas principales:
 | `/perfil` | Ficha personal del usuario. |
 | `/admin/config` | Configuracion municipal, fuentes, documentos e indicadores. |
 | `/admin/users` | Alta de usuarios y roles. |
+| `/admin/legislature` | Configuracion de legislatura, documentos iniciales, revision humana, composicion municipal y calendario base. |
 
 ### Backend
 
@@ -299,6 +303,16 @@ Supabase
   |     |-- institutional_requests
   |     |-- votes
   |     |-- process_runs
+  |     |-- legislatures
+  |     |-- legislature_documents
+  |     |-- municipal_corporation_members
+  |     |-- municipal_groups
+  |     |-- government_areas
+  |     |-- delegated_councillors
+  |     |-- standing_committees
+  |     |-- committee_memberships
+  |     |-- plenary_regular_schedule
+  |     |-- committee_regular_schedule
   |     |-- data_sources
   |     |-- cached_external_data
   |     |-- audit_log
@@ -1563,6 +1577,9 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 | `ConfigurationForms` | Configuracion municipal, fuentes, catalogo, documentos e indicadores. |
 | `CreateUserForm` | Alta de usuarios. |
 | `OperationalForms` | Formularios minimos para crear alertas, tareas y eventos de calendario desde el panel de direccion. |
+| `GuidedProcessForms` | Procesos guiados para importar ordenes del dia de Pleno y convocatorias de comision. |
+| `LegislatureForms` | Configuracion de legislatura: crear mandato, subir documentos, revisar JSON, validar datos y registrar calendario ordinario. |
+| `LogoUploadForm` | Carga del logo del grupo municipal en Supabase Storage. |
 
 ### Componentes de aplicacion
 
@@ -1604,6 +1621,11 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Generacion basica de alertas por vencimientos y proximidad de hitos.
 - Procesos guiados de importacion de orden del dia de Pleno y convocatoria de comision.
 - Subida de logo y uso del logo en portada/barra privada.
+- Ruta `/admin/legislature` protegida para configurar la legislatura.
+- Creacion de legislatura y carga de documentos iniciales.
+- Revision humana de documentos de legislatura mediante JSON.
+- Validacion de documentos de legislatura con consolidacion inicial en tablas de concejales, grupos, areas, comisiones y calendario de Pleno.
+- Generacion basica de calendario institucional a partir de reglas ordinarias de Pleno.
 - Auditoria basica de acciones.
 - RLS inicial.
 
@@ -1621,6 +1643,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Observaciones: concejal puede crearlas, pero no hay circuito de revision.
 - Formularios operativos: permiten crear alertas, tareas y eventos, pero aun no cubren plenos, mociones, solicitudes y votaciones.
 - Procesos guiados: cubren Pleno y comision, pero falta historial visible y resto de procesos politicos.
+- Configuracion de legislatura: existe el flujo inicial, pero la revision todavia usa JSON libre y no formularios guiados por entidad.
 
 ### Solo disenado
 
@@ -1647,7 +1670,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 - Normalizar entidades politicas y administrativas.
 - Implementar conectores oficiales.
-- Aplicar en Supabase la migracion `0011_operational_core.sql`.
+- Aplicar en Supabase las migraciones `0011_operational_core.sql`, `0012_guided_process_runs.sql` y `0013_legislature_configuration.sql` si no estan ya aplicadas.
 - Completar formularios/importadores de procesos reales.
 - Sustituir datos mock por datos reales.
 - Disenar flujos de validacion.
@@ -1662,26 +1685,27 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 Prioridad recomendada:
 
-1. Aplicar la migracion `0011_operational_core.sql` en Supabase.
-2. Consolidar permisos y matriz de roles.
-3. Crear acciones de cambio de estado y cierre de alertas/tareas.
-4. Crear formularios o importadores para plenos, comisiones, mociones, solicitudes y votaciones.
-5. Automatizar primer dato real: poblacion INE.
-6. Crear motor de caducidad/sincronizacion no bloqueante.
-7. Crear fichas individuales de pleno, mocion, comision y solicitud.
-8. Crear bandeja del portavoz para validar observaciones de concejales.
-9. Completar carga y extraccion de texto documental.
-10. Integrar OpenAI para extraccion estructurada con revision humana.
-11. Crear tablas de presupuesto y ordenanzas.
-12. Crear comparativa fiscal con marco legal.
-13. Crear modulo de contratacion.
-14. Crear modulo de seguridad y criminalidad.
-15. Crear modulo de programa electoral.
-16. Crear modulo de comunicacion.
-17. Crear modulo de vivienda.
-18. Crear automatizaciones n8n.
-19. Implementar busqueda documental y semantica.
-20. Preparar multi-municipio real con asistente de migracion/configuracion.
+1. Aplicar las migraciones `0011`, `0012` y `0013` en Supabase si no estan ya aplicadas.
+2. Completar formularios estructurados de revision de legislatura para sustituir JSON libre.
+3. Consolidar permisos y matriz de roles.
+4. Crear acciones de cambio de estado y cierre de alertas/tareas.
+5. Crear formularios o importadores para plenos, comisiones, mociones, solicitudes y votaciones.
+6. Automatizar primer dato real: poblacion INE.
+7. Crear motor de caducidad/sincronizacion no bloqueante.
+8. Crear fichas individuales de pleno, mocion, comision y solicitud.
+9. Crear bandeja del portavoz para validar observaciones de concejales.
+10. Completar carga y extraccion de texto documental.
+11. Integrar OpenAI para extraccion estructurada con revision humana.
+12. Crear tablas de presupuesto y ordenanzas.
+13. Crear comparativa fiscal con marco legal.
+14. Crear modulo de contratacion.
+15. Crear modulo de seguridad y criminalidad.
+16. Crear modulo de programa electoral.
+17. Crear modulo de comunicacion.
+18. Crear modulo de vivienda.
+19. Crear automatizaciones n8n.
+20. Implementar busqueda documental y semantica.
+21. Preparar multi-municipio real con asistente de migracion/configuracion.
 
 ## 14. Problemas conocidos
 

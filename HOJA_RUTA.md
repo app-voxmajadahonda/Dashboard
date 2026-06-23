@@ -668,3 +668,41 @@ Pendiente:
 - Crear procesos guiados para registrar moción, registrar solicitud/pregunta/ruego, importar acta, importar presupuesto, importar ordenanza fiscal, importar informe de criminalidad e importar contrato.
 - Crear vistas de historial de `process_runs`.
 - Permitir asignar tareas generadas a distintos responsables por tarea.
+
+## 24. Configuración de legislatura
+
+**Estado:** En desarrollo
+
+La aplicación debe tener un módulo específico para configurar el mandato municipal antes de explotar datos institucionales. Esta configuración debe ser accesible solo para portavoz y administradores.
+
+Primera versión implementada:
+
+- Migración `0013_legislature_configuration.sql`.
+- Ruta `/admin/legislature` protegida para `admin` y `spokesperson`.
+- Creación de legislatura con estado de configuración.
+- Subida de documentos iniciales de legislatura:
+  - Pleno de Organización y Funcionamiento.
+  - Decreto de delegaciones.
+  - Acuerdo de creación de comisiones.
+  - Composición del Pleno / Grupo Municipal.
+  - ROM municipal.
+  - Logo del Grupo Municipal.
+- Bandeja de revisión humana obligatoria mediante JSON revisado.
+- Validación de documento con consolidación inicial en tablas reales:
+  - `municipal_corporation_members`.
+  - `municipal_groups`.
+  - `government_areas`.
+  - `standing_committees`.
+  - `plenary_regular_schedule`.
+- Registro manual de regla ordinaria de Pleno.
+- Generación básica de calendario institucional a partir de la regla de Pleno.
+- Auditoría de creación, subida, revisión, validación y calendario.
+
+Pendiente:
+
+- Aplicar la migración `0013` en Supabase.
+- Mejorar la revisión con formularios estructurados en vez de JSON libre.
+- Añadir persistencia completa de delegaciones, miembros de comisiones y calendario ordinario de comisiones.
+- Conectar extracción real de documentos para rellenar el JSON de revisión automáticamente.
+- Crear vista comparativa de “datos extraídos” frente a “datos validados”.
+- Bloquear la activación de legislatura si faltan documentos obligatorios o datos mínimos.

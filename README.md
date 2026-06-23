@@ -76,6 +76,7 @@ Endpoints de salud:
 /perfil     Configuración de usuario y ficha personal
 /admin/config Configuración del municipio, fuentes y documentación base
 /admin/users Gestión de usuarios y roles
+/admin/legislature Configuración de legislatura, documentos base, revisión y calendario ordinario
 /api/concejal/observations Observaciones internas de concejales
 ```
 
@@ -120,6 +121,7 @@ supabase/migrations/0009_data_freshness_controls.sql
 supabase/migrations/0010_data_catalog.sql
 supabase/migrations/0011_operational_core.sql
 supabase/migrations/0012_guided_process_runs.sql
+supabase/migrations/0013_legislature_configuration.sql
 ```
 
 Las migraciones crean:
@@ -147,6 +149,7 @@ Las migraciones crean:
 - Vista del catálogo y carga manual de indicadores reales desde configuración.
 - Núcleo operativo real: alertas, tareas, calendario institucional, plenos, comisiones, mociones, solicitudes y votaciones.
 - Procesos guiados registrados en `process_runs` para importar ordenes del dia de Pleno y convocatorias de comision.
+- Configuración de legislatura: mandato, documentos iniciales, composición municipal, grupos, áreas, comisiones y calendario ordinario base con revisión humana.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 
@@ -189,3 +192,4 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 5. Completar extracción de texto de PDF/DOCX/TXT.
 6. Enviar texto a OpenAI para clasificación y extracción estructurada.
 7. Crear revisión humana de extracciones.
+8. Aplicar `0013_legislature_configuration.sql` y completar la configuración inicial de legislatura desde `/admin/legislature`.
