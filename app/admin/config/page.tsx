@@ -18,40 +18,50 @@ export default async function AdminConfigPage() {
   }
 
   const adminClient = getSupabaseAdminClient();
-  const [{ data: requirements }, { data: documents }, { data: dataSources }, { data: indicators }] = await Promise.all([
-    adminClient
-      .from("base_document_requirements")
-      .select("id, title, description, document_kind, source_preference")
-      .eq("organization_id", context.organization.id)
-      .order("created_at", { ascending: true }),
-    adminClient
-      .from("documents")
-      .select("id, title, kind, processing_status, created_at")
-      .eq("organization_id", context.organization.id)
-      .in("kind", [
-        "fiscal_ordinance",
-        "budget",
-        "delegation_decree",
-        "rom",
-        "electoral_program",
-        "strategic_plan",
-        "communication_plan",
-        "report"
-      ])
-      .order("created_at", { ascending: false })
-      .limit(8),
-    adminClient
-      .from("data_sources")
-      .select("id, source_key, label, provider, source_url, refresh_interval_days, enabled, updated_at")
-      .eq("organization_id", context.organization.id)
-      .order("label", { ascending: true }),
-    adminClient
-      .from("municipal_indicators")
-      .select("id, label, source_key, data_status, updated_at, expires_at")
-      .eq("organization_id", context.organization.id)
-      .order("updated_at", { ascending: false })
-      .limit(8)
-  ]);
+  const [{ data: requirements }, { data: documents }, { data: dataSources }, { data: indicators }, { data: dataCatalog }] =
+    await Promise.all([
+      adminClient
+        .from("base_document_requirements")
+        .select("id, title, description, document_kind, source_preference")
+        .eq("organization_id", context.organization.id)
+        .order("created_at", { ascending: true }),
+      adminClient
+        .from("documents")
+        .select("id, title, kind, processing_status, created_at")
+        .eq("organization_id", context.organization.id)
+        .in("kind", [
+          "fiscal_ordinance",
+          "budget",
+          "delegation_decree",
+          "rom",
+          "electoral_program",
+          "strategic_plan",
+          "communication_plan",
+          "report"
+        ])
+        .order("created_at", { ascending: false })
+        .limit(8),
+      adminClient
+        .from("data_sources")
+        .select("id, source_key, label, provider, source_url, refresh_interval_days, enabled, updated_at")
+        .eq("organization_id", context.organization.id)
+        .order("label", { ascending: true }),
+      adminClient
+        .from("municipal_indicators")
+        .select("id, label, source_key, data_status, updated_at, expires_at")
+        .eq("organization_id", context.organization.id)
+        .order("updated_at", { ascending: false })
+        .limit(8),
+      adminClient
+        .from("data_catalog_items")
+        .select(
+          "id, data_key, display_name, dashboard_tab, dashboard_section, data_path, source_type, preferred_source, source_url, fallback_source, automation_level, refresh_interval_days, target_indicator_key, status"
+        )
+        .eq("organization_id", context.organization.id)
+        .order("dashboard_tab", { ascending: true })
+        .order("dashboard_section", { ascending: true })
+        .order("display_name", { ascending: true })
+    ]);
 
   return (
     <div className="private-shell">
@@ -78,6 +88,7 @@ export default async function AdminConfigPage() {
 
         <ConfigurationForms
           documents={documents ?? []}
+          dataCatalog={dataCatalog ?? []}
           dataSources={dataSources ?? []}
           indicators={indicators ?? []}
           organization={context.organization}

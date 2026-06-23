@@ -142,6 +142,7 @@ Las migraciones crean:
 - Base de indicadores municipales, observaciones y marcados relevantes del concejal.
 - Controles de fuente y caducidad para indicadores municipales.
 - Catálogo inicial de datos, fuentes, rutas, automatización, caducidad y destino en base de datos.
+- Vista del catálogo y carga manual de indicadores reales desde configuración.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 
@@ -179,8 +180,8 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 
 1. Ejecutar las migraciones `0003` a `0010` en Supabase.
 2. Revisar [CATALOGO_DATOS.md](./CATALOGO_DATOS.md) y añadir/corregir datos municipales.
-3. Cargar los primeros indicadores reales en `municipal_indicators` con fuente, caducidad y estado.
-4. Completar extracción de texto de PDF/DOCX/TXT.
-5. Enviar texto a OpenAI para clasificación y extracción estructurada.
-6. Guardar acciones de gobierno detectadas.
+3. Cargar los primeros indicadores reales desde `/admin/config`.
+4. Automatizar el primer indicador real: población INE.
+5. Completar extracción de texto de PDF/DOCX/TXT.
+6. Enviar texto a OpenAI para clasificación y extracción estructurada.
 7. Crear revisión humana de extracciones.

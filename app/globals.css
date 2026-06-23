@@ -2961,6 +2961,20 @@ tr:last-child td {
   color: var(--brand-dark);
 }
 
+.catalog-table {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.catalog-table p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
 .form-error {
   background: #fbe7e7;
   border: 1px solid #f0b8b8;

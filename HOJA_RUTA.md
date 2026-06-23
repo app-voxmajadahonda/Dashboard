@@ -572,12 +572,14 @@ Primera versión implementada:
 - Creado [CATALOGO_DATOS.md](./CATALOGO_DATOS.md) para identificar datos, fuente preferente, alternativa documental, caducidad y responsable de validación.
 - Creada tabla `data_catalog_items` para guardar ese catálogo en base de datos por organización.
 - Verificado el dato de población total en INE: tabla 2881, municipio Majadahonda código 28080, JSON disponible y total 2025 localizado.
+- Configuración ampliada para consultar el catálogo y cargar indicadores reales manualmente en `municipal_indicators`.
+- La carga manual calcula `expires_at` usando la caducidad definida en el catálogo.
 
 Pendiente:
 
 - Definir conectores reales por fuente: INE, Comunidad de Madrid, Ayuntamiento, portal de transparencia y documentos oficiales.
-- Crear proceso de carga manual de indicadores cuando no exista API oficial.
 - Crear panel de revisión del portavoz para aceptar datos extraídos antes de usarlos como oficiales.
+- Automatizar el primer dato real desde INE: población total.
 
 ## 20. Configuración de usuario
 

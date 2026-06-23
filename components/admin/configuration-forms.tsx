@@ -2,7 +2,7 @@
 
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { AlertTriangle, DatabaseZap, FileUp, Globe2, Save, ShieldAlert } from "lucide-react";
+import { AlertTriangle, DatabaseZap, FileUp, Globe2, ListChecks, Save, ShieldAlert } from "lucide-react";
 
 type ConfigurationFormsProps = {
   organization: {
@@ -27,6 +27,22 @@ type ConfigurationFormsProps = {
     kind: string;
     processing_status: string;
     created_at: string;
+  }[];
+  dataCatalog: {
+    id: string;
+    data_key: string;
+    display_name: string;
+    dashboard_tab: string;
+    dashboard_section: string;
+    data_path: string;
+    source_type: string;
+    preferred_source: string;
+    source_url: string | null;
+    fallback_source: string | null;
+    automation_level: string;
+    refresh_interval_days: number | null;
+    target_indicator_key: string;
+    status: string;
   }[];
   dataSources: {
     id: string;
@@ -101,6 +117,7 @@ export function ConfigurationForms({
   requirements,
   documents,
   dataSources,
+  dataCatalog,
   indicators
 }: ConfigurationFormsProps) {
   const [sourcesMessage, setSourcesMessage] = useState<string | null>(null);
@@ -113,8 +130,11 @@ export function ConfigurationForms({
   const [syncError, setSyncError] = useState<string | null>(null);
   const [dataSourcesMessage, setDataSourcesMessage] = useState<string | null>(null);
   const [dataSourcesError, setDataSourcesError] = useState<string | null>(null);
+  const [indicatorMessage, setIndicatorMessage] = useState<string | null>(null);
+  const [indicatorError, setIndicatorError] = useState<string | null>(null);
   const [isSavingSources, setIsSavingSources] = useState(false);
   const [isSavingDataSources, setIsSavingDataSources] = useState(false);
+  const [isSavingIndicator, setIsSavingIndicator] = useState(false);
   const [isRequestingMunicipality, setIsRequestingMunicipality] = useState(false);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -177,6 +197,22 @@ export function ConfigurationForms({
       setDocumentError(error instanceof Error ? error.message : "No se ha podido subir.");
     } finally {
       setIsUploadingDocument(false);
+    }
+  }
+
+  async function handleIndicator(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIndicatorMessage(null);
+    setIndicatorError(null);
+    setIsSavingIndicator(true);
+
+    try {
+      setIndicatorMessage(await submitForm("/api/admin/indicators", event.currentTarget));
+      event.currentTarget.reset();
+    } catch (error) {
+      setIndicatorError(error instanceof Error ? error.message : "No se ha podido cargar el indicador.");
+    } finally {
+      setIsSavingIndicator(false);
     }
   }
 
@@ -327,6 +363,112 @@ export function ConfigurationForms({
           ) : (
             <div className="empty-state">Todavía no hay indicadores reales cargados.</div>
           )}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Catálogo de datos</h2>
+            <p>Inventario de datos que deben alimentar los dashboards, con fuente y caducidad.</p>
+          </div>
+          <ListChecks size={22} />
+        </div>
+        <form className="admin-form two-column-form" onSubmit={handleIndicator}>
+          {indicatorMessage ? <div className="form-success form-wide">{indicatorMessage}</div> : null}
+          {indicatorError ? <div className="form-error form-wide">{indicatorError}</div> : null}
+          <label className="form-wide">
+            Dato del catálogo
+            <select name="catalogItemId" required>
+              <option value="">Selecciona un dato</option>
+              {dataCatalog.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.dashboard_tab} / {item.dashboard_section} / {item.display_name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Valor mostrado
+            <input name="displayValue" placeholder="Ej. 73.625 habitantes" required />
+          </label>
+          <label>
+            Valor numérico opcional
+            <input name="rawValue" placeholder="Ej. 73625" />
+          </label>
+          <label>
+            Periodo
+            <input name="period" placeholder="Ej. 2025 o actual" />
+          </label>
+          <label>
+            Unidad
+            <input name="unit" placeholder="habitantes, €, %, etc." />
+          </label>
+          <label>
+            Estado del dato
+            <select defaultValue="pendiente_validacion" name="dataStatus">
+              <option value="oficial">Oficial</option>
+              <option value="pendiente_validacion">Pendiente validación</option>
+              <option value="estimado">Estimado</option>
+              <option value="interno">Interno</option>
+              <option value="desactualizado">Desactualizado</option>
+            </select>
+          </label>
+          <label>
+            Confianza
+            <select defaultValue="media" name="confidence">
+              <option value="alta">Alta</option>
+              <option value="media">Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </label>
+          <label>
+            Fuente concreta
+            <input name="sourceName" placeholder="INE, Ayuntamiento, documento oficial..." />
+          </label>
+          <label>
+            URL fuente
+            <input name="sourceUrl" placeholder="https://..." type="url" />
+          </label>
+          <label className="form-wide">
+            Detalle u observación
+            <textarea name="detail" placeholder="Contexto, notas de validación o referencia del documento." rows={3} />
+          </label>
+          <button className="button primary form-fit" disabled={isSavingIndicator} type="submit">
+            <Save size={17} />
+            {isSavingIndicator ? "Guardando..." : "Cargar indicador"}
+          </button>
+        </form>
+        <div className="catalog-table">
+          <div className="responsive-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dato</th>
+                  <th>Pestaña</th>
+                  <th>Fuente</th>
+                  <th>Auto</th>
+                  <th>Caducidad</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataCatalog.slice(0, 30).map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.display_name}</td>
+                    <td>{item.dashboard_tab}</td>
+                    <td>{item.preferred_source}</td>
+                    <td>{item.automation_level}</td>
+                    <td>{item.refresh_interval_days ? `${item.refresh_interval_days} días` : "Sin caducidad"}</td>
+                    <td>{item.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Mostrando los primeros 30 datos. El listado completo queda en <code>CATALOGO_DATOS.md</code>.
+          </p>
         </div>
       </section>
 
