@@ -117,6 +117,7 @@ supabase/migrations/0006_performance_indexes.sql
 supabase/migrations/0007_user_profile_settings.sql
 supabase/migrations/0008_councillor_dashboard_foundation.sql
 supabase/migrations/0009_data_freshness_controls.sql
+supabase/migrations/0010_data_catalog.sql
 ```
 
 Las migraciones crean:
@@ -140,6 +141,7 @@ Las migraciones crean:
 - Campos ampliados de ficha de usuario/concejal.
 - Base de indicadores municipales, observaciones y marcados relevantes del concejal.
 - Controles de fuente y caducidad para indicadores municipales.
+- Catálogo inicial de datos, fuentes, rutas, automatización, caducidad y destino en base de datos.
 
 ## Despliegue
 
@@ -173,10 +175,10 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 
 ## Siguientes pasos técnicos
 
-1. Ejecutar las migraciones `0003` a `0009` en Supabase.
-2. Cargar los primeros indicadores reales en `municipal_indicators` con fuente, caducidad y estado.
-3. Completar extracción de texto de PDF/DOCX/TXT.
-4. Enviar texto a OpenAI para clasificación y extracción estructurada.
-5. Guardar acciones de gobierno detectadas.
-6. Crear revisión humana de extracciones.
-7. Ampliar el modelo para plenos, mociones, decretos, expedientes, presupuesto y alertas.
+1. Ejecutar las migraciones `0003` a `0010` en Supabase.
+2. Revisar [CATALOGO_DATOS.md](./CATALOGO_DATOS.md) y añadir/corregir datos municipales.
+3. Cargar los primeros indicadores reales en `municipal_indicators` con fuente, caducidad y estado.
+4. Completar extracción de texto de PDF/DOCX/TXT.
+5. Enviar texto a OpenAI para clasificación y extracción estructurada.
+6. Guardar acciones de gobierno detectadas.
+7. Crear revisión humana de extracciones.

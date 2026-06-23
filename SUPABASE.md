@@ -76,6 +76,7 @@ supabase/migrations/0006_performance_indexes.sql
 supabase/migrations/0007_user_profile_settings.sql
 supabase/migrations/0008_councillor_dashboard_foundation.sql
 supabase/migrations/0009_data_freshness_controls.sql
+supabase/migrations/0010_data_catalog.sql
 ```
 
 4. Ejecutar.
@@ -102,6 +103,7 @@ Las migraciones crean:
 - Tabla `municipal_indicators` para datos mostrables en dashboards.
 - Tablas de observaciones y marcados relevantes del concejal.
 - Columnas `source_key` y `expires_at` en indicadores para controlar fuente y caducidad.
+- Tabla `data_catalog_items` para inventariar datos, fuentes, rutas, automatización, caducidad y destino.
 
 ## Después de ejecutar las migraciones
 
@@ -161,8 +163,9 @@ Dominios a permitir:
 
 ## Próximo trabajo Supabase
 
-1. Ejecutar las migraciones `0003` a `0009` en el proyecto ya desplegado.
-2. Cargar los primeros indicadores reales con `source_key`, `data_status`, `updated_at` y `expires_at`.
-3. Completar extracción real de texto desde PDF/DOCX/TXT.
-4. Guardar texto extraído y resultados IA en `document_extractions`.
-5. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.
+1. Ejecutar las migraciones `0003` a `0010` en el proyecto ya desplegado.
+2. Revisar y completar el catálogo `data_catalog_items`.
+3. Cargar los primeros indicadores reales con `source_key`, `data_status`, `updated_at` y `expires_at`.
+4. Completar extracción real de texto desde PDF/DOCX/TXT.
+5. Guardar texto extraído y resultados IA en `document_extractions`.
+6. Consolidar hallazgos validados en `government_actions` y futuras tablas específicas.

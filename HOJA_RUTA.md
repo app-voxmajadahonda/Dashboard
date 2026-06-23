@@ -570,6 +570,8 @@ Primera versión implementada:
 - Pantalla de configuración ampliada para revisar fuentes, proveedor, URL/API, estado activo y caducidad de cada dato.
 - Indicadores municipales preparados con `source_key` y `expires_at` para marcar datos caducados en dashboards.
 - Creado [CATALOGO_DATOS.md](./CATALOGO_DATOS.md) para identificar datos, fuente preferente, alternativa documental, caducidad y responsable de validación.
+- Creada tabla `data_catalog_items` para guardar ese catálogo en base de datos por organización.
+- Verificado el dato de población total en INE: tabla 2881, municipio Majadahonda código 28080, JSON disponible y total 2025 localizado.
 
 Pendiente:
 

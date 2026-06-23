@@ -4,12 +4,10 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
-  Download,
   Eye,
   FileText,
   FolderKanban,
   Landmark,
-  MessageSquarePlus,
   ScrollText,
   Star,
   Users
@@ -25,7 +23,6 @@ import {
 } from "@/components/dashboard/dashboard-components";
 import { CouncillorObservationForm } from "@/components/dashboard/councillor-observation-form";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
-import municipalProfile from "@/config/municipal-profile.json";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
 import { getCouncillorDashboardData } from "@/lib/data/councillor-dashboard";
 import { requireUser } from "@/lib/supabase/server";
@@ -113,31 +110,6 @@ export default async function CouncillorPage() {
       <PrivateTopNav />
 
       <main className="private-main councillor-workspace">
-        <header className="private-page-header">
-          <div>
-            <span className="eyebrow">
-              <Users size={16} />
-              Ficha de concejal
-            </span>
-            <h1>Ficha de concejal</h1>
-            <p>
-              Vista de consulta y seguimiento para concejales de {municipalProfile.groupName}.
-              El área central muestra cada bloque operativo y la barra derecha mantiene alertas,
-              tareas y calendario siempre visibles.
-            </p>
-          </div>
-          <div className="private-header-actions">
-            <button className="button" type="button">
-              <Download size={17} />
-              Exportar
-            </button>
-            <a className="button primary" href="#observaciones">
-              <MessageSquarePlus size={17} />
-              Añadir observación
-            </a>
-          </div>
-        </header>
-
         <div className="councillor-control-layout">
           <section className="councillor-content-frame" aria-label="Contenido operativo del concejal">
             <details className="workspace-accordion" id="datos-generales" open>
