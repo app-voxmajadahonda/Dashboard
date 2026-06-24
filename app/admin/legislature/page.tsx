@@ -3,11 +3,19 @@ import { Archive, Building2, CalendarPlus, FileText, Gauge, Landmark, UsersRound
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { LogoUploadForm } from "@/components/admin/logo-upload-form";
 import {
+  CommitteeMembershipForm,
+  CorporationMemberForm,
   CreateLegislatureForm,
+  DelegationForm,
+  DiscardLegislatureDocumentForm,
   GenerateCalendarForm,
+  GovernmentAreaForm,
   LegislatureDocumentUploadForm,
+  MunicipalGroupForm,
   PlenaryScheduleForm,
   ReviewLegislatureDocumentForm,
+  StandingCommitteeForm,
+  CommitteeScheduleForm,
   ValidateLegislatureDocumentForm,
   ValidateLegislatureForm
 } from "@/components/admin/legislature-forms";
@@ -19,6 +27,9 @@ import type {
   LegislatureDocument,
   MunicipalCorporationMember,
   MunicipalGroup,
+  CommitteeMembership,
+  DelegatedCouncillor,
+  PlenaryRegularSchedule,
   StandingCommittee
 } from "@/lib/types";
 
@@ -66,6 +77,12 @@ function statusForRole(role: string, documents: LegislatureDocument[]) {
   return document?.status ?? "pendiente";
 }
 
+function documentSummary(document: LegislatureDocument, key: "extracted_data" | "reviewed_data") {
+  const value = document[key] ?? {};
+  const text = JSON.stringify(value, null, 2);
+  return text.length > 420 ? `${text.slice(0, 420)}...` : text;
+}
+
 export default async function LegislatureConfigurationPage() {
   const user = await requireUser();
 
@@ -83,7 +100,12 @@ export default async function LegislatureConfigurationPage() {
     { data: members },
     { data: groups },
     { data: areas },
-    { data: committees }
+    { data: committees },
+    { data: delegations },
+    { data: memberships },
+    { data: plenarySchedules },
+    { data: committeeSchedules },
+    { data: generatedCalendarEvents }
   ] = await Promise.all([
     adminClient
       .from("legislatures")
@@ -117,7 +139,33 @@ export default async function LegislatureConfigurationPage() {
       .select("*")
       .eq("organization_id", context.organization.id)
       .eq("active", true)
-      .order("name", { ascending: true })
+      .order("name", { ascending: true }),
+    adminClient
+      .from("delegated_councillors")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .eq("active", true)
+      .order("delegation_title", { ascending: true }),
+    adminClient
+      .from("committee_memberships")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .eq("active", true),
+    adminClient
+      .from("plenary_regular_schedule")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .eq("active", true),
+    adminClient
+      .from("committee_regular_schedule")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .eq("active", true),
+    adminClient
+      .from("calendar_events")
+      .select("id")
+      .eq("organization_id", context.organization.id)
+      .in("event_type", ["pleno", "comision"])
   ]);
 
   const allLegislatures = (legislatures ?? []) as Legislature[];
@@ -125,7 +173,43 @@ export default async function LegislatureConfigurationPage() {
   const activeDocuments = ((legislatureDocuments ?? []) as LegislatureDocument[]).filter(
     (document) => document.legislature_id === activeLegislature?.id
   );
+  const activeMembers = ((members ?? []) as MunicipalCorporationMember[]).filter(
+    (member) => member.legislature_id === activeLegislature?.id
+  );
+  const activeGroups = ((groups ?? []) as MunicipalGroup[]).filter((group) => group.legislature_id === activeLegislature?.id);
+  const activeAreas = ((areas ?? []) as GovernmentArea[]).filter((area) => area.legislature_id === activeLegislature?.id);
+  const activeCommittees = ((committees ?? []) as StandingCommittee[]).filter(
+    (committee) => committee.legislature_id === activeLegislature?.id
+  );
+  const activeDelegations = ((delegations ?? []) as DelegatedCouncillor[]).filter(
+    (delegation) => delegation.legislature_id === activeLegislature?.id
+  );
+  const activeMemberships = ((memberships ?? []) as CommitteeMembership[]).filter(
+    (membership) => membership.legislature_id === activeLegislature?.id
+  );
+  const activePlenarySchedules = ((plenarySchedules ?? []) as PlenaryRegularSchedule[]).filter(
+    (schedule) => schedule.legislature_id === activeLegislature?.id
+  );
+  const activeCommitteeSchedules = (committeeSchedules ?? []).filter(
+    (schedule) => schedule.legislature_id === activeLegislature?.id
+  );
   const progress = progressFor(activeLegislature, activeDocuments);
+  const hasVoxGroup = activeGroups.some((group) => group.name.toLowerCase().includes("vox"));
+  const hasVoxSpokesperson = activeGroups.some(
+    (group) => group.name.toLowerCase().includes("vox") && Boolean(group.spokesperson_name)
+  );
+  const readinessItems = [
+    ["Legislatura creada", Boolean(activeLegislature)],
+    ["Documentos cargados", activeDocuments.length > 0],
+    ["Datos revisados", activeDocuments.some((document) => ["needs_review", "validated"].includes(document.status))],
+    ["Composición del Pleno", activeMembers.length > 0],
+    ["Grupos municipales", activeGroups.length > 0],
+    ["Grupo VOX identificado", hasVoxGroup],
+    ["Portavoz VOX identificado", hasVoxSpokesperson],
+    ["Regla ordinaria de Pleno", activePlenarySchedules.length > 0],
+    ["Calendario generado", (generatedCalendarEvents ?? []).length > 0],
+    ["Legislatura activa", activeLegislature?.status === "active"]
+  ] as const;
 
   return (
     <div className="private-shell">
@@ -166,7 +250,17 @@ export default async function LegislatureConfigurationPage() {
           <div className="legislature-actions">
             <CreateLegislatureForm />
             <ValidateLegislatureForm legislatureId={activeLegislature?.id ?? null} />
-            <GenerateCalendarForm legislatureId={activeLegislature?.id ?? null} />
+          </div>
+          <div className="status-list legislature-step-list">
+            {readinessItems.map(([label, ready]) => (
+              <div className="status-item" key={label}>
+                <div>
+                  <div className="status-title">{label}</div>
+                  <div className="status-meta">{ready ? "Completado" : "Pendiente"}</div>
+                </div>
+                <span className={ready ? "badge green" : "badge"}>{ready ? "OK" : "Falta"}</span>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -209,11 +303,40 @@ export default async function LegislatureConfigurationPage() {
           <div className="panel-header">
             <div>
               <h2>Calendario ordinario base</h2>
-              <p>Registra la regla de Pleno ordinario antes de generar eventos iniciales del calendario institucional.</p>
+              <p>Registra reglas ordinarias de Pleno y comisiones antes de generar eventos institucionales.</p>
             </div>
             <CalendarPlus size={20} />
           </div>
-          <PlenaryScheduleForm legislatureId={activeLegislature?.id ?? null} />
+          <div className="legislature-accordion-grid">
+            <details open>
+              <summary>Régimen ordinario de Pleno</summary>
+              <PlenaryScheduleForm legislatureId={activeLegislature?.id ?? null} schedules={activePlenarySchedules} />
+            </details>
+            <details>
+              <summary>Régimen ordinario de comisiones</summary>
+              <CommitteeScheduleForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
+            </details>
+            <details>
+              <summary>Generar calendario institucional</summary>
+              <GenerateCalendarForm legislatureId={activeLegislature?.id ?? null} />
+              <div className="status-list">
+                <div className="status-item">
+                  <div>
+                    <div className="status-title">Reglas de Pleno</div>
+                    <div className="status-meta">{activePlenarySchedules.map((schedule) => schedule.rule_description).join(", ") || "Pendiente"}</div>
+                  </div>
+                  <span className="badge blue">{activePlenarySchedules.length}</span>
+                </div>
+                <div className="status-item">
+                  <div>
+                    <div className="status-title">Reglas de comisiones</div>
+                    <div className="status-meta">Reglas registradas para comisiones ordinarias</div>
+                  </div>
+                  <span className="badge blue">{activeCommitteeSchedules.length}</span>
+                </div>
+              </div>
+            </details>
+          </div>
         </section>
 
         <section className="panel">
@@ -233,8 +356,28 @@ export default async function LegislatureConfigurationPage() {
                       <strong>{document.document_role}</strong>
                       <span>{document.status}</span>
                     </div>
-                    <ValidateLegislatureDocumentForm documentId={document.id} />
+                    <div className="form-actions-row">
+                      <ValidateLegislatureDocumentForm documentId={document.id} />
+                      <DiscardLegislatureDocumentForm documentId={document.id} />
+                    </div>
                   </header>
+                  <div className="extraction-compare-grid">
+                    <div>
+                      <strong>Datos extraídos</strong>
+                      <pre>{documentSummary(document, "extracted_data")}</pre>
+                    </div>
+                    <div>
+                      <strong>Datos revisados</strong>
+                      <pre>{documentSummary(document, "reviewed_data")}</pre>
+                    </div>
+                    <div>
+                      <strong>Datos consolidados</strong>
+                      <p>
+                        Se consolidan al validar el documento si el JSON revisado contiene concejales, grupos, áreas,
+                        comisiones o calendario de plenos.
+                      </p>
+                    </div>
+                  </div>
                   <ReviewLegislatureDocumentForm document={document} />
                 </article>
               ))
@@ -243,6 +386,52 @@ export default async function LegislatureConfigurationPage() {
                 Aún no hay documentos de legislatura. Crea una legislatura y sube el Pleno de Organización, el decreto de delegaciones o el ROM.
               </div>
             )}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Formularios estructurados</h2>
+              <p>Completa o corrige manualmente los datos institucionales validados de la legislatura.</p>
+            </div>
+            <UsersRound size={20} />
+          </div>
+          <div className="legislature-accordion-grid">
+            <details open>
+              <summary>Composición del Pleno</summary>
+              <CorporationMemberForm legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
+            </details>
+            <details>
+              <summary>Grupos municipales</summary>
+              <MunicipalGroupForm groups={activeGroups} legislatureId={activeLegislature?.id ?? null} />
+            </details>
+            <details>
+              <summary>Áreas de gobierno</summary>
+              <GovernmentAreaForm areas={activeAreas} legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
+            </details>
+            <details>
+              <summary>Delegaciones</summary>
+              <DelegationForm
+                areas={activeAreas}
+                delegations={activeDelegations}
+                legislatureId={activeLegislature?.id ?? null}
+                members={activeMembers}
+              />
+            </details>
+            <details>
+              <summary>Comisiones informativas</summary>
+              <StandingCommitteeForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
+            </details>
+            <details>
+              <summary>Miembros de comisiones</summary>
+              <CommitteeMembershipForm
+                committees={activeCommittees}
+                legislatureId={activeLegislature?.id ?? null}
+                memberships={activeMemberships}
+                members={activeMembers}
+              />
+            </details>
           </div>
         </section>
 
@@ -265,8 +454,8 @@ export default async function LegislatureConfigurationPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {((members ?? []) as MunicipalCorporationMember[]).length ? (
-                    ((members ?? []) as MunicipalCorporationMember[]).map((member) => (
+                  {activeMembers.length ? (
+                    activeMembers.map((member) => (
                       <tr key={member.id}>
                         <td>{member.full_name}</td>
                         <td>{member.political_group ?? "-"}</td>
@@ -295,23 +484,37 @@ export default async function LegislatureConfigurationPage() {
               <div className="status-item">
                 <div>
                   <div className="status-title">Grupos municipales</div>
-                  <div className="status-meta">{((groups ?? []) as MunicipalGroup[]).map((group) => group.name).join(", ") || "Pendiente"}</div>
+                  <div className="status-meta">{activeGroups.map((group) => group.name).join(", ") || "Pendiente"}</div>
                 </div>
-                <span className="badge blue">{(groups ?? []).length}</span>
+                <span className="badge blue">{activeGroups.length}</span>
               </div>
               <div className="status-item">
                 <div>
                   <div className="status-title">Áreas de gobierno</div>
-                  <div className="status-meta">{((areas ?? []) as GovernmentArea[]).map((area) => area.name).join(", ") || "Pendiente"}</div>
+                  <div className="status-meta">{activeAreas.map((area) => area.name).join(", ") || "Pendiente"}</div>
                 </div>
-                <span className="badge blue">{(areas ?? []).length}</span>
+                <span className="badge blue">{activeAreas.length}</span>
               </div>
               <div className="status-item">
                 <div>
                   <div className="status-title">Comisiones</div>
-                  <div className="status-meta">{((committees ?? []) as StandingCommittee[]).map((committee) => committee.name).join(", ") || "Pendiente"}</div>
+                  <div className="status-meta">{activeCommittees.map((committee) => committee.name).join(", ") || "Pendiente"}</div>
                 </div>
-                <span className="badge blue">{(committees ?? []).length}</span>
+                <span className="badge blue">{activeCommittees.length}</span>
+              </div>
+              <div className="status-item">
+                <div>
+                  <div className="status-title">Delegaciones</div>
+                  <div className="status-meta">{activeDelegations.map((delegation) => delegation.delegation_title).join(", ") || "Pendiente"}</div>
+                </div>
+                <span className="badge blue">{activeDelegations.length}</span>
+              </div>
+              <div className="status-item">
+                <div>
+                  <div className="status-title">Miembros de comisiones</div>
+                  <div className="status-meta">Titulares y suplentes configurados</div>
+                </div>
+                <span className="badge blue">{activeMemberships.length}</span>
               </div>
             </div>
           </article>

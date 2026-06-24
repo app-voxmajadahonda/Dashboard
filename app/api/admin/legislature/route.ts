@@ -158,6 +158,244 @@ function asJsonArray(value: unknown) {
   return Array.isArray(value) ? value : [];
 }
 
+function jsonArrayFromText(value: string) {
+  if (!value.trim()) {
+    return [];
+  }
+
+  return value
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function nullableDate(value: string) {
+  return value || null;
+}
+
+function booleanFromForm(formData: FormData, name: string) {
+  return formData.get(name) === "on" || textValue(formData, name) === "true";
+}
+
+async function upsertRecord({
+  action,
+  formData,
+  organizationId,
+  userId
+}: {
+  action: string;
+  formData: FormData;
+  organizationId: string;
+  userId: string;
+}) {
+  const adminClient = getSupabaseAdminClient();
+  const legislatureId = textValue(formData, "legislatureId");
+  const recordId = textValue(formData, "recordId");
+
+  if (!legislatureId) {
+    throw new Error("Falta la legislatura activa.");
+  }
+
+  const base = {
+    organization_id: organizationId,
+    legislature_id: legislatureId,
+    updated_at: new Date().toISOString()
+  };
+
+  const save = async (table: string, payload: Record<string, unknown>, auditAction: string) => {
+    if (recordId) {
+      const { error } = await adminClient
+        .from(table)
+        .update(payload)
+        .eq("id", recordId)
+        .eq("organization_id", organizationId)
+        .eq("legislature_id", legislatureId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      await audit(organizationId, userId, auditAction, table, recordId, { mode: "update" });
+      return "Registro actualizado.";
+    }
+
+    const { data, error } = await adminClient
+      .from(table)
+      .insert({ ...payload, organization_id: organizationId, legislature_id: legislatureId })
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message ?? "No se ha podido guardar el registro.");
+    }
+
+    await audit(organizationId, userId, auditAction, table, data.id as string, { mode: "insert" });
+    return "Registro guardado.";
+  };
+
+  if (action === "save-corporation-member") {
+    const fullName = textValue(formData, "fullName");
+    if (!fullName) {
+      throw new Error("Falta el nombre del concejal.");
+    }
+
+    return save(
+      "municipal_corporation_members",
+      {
+        ...base,
+        full_name: fullName,
+        political_group: textValue(formData, "politicalGroup") || null,
+        party: textValue(formData, "party") || null,
+        role: textValue(formData, "role") || null,
+        is_mayor: booleanFromForm(formData, "isMayor"),
+        is_government_member: booleanFromForm(formData, "isGovernmentMember"),
+        order_number: textValue(formData, "orderNumber") ? Number(textValue(formData, "orderNumber")) : null,
+        start_date: nullableDate(textValue(formData, "startDate")),
+        end_date: nullableDate(textValue(formData, "endDate")),
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_corporation_member_saved"
+    );
+  }
+
+  if (action === "save-municipal-group") {
+    const name = textValue(formData, "name");
+    if (!name) {
+      throw new Error("Falta el nombre del grupo municipal.");
+    }
+
+    return save(
+      "municipal_groups",
+      {
+        ...base,
+        name,
+        party: textValue(formData, "party") || null,
+        spokesperson_name: textValue(formData, "spokespersonName") || null,
+        deputy_spokesperson_name: textValue(formData, "deputySpokespersonName") || null,
+        councillors_count: textValue(formData, "councillorsCount") ? Number(textValue(formData, "councillorsCount")) : null,
+        votes: textValue(formData, "votes") ? Number(textValue(formData, "votes")) : null,
+        vote_percentage: textValue(formData, "votePercentage") ? Number(textValue(formData, "votePercentage")) : null,
+        seats: textValue(formData, "seats") ? Number(textValue(formData, "seats")) : null,
+        notes: textValue(formData, "notes") || null
+      },
+      "legislature_municipal_group_saved"
+    );
+  }
+
+  if (action === "save-government-area") {
+    const name = textValue(formData, "name");
+    if (!name) {
+      throw new Error("Falta el nombre del area.");
+    }
+
+    return save(
+      "government_areas",
+      {
+        ...base,
+        name,
+        description: textValue(formData, "description") || null,
+        delegated_councillor_id: textValue(formData, "delegatedCouncillorId") || null,
+        competencies: jsonArrayFromText(textValue(formData, "competencies")),
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_government_area_saved"
+    );
+  }
+
+  if (action === "save-delegation") {
+    const delegationTitle = textValue(formData, "delegationTitle");
+    if (!delegationTitle) {
+      throw new Error("Falta el titulo de la delegacion.");
+    }
+
+    return save(
+      "delegated_councillors",
+      {
+        ...base,
+        councillor_id: textValue(formData, "councillorId") || null,
+        area_id: textValue(formData, "areaId") || null,
+        delegation_title: delegationTitle,
+        competencies: jsonArrayFromText(textValue(formData, "competencies")),
+        decree_reference: textValue(formData, "decreeReference") || null,
+        start_date: nullableDate(textValue(formData, "startDate")),
+        end_date: nullableDate(textValue(formData, "endDate")),
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_delegation_saved"
+    );
+  }
+
+  if (action === "save-standing-committee") {
+    const name = textValue(formData, "name");
+    if (!name) {
+      throw new Error("Falta el nombre de la comision.");
+    }
+
+    return save(
+      "standing_committees",
+      {
+        ...base,
+        name,
+        description: textValue(formData, "description") || null,
+        committee_type: textValue(formData, "committeeType") || "standing",
+        ordinary_schedule_rule: textValue(formData, "ordinaryScheduleRule") || null,
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_standing_committee_saved"
+    );
+  }
+
+  if (action === "save-committee-membership") {
+    const committeeId = textValue(formData, "committeeId");
+    if (!committeeId) {
+      throw new Error("Falta la comision.");
+    }
+
+    return save(
+      "committee_memberships",
+      {
+        ...base,
+        committee_id: committeeId,
+        councillor_id: textValue(formData, "councillorId") || null,
+        political_group: textValue(formData, "politicalGroup") || null,
+        role: textValue(formData, "membershipRole") || "member",
+        is_primary: booleanFromForm(formData, "isPrimary"),
+        substitute_for_id: textValue(formData, "substituteForId") || null,
+        start_date: nullableDate(textValue(formData, "startDate")),
+        end_date: nullableDate(textValue(formData, "endDate")),
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_committee_membership_saved"
+    );
+  }
+
+  if (action === "save-committee-schedule") {
+    const committeeId = textValue(formData, "committeeId");
+    const ruleDescription = textValue(formData, "ruleDescription");
+    if (!committeeId || !ruleDescription) {
+      throw new Error("Faltan la comision o la regla ordinaria.");
+    }
+
+    return save(
+      "committee_regular_schedule",
+      {
+        ...base,
+        committee_id: committeeId,
+        rule_description: ruleDescription,
+        frequency: textValue(formData, "frequency") || null,
+        weekday: textValue(formData, "weekday") || null,
+        week_of_month: textValue(formData, "weekOfMonth") ? Number(textValue(formData, "weekOfMonth")) : null,
+        time: textValue(formData, "time") || null,
+        exceptions: jsonArrayFromText(textValue(formData, "exceptions")),
+        active: booleanFromForm(formData, "active")
+      },
+      "legislature_committee_schedule_saved"
+    );
+  }
+
+  throw new Error("Accion estructurada no reconocida.");
+}
+
 async function persistReviewedLegislatureData(organizationId: string, legislatureDocumentId: string) {
   const adminClient = getSupabaseAdminClient();
   const { data: document, error } = await adminClient
@@ -330,7 +568,54 @@ async function persistReviewedLegislatureData(organizationId: string, legislatur
   return { counts, legislatureId };
 }
 
-async function generateBaseCalendar(organizationId: string, userId: string, legislatureId: string) {
+const weekdayMap: Record<string, number> = {
+  domingo: 0,
+  lunes: 1,
+  martes: 2,
+  miercoles: 3,
+  "miércoles": 3,
+  jueves: 4,
+  viernes: 5,
+  sabado: 6,
+  "sábado": 6
+};
+
+function getScheduledDate(year: number, month: number, weekOfMonth: number | null, weekday: string | null, time: string | null) {
+  const hour = time ? Number(time.slice(0, 2)) : 10;
+  const minute = time ? Number(time.slice(3, 5) || "0") : 0;
+  const weekdayNumber = weekday ? weekdayMap[weekday.toLowerCase()] : undefined;
+
+  if (weekdayNumber === undefined || !weekOfMonth) {
+    return new Date(year, month, 15, hour, minute);
+  }
+
+  const firstDay = new Date(year, month, 1, hour, minute);
+  const offset = (weekdayNumber - firstDay.getDay() + 7) % 7;
+  const day = 1 + offset + (weekOfMonth - 1) * 7;
+  return new Date(year, month, day, hour, minute);
+}
+
+function monthsBetween(start: Date, end: Date) {
+  const months: Array<{ year: number; month: number }> = [];
+  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  const limit = new Date(end.getFullYear(), end.getMonth(), 1);
+
+  while (cursor <= limit) {
+    months.push({ year: cursor.getFullYear(), month: cursor.getMonth() });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  return months;
+}
+
+async function generateBaseCalendar(
+  organizationId: string,
+  userId: string,
+  legislatureId: string,
+  rangeMode = "current_year",
+  rangeStart?: string,
+  rangeEnd?: string
+) {
   const adminClient = getSupabaseAdminClient();
   const { data: legislature } = await adminClient
     .from("legislatures")
@@ -343,46 +628,193 @@ async function generateBaseCalendar(organizationId: string, userId: string, legi
     throw new Error("No se ha encontrado la legislatura.");
   }
 
-  const { data: schedules } = await adminClient
+  const currentYear = new Date().getFullYear();
+  const startDate =
+    rangeMode === "full_legislature"
+      ? new Date(`${legislature.start_date}T00:00:00`)
+      : rangeMode === "custom" && rangeStart
+        ? new Date(`${rangeStart}T00:00:00`)
+        : new Date(currentYear, 0, 1);
+  const endDate =
+    rangeMode === "full_legislature"
+      ? new Date(`${legislature.end_date}T23:59:59`)
+      : rangeMode === "custom" && rangeEnd
+        ? new Date(`${rangeEnd}T23:59:59`)
+        : new Date(currentYear, 11, 31, 23, 59, 59);
+
+  const { data: plenarySchedules } = await adminClient
     .from("plenary_regular_schedule")
     .select("*")
     .eq("organization_id", organizationId)
     .eq("legislature_id", legislatureId)
     .eq("active", true);
 
-  const currentYear = new Date().getFullYear();
-  const rows = (schedules ?? []).slice(0, 1).flatMap((schedule) => {
-    const time = typeof schedule.time === "string" ? schedule.time : "10:00";
-    return Array.from({ length: 12 }, (_, month) => {
-      const startsAt = new Date(currentYear, month, 15, Number(time.slice(0, 2)), Number(time.slice(3, 5) || "0"));
-      return {
-        organization_id: organizationId,
-        title: `Pleno ordinario previsto ${month + 1}/${currentYear}`,
-        description: `Evento generado desde configuracion de legislatura: ${schedule.rule_description}`,
-        event_type: "pleno",
-        starts_at: startsAt.toISOString(),
-        status: "scheduled",
-        related_entity_type: "legislatures",
-        related_entity_id: legislatureId,
-        created_by: userId
-      };
-    });
+  const { data: committeeSchedules } = await adminClient
+    .from("committee_regular_schedule")
+    .select("*, standing_committees(name)")
+    .eq("organization_id", organizationId)
+    .eq("legislature_id", legislatureId)
+    .eq("active", true);
+
+  const months = monthsBetween(startDate, endDate);
+  const rows = [
+    ...(plenarySchedules ?? []).flatMap((schedule) =>
+      months.map(({ year, month }) => {
+        const startsAt = getScheduledDate(
+          year,
+          month,
+          typeof schedule.week_of_month === "number" ? schedule.week_of_month : null,
+          typeof schedule.weekday === "string" ? schedule.weekday : null,
+          typeof schedule.time === "string" ? schedule.time : null
+        );
+        const endsAt = new Date(startsAt.getTime() + 2 * 60 * 60 * 1000);
+        return {
+          organization_id: organizationId,
+          title: `Pleno ordinario previsto ${month + 1}/${year}`,
+          description: `Evento generado desde configuracion de legislatura: ${schedule.rule_description}`,
+          event_type: "pleno",
+          starts_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
+          status: "scheduled",
+          related_entity_type: "legislatures",
+          related_entity_id: legislatureId,
+          created_by: userId
+        };
+      })
+    ),
+    ...(committeeSchedules ?? []).flatMap((schedule) =>
+      months.map(({ year, month }) => {
+        const startsAt = getScheduledDate(
+          year,
+          month,
+          typeof schedule.week_of_month === "number" ? schedule.week_of_month : null,
+          typeof schedule.weekday === "string" ? schedule.weekday : null,
+          typeof schedule.time === "string" ? schedule.time : null
+        );
+        const endsAt = new Date(startsAt.getTime() + 90 * 60 * 1000);
+        const committeeName =
+          typeof schedule.standing_committees === "object" &&
+          schedule.standing_committees &&
+          "name" in schedule.standing_committees
+            ? String(schedule.standing_committees.name)
+            : "Comision";
+        return {
+          organization_id: organizationId,
+          title: `${committeeName} ordinaria prevista ${month + 1}/${year}`,
+          description: `Evento generado desde configuracion de legislatura: ${schedule.rule_description}`,
+          event_type: "comision",
+          starts_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
+          status: "scheduled",
+          related_entity_type: "standing_committees",
+          related_entity_id: schedule.committee_id ?? legislatureId,
+          created_by: userId
+        };
+      })
+    )
+  ].filter((row) => {
+    const startsAt = new Date(row.starts_at);
+    return startsAt >= startDate && startsAt <= endDate;
   });
 
   if (!rows.length) {
     return 0;
   }
 
-  const { error } = await adminClient.from("calendar_events").insert(rows);
+  const { data: existingEvents } = await adminClient
+    .from("calendar_events")
+    .select("title, starts_at, event_type")
+    .eq("organization_id", organizationId)
+    .gte("starts_at", startDate.toISOString())
+    .lte("starts_at", endDate.toISOString());
+
+  const existingKeys = new Set((existingEvents ?? []).map((event) => `${event.event_type}|${event.title}|${event.starts_at}`));
+  const newRows = rows.filter((row) => !existingKeys.has(`${row.event_type}|${row.title}|${row.starts_at}`));
+
+  if (!newRows.length) {
+    return 0;
+  }
+
+  const { error } = await adminClient.from("calendar_events").insert(newRows);
   if (error) {
     throw new Error(error.message);
   }
 
   await audit(organizationId, userId, "legislature_base_calendar_generated", "legislatures", legislatureId, {
-    eventsCreated: rows.length
+    eventsCreated: newRows.length,
+    rangeMode,
+    rangeStart: startDate.toISOString(),
+    rangeEnd: endDate.toISOString()
   });
 
-  return rows.length;
+  return newRows.length;
+}
+
+async function getActivationReadiness(organizationId: string, legislatureId: string) {
+  const adminClient = getSupabaseAdminClient();
+  const [
+    { count: memberCount },
+    { data: groups },
+    { data: schedules },
+    { data: documents },
+    { data: committees },
+    { data: areas }
+  ] = await Promise.all([
+    adminClient
+      .from("municipal_corporation_members")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organizationId)
+      .eq("legislature_id", legislatureId)
+      .eq("active", true),
+    adminClient.from("municipal_groups").select("name, spokesperson_name").eq("organization_id", organizationId).eq("legislature_id", legislatureId),
+    adminClient
+      .from("plenary_regular_schedule")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("legislature_id", legislatureId)
+      .eq("active", true),
+    adminClient
+      .from("legislature_documents")
+      .select("document_role, status")
+      .eq("organization_id", organizationId)
+      .eq("legislature_id", legislatureId),
+    adminClient
+      .from("standing_committees")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("legislature_id", legislatureId)
+      .eq("active", true),
+    adminClient
+      .from("government_areas")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("legislature_id", legislatureId)
+      .eq("active", true)
+  ]);
+
+  const hasVoxGroup = (groups ?? []).some((group) => String(group.name).toLowerCase().includes("vox"));
+  const hasVoxSpokesperson = (groups ?? []).some(
+    (group) => String(group.name).toLowerCase().includes("vox") && Boolean(group.spokesperson_name)
+  );
+  const hasRom = (documents ?? []).some((document) => document.document_role === "municipal_rom");
+
+  const missingRequired = [
+    !memberCount ? "composicion del Pleno" : null,
+    !(groups ?? []).length ? "grupos municipales" : null,
+    !hasVoxGroup ? "Grupo Municipal VOX identificado" : null,
+    !hasVoxSpokesperson ? "portavoz VOX identificado" : null,
+    !hasRom && !(schedules ?? []).length ? "ROM o regla de Pleno" : null,
+    !(schedules ?? []).length ? "regla ordinaria de Pleno" : null
+  ].filter(Boolean);
+
+  const missingRecommended = [
+    !(documents ?? []).some((document) => document.document_role === "delegation_decree") ? "decreto de delegaciones" : null,
+    !(areas ?? []).length ? "areas de gobierno" : null,
+    !(committees ?? []).length ? "comisiones informativas" : null,
+    !(documents ?? []).some((document) => document.document_role === "logo") ? "logo del grupo municipal" : null
+  ].filter(Boolean);
+
+  return { missingRecommended, missingRequired };
 }
 
 export async function POST(request: Request) {
@@ -397,6 +829,26 @@ export async function POST(request: Request) {
   const adminClient = getSupabaseAdminClient();
 
   try {
+    if (
+      [
+        "save-corporation-member",
+        "save-municipal-group",
+        "save-government-area",
+        "save-delegation",
+        "save-standing-committee",
+        "save-committee-membership",
+        "save-committee-schedule"
+      ].includes(action)
+    ) {
+      const message = await upsertRecord({
+        action,
+        formData,
+        organizationId: context.organization.id,
+        userId: user.id
+      });
+      return NextResponse.json({ ok: true, message });
+    }
+
     if (action === "create-legislature") {
       const name = textValue(formData, "name");
       const startDate = textValue(formData, "startDate");
@@ -537,6 +989,7 @@ export async function POST(request: Request) {
 
     if (action === "save-plenary-schedule") {
       const legislatureId = textValue(formData, "legislatureId");
+      const recordId = textValue(formData, "recordId");
       const ruleDescription = textValue(formData, "ruleDescription");
       const frequency = textValue(formData, "frequency");
       const weekday = textValue(formData, "weekday");
@@ -547,7 +1000,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Falta la regla de calendario de Pleno." }, { status: 400 });
       }
 
-      const { error } = await adminClient.from("plenary_regular_schedule").insert({
+      const payload = {
         organization_id: context.organization.id,
         legislature_id: legislatureId,
         rule_description: ruleDescription,
@@ -555,21 +1008,59 @@ export async function POST(request: Request) {
         weekday: weekday || null,
         week_of_month: weekOfMonth ? Number(weekOfMonth) : null,
         time: time || null,
-        active: true
-      });
+        exceptions: jsonArrayFromText(textValue(formData, "exceptions")),
+        active: booleanFromForm(formData, "active"),
+        updated_at: new Date().toISOString()
+      };
 
-      if (error) {
-        throw new Error(error.message);
+      const { data, error } = recordId
+        ? await adminClient
+            .from("plenary_regular_schedule")
+            .update(payload)
+            .eq("id", recordId)
+            .eq("organization_id", context.organization.id)
+            .eq("legislature_id", legislatureId)
+            .select("id")
+            .single()
+        : await adminClient.from("plenary_regular_schedule").insert(payload).select("id").single();
+
+      if (error || !data) {
+        throw new Error(error?.message ?? "No se ha podido guardar la regla de Pleno.");
       }
 
-      await audit(context.organization.id, user.id, "legislature_plenary_schedule_saved", "plenary_regular_schedule", legislatureId, {
+      await audit(context.organization.id, user.id, "legislature_plenary_schedule_saved", "plenary_regular_schedule", data.id as string, {
         ruleDescription
       });
       return NextResponse.json({ ok: true, message: "Regla de Pleno ordinario guardada." });
     }
 
+    if (action === "discard-document") {
+      const legislatureDocumentId = textValue(formData, "legislatureDocumentId");
+
+      const { error } = await adminClient
+        .from("legislature_documents")
+        .update({ status: "failed", updated_at: new Date().toISOString() })
+        .eq("id", legislatureDocumentId)
+        .eq("organization_id", context.organization.id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      await audit(context.organization.id, user.id, "legislature_document_discarded", "legislature_documents", legislatureDocumentId, {});
+      return NextResponse.json({ ok: true, message: "Documento descartado." });
+    }
+
     if (action === "validate-legislature") {
       const legislatureId = textValue(formData, "legislatureId");
+      const readiness = await getActivationReadiness(context.organization.id, legislatureId);
+
+      if (readiness.missingRequired.length) {
+        return NextResponse.json(
+          { error: `No se puede activar. Faltan datos obligatorios: ${readiness.missingRequired.join(", ")}.` },
+          { status: 400 }
+        );
+      }
 
       const { error } = await adminClient
         .from("legislatures")
@@ -587,13 +1078,25 @@ export async function POST(request: Request) {
         throw new Error(error.message);
       }
 
-      await audit(context.organization.id, user.id, "legislature_validated", "legislatures", legislatureId, {});
-      return NextResponse.json({ ok: true, message: "Legislatura activada y validada." });
+      await audit(context.organization.id, user.id, "legislature_validated", "legislatures", legislatureId, readiness);
+      return NextResponse.json({
+        ok: true,
+        message: readiness.missingRecommended.length
+          ? `Legislatura activada. Recomendado completar: ${readiness.missingRecommended.join(", ")}.`
+          : "Legislatura activada y validada."
+      });
     }
 
     if (action === "generate-calendar") {
       const legislatureId = textValue(formData, "legislatureId");
-      const count = await generateBaseCalendar(context.organization.id, user.id, legislatureId);
+      const count = await generateBaseCalendar(
+        context.organization.id,
+        user.id,
+        legislatureId,
+        textValue(formData, "rangeMode") || "current_year",
+        textValue(formData, "rangeStart"),
+        textValue(formData, "rangeEnd")
+      );
       return NextResponse.json({ ok: true, message: `Calendario base generado: ${count} eventos.` });
     }
 

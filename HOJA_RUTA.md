@@ -698,11 +698,35 @@ Primera versión implementada:
 - Generación básica de calendario institucional a partir de la regla de Pleno.
 - Auditoría de creación, subida, revisión, validación y calendario.
 
+Ampliación implementada:
+
+- Formularios estructurados en `/admin/legislature` para:
+  - composición del Pleno;
+  - grupos municipales;
+  - áreas de gobierno;
+  - delegaciones;
+  - comisiones informativas;
+  - miembros titulares y suplentes de comisiones;
+  - régimen ordinario de Pleno;
+  - régimen ordinario de comisiones.
+- Vista de documento con datos extraídos, datos revisados y estado de consolidación.
+- Acción para descartar documentos de legislatura.
+- Activación de legislatura bloqueada si faltan datos obligatorios:
+  - composición del Pleno;
+  - grupos municipales;
+  - Grupo Municipal VOX;
+  - portavoz VOX;
+  - ROM o regla de Pleno;
+  - regla ordinaria de Pleno.
+- Advertencia no bloqueante si faltan datos recomendados: decreto de delegaciones, áreas, comisiones o logo.
+- Generación de calendario base para año actual, legislatura completa o rango personalizado.
+- Generación de eventos ordinarios de Pleno y comisiones evitando duplicados básicos.
+
 Pendiente:
 
 - Aplicar la migración `0013` en Supabase.
-- Mejorar la revisión con formularios estructurados en vez de JSON libre.
-- Añadir persistencia completa de delegaciones, miembros de comisiones y calendario ordinario de comisiones.
+- Mejorar la revisión documental con formularios asistidos desde los datos extraídos, no solo formularios manuales.
+- Añadir edición precargada de registros existentes en los formularios estructurados.
 - Conectar extracción real de documentos para rellenar el JSON de revisión automáticamente.
 - Crear vista comparativa de “datos extraídos” frente a “datos validados”.
-- Bloquear la activación de legislatura si faltan documentos obligatorios o datos mínimos.
+- Refinar la generación de fechas del calendario cuando el régimen ordinario tenga reglas más complejas o excepciones.

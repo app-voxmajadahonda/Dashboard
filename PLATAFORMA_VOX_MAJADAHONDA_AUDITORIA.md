@@ -10,6 +10,8 @@ Actualizacion de procesos guiados incorporada el 23 de junio de 2026: se anade `
 
 Actualizacion de configuracion de legislatura incorporada el 23 de junio de 2026: se anade `0013_legislature_configuration.sql`, la ruta protegida `/admin/legislature`, tablas para mandato, documentos de legislatura, corporacion municipal, grupos, areas, delegaciones, comisiones y reglas ordinarias de calendario. La validacion de un documento revisado consolida datos en tablas definitivas y deja auditoria.
 
+Actualizacion de consolidacion de legislatura incorporada el 24 de junio de 2026: `/admin/legislature` se amplia con formularios estructurados para composicion del Pleno, grupos municipales, areas de gobierno, delegaciones, comisiones, miembros de comision y reglas ordinarias de Pleno/comisiones. La activacion de legislatura valida datos minimos obligatorios y la generacion de calendario admite ano actual, legislatura completa o rango personalizado, evitando duplicados basicos.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -61,6 +63,7 @@ La plataforma ya tiene una base funcional desplegable:
 - Procesos guiados iniciales para Pleno y comision, registrados en `process_runs`.
 - Portada publica con proximos eventos institucionales basicos.
 - Modulo inicial de configuracion de legislatura para portavoz/admin, con subida documental, revision humana, consolidacion de datos institucionales y calendario ordinario base.
+- Formularios estructurados de legislatura para completar manualmente el marco institucional sin depender todavia de OCR, IA o conectores externos.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -1578,7 +1581,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 | `CreateUserForm` | Alta de usuarios. |
 | `OperationalForms` | Formularios minimos para crear alertas, tareas y eventos de calendario desde el panel de direccion. |
 | `GuidedProcessForms` | Procesos guiados para importar ordenes del dia de Pleno y convocatorias de comision. |
-| `LegislatureForms` | Configuracion de legislatura: crear mandato, subir documentos, revisar JSON, validar datos y registrar calendario ordinario. |
+| `LegislatureForms` | Configuracion de legislatura: crear mandato, subir documentos, revisar datos, validar documentos, formularios institucionales, activar legislatura y generar calendario. |
 | `LogoUploadForm` | Carga del logo del grupo municipal en Supabase Storage. |
 
 ### Componentes de aplicacion
@@ -1626,6 +1629,9 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Revision humana de documentos de legislatura mediante JSON.
 - Validacion de documentos de legislatura con consolidacion inicial en tablas de concejales, grupos, areas, comisiones y calendario de Pleno.
 - Generacion basica de calendario institucional a partir de reglas ordinarias de Pleno.
+- Formularios estructurados para crear o sobrescribir datos de concejales, grupos, areas, delegaciones, comisiones, miembros y reglas ordinarias.
+- Activacion de legislatura bloqueada por requisitos minimos obligatorios.
+- Generacion de calendario institucional para plenos y comisiones con rango configurable.
 - Auditoria basica de acciones.
 - RLS inicial.
 
@@ -1643,7 +1649,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Observaciones: concejal puede crearlas, pero no hay circuito de revision.
 - Formularios operativos: permiten crear alertas, tareas y eventos, pero aun no cubren plenos, mociones, solicitudes y votaciones.
 - Procesos guiados: cubren Pleno y comision, pero falta historial visible y resto de procesos politicos.
-- Configuracion de legislatura: existe el flujo inicial, pero la revision todavia usa JSON libre y no formularios guiados por entidad.
+- Configuracion de legislatura: ya tiene formularios estructurados, pero la edicion de registros existentes no precarga valores y la revision documental automatica sigue pendiente.
 
 ### Solo disenado
 

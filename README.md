@@ -149,7 +149,7 @@ Las migraciones crean:
 - Vista del catálogo y carga manual de indicadores reales desde configuración.
 - Núcleo operativo real: alertas, tareas, calendario institucional, plenos, comisiones, mociones, solicitudes y votaciones.
 - Procesos guiados registrados en `process_runs` para importar ordenes del dia de Pleno y convocatorias de comision.
-- Configuración de legislatura: mandato, documentos iniciales, composición municipal, grupos, áreas, comisiones y calendario ordinario base con revisión humana.
+- Configuración de legislatura: mandato, documentos iniciales, composición municipal, grupos, áreas, delegaciones, comisiones, miembros, reglas ordinarias y calendario institucional base con revisión humana.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 
@@ -193,3 +193,4 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 6. Enviar texto a OpenAI para clasificación y extracción estructurada.
 7. Crear revisión humana de extracciones.
 8. Aplicar `0013_legislature_configuration.sql` y completar la configuración inicial de legislatura desde `/admin/legislature`.
+9. Sustituir progresivamente la revisión JSON de documentos por formularios de revisión asistida y extracción documental real.

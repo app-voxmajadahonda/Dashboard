@@ -3108,6 +3108,36 @@ tr:last-child td {
   padding-top: 16px;
 }
 
+.legislature-step-list {
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.legislature-accordion-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.legislature-accordion-grid details {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.legislature-accordion-grid summary {
+  background: var(--surface-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 900;
+  padding: 14px 16px;
+}
+
+.legislature-accordion-grid form {
+  padding: 16px;
+}
+
 .review-grid {
   display: grid;
   gap: 14px;
@@ -3142,9 +3172,43 @@ tr:last-child td {
   font-weight: 850;
 }
 
+.extraction-compare-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.extraction-compare-grid div {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.extraction-compare-grid pre {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 8px 0 0;
+  max-height: 180px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
 .legislature-review-form textarea {
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   min-height: 190px;
+}
+
+.checkbox-row {
+  align-items: center;
+  color: var(--text);
+  display: flex;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.checkbox-row input {
+  width: auto;
 }
 
 .inline-admin-form {
