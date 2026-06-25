@@ -20,6 +20,7 @@ import {
   ValidateLegislatureForm
 } from "@/components/admin/legislature-forms";
 import { requireOrganizationAdmin } from "@/lib/auth/organization";
+import { getMunicipalElectionCycle } from "@/lib/municipal-election-cycle";
 import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
 import type {
   GovernmentArea,
@@ -71,6 +72,8 @@ const officialLegislatureSources = [
     detail: "Decretos y acuerdos para delegaciones, áreas, tenencias y cambios organizativos."
   }
 ];
+
+const municipalCycles = [getMunicipalElectionCycle(2023), getMunicipalElectionCycle(2027), getMunicipalElectionCycle(2031)];
 
 function progressFor(legislature: Legislature | null, documents: LegislatureDocument[]) {
   if (!legislature) {
@@ -345,6 +348,41 @@ export default async function LegislatureConfigurationPage() {
                 </a>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Ciclo electoral municipal</h2>
+              <p>Regla legal base para elecciones, constitución del Ayuntamiento e inicio efectivo del mandato.</p>
+            </div>
+            <CalendarPlus size={20} />
+          </div>
+          <div className="status-list">
+            {municipalCycles.map((cycle) => (
+              <div className="status-item" key={cycle.electionYear}>
+                <div>
+                  <div className="status-title">Elecciones municipales {cycle.electionYear}</div>
+                  <div className="status-meta">
+                    Elección: {formatDate(cycle.electionDate)} · Constitución: {formatDate(cycle.constitutionDate)}
+                  </div>
+                </div>
+                <span className="badge blue">{cycle.legalBasis}</span>
+              </div>
+            ))}
+          </div>
+          <div className="critical-warning">
+            <CalendarPlus size={18} />
+            <span>
+              La LOREG fija el cuarto domingo de mayo. En 2027 eso apunta al 23 de mayo y a la constitución el 12 de junio,
+              no al 30 de mayo y 19 de junio, salvo cambio legal o supuesto electoral específico. Fuente:
+              <a href="https://www.boe.es/buscar/act.php?id=BOE-A-1985-11672" rel="noreferrer" target="_blank">
+                {" "}
+                Ley Orgánica 5/1985, de Régimen Electoral General
+              </a>
+              .
+            </span>
           </div>
         </section>
 

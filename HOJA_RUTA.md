@@ -727,6 +727,11 @@ Ampliación implementada:
   - legislatura 2023-2027;
   - información general de órganos de gobierno;
   - acuerdos y decretos de organización.
+- Regla de ciclo electoral municipal incorporada desde LOREG:
+  - elecciones municipales cada cuatro años, cuarto domingo de mayo;
+  - constitución de la corporación el vigésimo día posterior;
+  - 2023: elecciones 28/05/2023 y constitución 17/06/2023;
+  - 2027, según la regla vigente: elecciones 23/05/2027 y constitución 12/06/2027.
 
 Pendiente:
 

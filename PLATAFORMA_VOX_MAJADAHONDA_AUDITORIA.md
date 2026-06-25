@@ -14,6 +14,8 @@ Actualizacion de consolidacion de legislatura incorporada el 24 de junio de 2026
 
 Actualizacion de fuentes oficiales de legislatura incorporada el 24 de junio de 2026: la pantalla `/admin/legislature` incorpora enlaces del Portal de Transparencia de Majadahonda para organos de gobierno, estructura organizativa, legislatura 2023-2027, informacion general de organos de gobierno y acuerdos/decretos de organizacion. Estas fuentes se usan como referencia manual oficial para completar el marco institucional.
 
+Actualizacion de ciclo electoral municipal incorporada el 25 de junio de 2026: se crea `lib/municipal-election-cycle.ts` para calcular elecciones municipales conforme a la regla del cuarto domingo de mayo y constitucion de la corporacion el vigesimo dia posterior segun LOREG. La pantalla `/admin/legislature` muestra los ciclos 2023, 2027 y 2031 y advierte que, con la regla vigente, 2027 corresponde al 23/05/2027 y 12/06/2027, no al 30/05/2027 y 19/06/2027.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -67,6 +69,7 @@ La plataforma ya tiene una base funcional desplegable:
 - Modulo inicial de configuracion de legislatura para portavoz/admin, con subida documental, revision humana, consolidacion de datos institucionales y calendario ordinario base.
 - Formularios estructurados de legislatura para completar manualmente el marco institucional sin depender todavia de OCR, IA o conectores externos.
 - Fuentes oficiales de legislatura visibles desde `/admin/legislature` para facilitar carga y validacion manual de datos institucionales.
+- Calculo normativo del ciclo electoral municipal visible desde `/admin/legislature`.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 

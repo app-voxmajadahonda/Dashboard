@@ -150,6 +150,7 @@ Las migraciones crean:
 - Núcleo operativo real: alertas, tareas, calendario institucional, plenos, comisiones, mociones, solicitudes y votaciones.
 - Procesos guiados registrados en `process_runs` para importar ordenes del dia de Pleno y convocatorias de comision.
 - Configuración de legislatura: mandato, documentos iniciales, composición municipal, grupos, áreas, delegaciones, comisiones, miembros, reglas ordinarias y calendario institucional base con revisión humana.
+- Cálculo de ciclo electoral municipal conforme a LOREG: cuarto domingo de mayo y constitución el vigésimo día posterior.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 
