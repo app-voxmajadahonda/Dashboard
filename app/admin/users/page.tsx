@@ -1,6 +1,7 @@
 import { ShieldCheck, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import { CreateUserForm } from "@/components/admin/create-user-form";
+import { AppBreadcrumbs } from "@/components/app/breadcrumbs";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { requireOrganizationAdmin } from "@/lib/auth/organization";
 import { appRoles } from "@/lib/auth/roles";
@@ -8,11 +9,16 @@ import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+function roleLabel(role: string) {
+  return role === "spokesperson" ? "Usuario portavoz" : "Usuario administrador";
+}
+
 export default async function AdminUsersPage() {
   const user = await requireUser();
 
+  let context: Awaited<ReturnType<typeof requireOrganizationAdmin>>;
   try {
-    await requireOrganizationAdmin(user.id);
+    context = await requireOrganizationAdmin(user.id);
   } catch {
     redirect("/concejal");
   }
@@ -23,15 +29,16 @@ export default async function AdminUsersPage() {
       <main className="admin-page private-main">
         <header className="admin-header">
           <div>
-            <span className="eyebrow">
-              <ShieldCheck size={16} />
-              Administración
-            </span>
+            <AppBreadcrumbs
+              icon={<ShieldCheck size={16} />}
+              items={[
+                { href: "/dashboard", label: roleLabel(context.membership.role) },
+                { href: "/admin/config", label: "Configuracion" },
+                { label: "Usuarios y roles" }
+              ]}
+            />
             <h1>Usuarios y roles</h1>
-            <p>
-              Alta de usuarios internos y asignación inicial de permisos para la organización
-              configurada.
-            </p>
+            <p>Alta de usuarios internos y asignacion inicial de permisos para la organizacion configurada.</p>
           </div>
           <a className="button" href="/dashboard">
             Volver al dashboard
@@ -43,7 +50,7 @@ export default async function AdminUsersPage() {
             <div className="panel-header">
               <div>
                 <h2>Crear usuario</h2>
-                <p>Solo los administradores podrán usar esta acción.</p>
+                <p>Solo los administradores podran usar esta accion.</p>
               </div>
               <Users size={20} />
             </div>

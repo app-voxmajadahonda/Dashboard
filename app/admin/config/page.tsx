@@ -2,11 +2,16 @@ import { redirect } from "next/navigation";
 import { Settings, ShieldCheck } from "lucide-react";
 import { ConfigurationForms } from "@/components/admin/configuration-forms";
 import { LogoUploadForm } from "@/components/admin/logo-upload-form";
+import { AppBreadcrumbs } from "@/components/app/breadcrumbs";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { requireOrganizationAdmin } from "@/lib/auth/organization";
 import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+function roleLabel(role: string) {
+  return role === "spokesperson" ? "Usuario portavoz" : "Usuario administrador";
+}
 
 export default async function AdminConfigPage() {
   const user = await requireUser();
@@ -70,14 +75,14 @@ export default async function AdminConfigPage() {
       <main className="private-main">
         <header className="private-page-header">
           <div>
-            <span className="eyebrow">
-              <ShieldCheck size={16} />
-              Solo portavoz / administración
-            </span>
-            <h1>Configuración del municipio</h1>
+            <AppBreadcrumbs
+              icon={<ShieldCheck size={16} />}
+              items={[{ href: "/dashboard", label: roleLabel(context.membership.role) }, { label: "Configuracion" }]}
+            />
+            <h1>Configuracion del municipio</h1>
             <p>
-              Variables principales, fuentes oficiales, redes sociales y documentación base que
-              alimentará el análisis político, institucional y presupuestario.
+              Variables principales, fuentes oficiales, redes sociales y documentacion base que alimentara el analisis
+              politico, institucional y presupuestario.
             </p>
           </div>
           <div className="private-header-card">

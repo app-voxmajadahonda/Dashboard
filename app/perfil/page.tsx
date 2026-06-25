@@ -1,11 +1,28 @@
 import { redirect } from "next/navigation";
 import { BadgeCheck, UserRound, UsersRound } from "lucide-react";
+import { AppBreadcrumbs } from "@/components/app/breadcrumbs";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { UserProfileForm } from "@/components/profile/user-profile-form";
 import { getOrganizationContextForUser } from "@/lib/auth/organization";
 import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+function roleLabel(role: string) {
+  if (role === "spokesperson") {
+    return "Usuario portavoz";
+  }
+
+  if (role === "admin") {
+    return "Usuario administrador";
+  }
+
+  return "Usuario concejal";
+}
+
+function roleHome(role: string) {
+  return ["admin", "spokesperson"].includes(role) ? "/dashboard" : "/concejal";
+}
 
 export default async function ProfilePage() {
   const user = await requireUser();
@@ -81,15 +98,14 @@ export default async function ProfilePage() {
       <main className="private-main">
         <header className="private-page-header">
           <div>
-            <span className="eyebrow">
-              <UserRound size={16} />
-              Configuración de usuario
-            </span>
+            <AppBreadcrumbs
+              icon={<UserRound size={16} />}
+              items={[{ href: roleHome(context.membership.role), label: roleLabel(context.membership.role) }, { label: "Mi ficha" }]}
+            />
             <h1>Mi ficha</h1>
             <p>
-              Datos personales, contacto, redes sociales, comisiones y responsabilidades de trabajo.
-              Cada concejal puede editar su ficha; el portavoz/admin tendrá acceso a la información
-              del equipo.
+              Datos personales, contacto, redes sociales, comisiones y responsabilidades de trabajo. Cada concejal puede
+              editar su ficha; el portavoz/admin tendra acceso a la informacion del equipo.
             </p>
           </div>
           <div className="private-header-card">
@@ -115,7 +131,7 @@ export default async function ProfilePage() {
             <div className="panel-header">
               <div>
                 <h2>Equipo</h2>
-                <p>Visible completo para portavoz/admin. Los concejales verán su propia ficha.</p>
+                <p>Visible completo para portavoz/admin. Los concejales veran su propia ficha.</p>
               </div>
               <UsersRound size={20} />
             </div>
@@ -129,7 +145,7 @@ export default async function ProfilePage() {
                   </article>
                 ))
               ) : (
-                <div className="empty-state">La vista de equipo completa está reservada al portavoz/admin.</div>
+                <div className="empty-state">La vista de equipo completa esta reservada al portavoz/admin.</div>
               )}
             </div>
           </aside>

@@ -1,80 +1,36 @@
 import { redirect } from "next/navigation";
-import { Archive, Building2, CalendarPlus, FileText, Gauge, Landmark, UsersRound } from "lucide-react";
+import { FileText, Gauge, Landmark, UsersRound } from "lucide-react";
+import { AppBreadcrumbs } from "@/components/app/breadcrumbs";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
-import { LogoUploadForm } from "@/components/admin/logo-upload-form";
 import {
   CommitteeMembershipForm,
   CorporationMemberForm,
   CreateLegislatureForm,
   DelegationForm,
-  DiscardLegislatureDocumentForm,
   GenerateCalendarForm,
   GovernmentAreaForm,
-  LegislatureDocumentUploadForm,
   MunicipalGroupForm,
   PlenaryScheduleForm,
-  ReviewLegislatureDocumentForm,
   StandingCommitteeForm,
   CommitteeScheduleForm,
   TransparencyPortalImportForm,
-  ValidateLegislatureDocumentForm,
   ValidateLegislatureForm
 } from "@/components/admin/legislature-forms";
 import { requireOrganizationAdmin } from "@/lib/auth/organization";
-import { getMunicipalElectionCycle } from "@/lib/municipal-election-cycle";
 import { getSupabaseAdminClient, requireUser } from "@/lib/supabase/server";
 import type {
+  CommitteeMembership,
+  DelegatedCouncillor,
   GovernmentArea,
   Legislature,
   LegislatureDocument,
   MunicipalCorporationMember,
   MunicipalGroup,
-  CommitteeMembership,
-  DelegatedCouncillor,
   PlenaryRegularSchedule,
   StandingCommittee
 } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-
-const requiredDocuments = [
-  ["organization_plenary", "Pleno de Organización y Funcionamiento"],
-  ["delegation_decree", "Decreto de delegaciones"],
-  ["committee_creation", "Acuerdo de creación de comisiones"],
-  ["municipal_group_composition", "Composición del Pleno / Grupo Municipal"],
-  ["municipal_rom", "ROM municipal"],
-  ["logo", "Logo del Grupo Municipal"]
-];
-
-const officialLegislatureSources = [
-  {
-    title: "Órganos de Gobierno Municipal",
-    url: "https://transparencia.majadahonda.org/organos-de-gobierno-municipal",
-    detail: "Índice oficial para grupos políticos, Pleno, comisiones, Junta de Gobierno y decretos de organización."
-  },
-  {
-    title: "Estructura Organizativa del Ayuntamiento",
-    url: "https://transparencia.majadahonda.org/estructura-organizativa",
-    detail: "Fuente oficial para alcaldía, equipo de gobierno, tenencias de alcaldía, áreas y concejalías."
-  },
-  {
-    title: "Legislatura 2023-2027",
-    url: "https://transparencia.majadahonda.org/legislatura-2023-2027",
-    detail: "Grupos políticos municipales y datos biográficos de alcaldesa y concejales."
-  },
-  {
-    title: "Información general sobre órganos de gobierno",
-    url: "https://transparencia.majadahonda.org/organos-de-gobierno",
-    detail: "Regla publicada: Pleno ordinario mensual el último martes de cada mes a las 10:00; agosto suspendido."
-  },
-  {
-    title: "Acuerdos y decretos de organización",
-    url: "https://transparencia.majadahonda.org/acuerdos-y-decretos-organizacion-funcionamiento",
-    detail: "Decretos y acuerdos para delegaciones, áreas, tenencias y cambios organizativos."
-  }
-];
-
-const municipalCycles = [getMunicipalElectionCycle(2023), getMunicipalElectionCycle(2027), getMunicipalElectionCycle(2031)];
 
 function progressFor(legislature: Legislature | null, documents: LegislatureDocument[]) {
   if (!legislature) {
@@ -104,15 +60,8 @@ function formatDate(value: string | null) {
   return value ? new Date(value).toLocaleDateString("es-ES") : "Sin fecha";
 }
 
-function statusForRole(role: string, documents: LegislatureDocument[]) {
-  const document = documents.find((item) => item.document_role === role);
-  return document?.status ?? "pendiente";
-}
-
-function documentSummary(document: LegislatureDocument, key: "extracted_data" | "reviewed_data") {
-  const value = document[key] ?? {};
-  const text = JSON.stringify(value, null, 2);
-  return text.length > 420 ? `${text.slice(0, 420)}...` : text;
+function roleLabel(role: string) {
+  return role === "spokesperson" ? "Usuario portavoz" : "Usuario administrador";
 }
 
 export default async function LegislatureConfigurationPage() {
@@ -217,14 +166,14 @@ export default async function LegislatureConfigurationPage() {
   ]);
 
   const allLegislatures = (legislatures ?? []) as Legislature[];
+  const allMembers = (members ?? []) as MunicipalCorporationMember[];
+  const allGroups = (groups ?? []) as MunicipalGroup[];
   const activeLegislature = allLegislatures.find((item) => item.status === "active") ?? allLegislatures[0] ?? null;
   const activeDocuments = ((legislatureDocuments ?? []) as LegislatureDocument[]).filter(
     (document) => document.legislature_id === activeLegislature?.id
   );
-  const activeMembers = ((members ?? []) as MunicipalCorporationMember[]).filter(
-    (member) => member.legislature_id === activeLegislature?.id
-  );
-  const activeGroups = ((groups ?? []) as MunicipalGroup[]).filter((group) => group.legislature_id === activeLegislature?.id);
+  const activeMembers = allMembers.filter((member) => member.legislature_id === activeLegislature?.id);
+  const activeGroups = allGroups.filter((group) => group.legislature_id === activeLegislature?.id);
   const activeAreas = ((areas ?? []) as GovernmentArea[]).filter((area) => area.legislature_id === activeLegislature?.id);
   const activeCommittees = ((committees ?? []) as StandingCommittee[]).filter(
     (committee) => committee.legislature_id === activeLegislature?.id
@@ -242,22 +191,6 @@ export default async function LegislatureConfigurationPage() {
     (schedule) => schedule.legislature_id === activeLegislature?.id
   );
   const progress = progressFor(activeLegislature, activeDocuments);
-  const hasVoxGroup = activeGroups.some((group) => group.name.toLowerCase().includes("vox"));
-  const hasVoxSpokesperson = activeGroups.some(
-    (group) => group.name.toLowerCase().includes("vox") && Boolean(group.spokesperson_name)
-  );
-  const readinessItems = [
-    ["Legislatura creada", Boolean(activeLegislature)],
-    ["Documentos cargados", activeDocuments.length > 0],
-    ["Datos revisados", activeDocuments.some((document) => ["needs_review", "validated"].includes(document.status))],
-    ["Composición del Pleno", activeMembers.length > 0],
-    ["Grupos municipales", activeGroups.length > 0],
-    ["Grupo VOX identificado", hasVoxGroup],
-    ["Portavoz VOX identificado", hasVoxSpokesperson],
-    ["Regla ordinaria de Pleno", activePlenarySchedules.length > 0],
-    ["Calendario generado", (generatedCalendarEvents ?? []).length > 0],
-    ["Legislatura activa", activeLegislature?.status === "active"]
-  ] as const;
   const latestTransparencyJob = (transparencyJobs?.[0] ?? null) as {
     id: string;
     status: string;
@@ -266,6 +199,18 @@ export default async function LegislatureConfigurationPage() {
     metadata: Record<string, unknown>;
   } | null;
   const legislatureLocked = Boolean(activeLock);
+  const displayRole = roleLabel(context.membership.role);
+
+  const activeStats = [
+    ["Concejales", activeMembers.length],
+    ["Grupos", activeGroups.length],
+    ["Areas", activeAreas.length],
+    ["Comisiones", activeCommittees.length],
+    ["Delegaciones", activeDelegations.length],
+    ["Miembros de comision", activeMemberships.length],
+    ["Reglas de Pleno", activePlenarySchedules.length],
+    ["Eventos generados", (generatedCalendarEvents ?? []).length]
+  ] as const;
 
   return (
     <div className="private-shell">
@@ -273,123 +218,117 @@ export default async function LegislatureConfigurationPage() {
       <main className="private-main">
         <header className="private-page-header compact-private-header">
           <div>
-            <span className="eyebrow">
-              <Landmark size={16} />
-              Configuración inicial
-            </span>
-            <h1>Configuración de Legislatura</h1>
-            <p>Documentos base, revisión humana y marco institucional de trabajo del mandato.</p>
+            <AppBreadcrumbs
+              icon={<Landmark size={16} />}
+              items={[
+                { href: "/dashboard", label: displayRole },
+                { href: "/admin/config", label: "Configuracion" },
+                { label: "Legislatura" }
+              ]}
+            />
+            <h1>Legislatura</h1>
+            <p>Importacion guiada desde el Portal de Transparencia y revision de la legislatura activa.</p>
           </div>
         </header>
 
-        <section className="panel legislature-progress-panel">
+        <section className="panel">
           <div className="panel-header">
             <div>
-              <h2>Legislatura activa</h2>
-              <p>
-                {activeLegislature
-                  ? `${activeLegislature.name} · ${formatDate(activeLegislature.start_date)} - ${formatDate(activeLegislature.end_date)}`
-                  : "Aún no hay legislatura creada."}
-              </p>
+              <h2>Legislaturas registradas</h2>
+              <p>La legislatura activa aparece resaltada. Pulsa una tarjeta para ver el detalle.</p>
             </div>
-            <Gauge size={20} />
+            <Landmark size={20} />
           </div>
-          <div className="legislature-progress">
-            <div>
-              <strong>{progress}%</strong>
-              <span>{activeLegislature?.configuration_status ?? "pending"}</span>
+
+          {allLegislatures.length ? (
+            <div className="legislature-selector-grid">
+              {allLegislatures.map((legislature) => {
+                const isActive = legislature.id === activeLegislature?.id;
+
+                return (
+                  <a
+                    className="legislature-card"
+                    data-active={isActive}
+                    href={`#legislature-${legislature.id}`}
+                    key={legislature.id}
+                  >
+                    <span className={isActive ? "badge green" : "badge"}>{isActive ? "Actual" : legislature.status}</span>
+                    <strong>{legislature.name}</strong>
+                    <p>
+                      {formatDate(legislature.start_date)} - {formatDate(legislature.end_date)}
+                    </p>
+                    <small>{legislature.configuration_status}</small>
+                  </a>
+                );
+              })}
             </div>
-            <i>
-              <span style={{ width: `${progress}%` }} />
-            </i>
-          </div>
-          <div className="legislature-actions">
+          ) : (
+            <div className="empty-state">Aun no hay legislaturas registradas.</div>
+          )}
+
+          <details className="legislature-create-panel">
+            <summary>Crear nueva legislatura</summary>
             <CreateLegislatureForm />
-            <ValidateLegislatureForm legislatureId={activeLegislature?.id ?? null} />
-          </div>
-          <div className="status-list legislature-step-list">
-            {readinessItems.map(([label, ready]) => (
-              <div className="status-item" key={label}>
-                <div>
-                  <div className="status-title">{label}</div>
-                  <div className="status-meta">{ready ? "Completado" : "Pendiente"}</div>
-                </div>
-                <span className={ready ? "badge green" : "badge"}>{ready ? "OK" : "Falta"}</span>
-              </div>
-            ))}
-          </div>
+          </details>
         </section>
+
+        {allLegislatures.map((legislature) => {
+          const isActive = legislature.id === activeLegislature?.id;
+          const legislatureMembers = allMembers.filter((member) => member.legislature_id === legislature.id);
+          const legislatureGroups = allGroups.filter((group) => group.legislature_id === legislature.id);
+
+          return (
+            <aside className="legislature-modal" id={`legislature-${legislature.id}`} key={legislature.id}>
+              <article className="legislature-modal-card">
+                <header>
+                  <div>
+                    <span className={isActive ? "badge green" : "badge"}>{isActive ? "Legislatura actual" : legislature.status}</span>
+                    <h2>{legislature.name}</h2>
+                    <p>
+                      {formatDate(legislature.start_date)} - {formatDate(legislature.end_date)}
+                    </p>
+                  </div>
+                  <a className="button" href="/admin/legislature">
+                    Cerrar
+                  </a>
+                </header>
+                <div className="legislature-modal-grid">
+                  <div>
+                    <span>Estado de configuracion</span>
+                    <strong>{legislature.configuration_status}</strong>
+                  </div>
+                  <div>
+                    <span>Validada</span>
+                    <strong>{formatDate(legislature.validated_at)}</strong>
+                  </div>
+                  <div>
+                    <span>Concejales</span>
+                    <strong>{legislatureMembers.length}</strong>
+                  </div>
+                  <div>
+                    <span>Grupos</span>
+                    <strong>{legislatureGroups.length}</strong>
+                  </div>
+                </div>
+              </article>
+            </aside>
+          );
+        })}
 
         {legislatureLocked ? (
           <section className="panel">
             <div className="critical-warning">
-              Importación institucional en curso. La configuración de legislatura está bloqueada temporalmente hasta que
+              Importacion institucional en curso. La configuracion de legislatura esta bloqueada temporalmente hasta que
               finalice o expire el bloqueo de seguridad.
             </div>
           </section>
         ) : null}
 
-        <section className="private-dashboard-grid">
-          <article className="panel">
-            <div className="panel-header">
-              <div>
-                <h2>Documentos iniciales de legislatura</h2>
-                <p>Subida documental con extracción pendiente y revisión humana obligatoria.</p>
-              </div>
-              <FileText size={20} />
-            </div>
-            <LegislatureDocumentUploadForm legislatureId={activeLegislature?.id ?? null} />
-            <div className="status-list legislature-document-list">
-              {requiredDocuments.map(([role, label]) => (
-                <div className="status-item" key={role}>
-                  <div>
-                    <div className="status-title">{label}</div>
-                    <div className="status-meta">{role}</div>
-                  </div>
-                  <span className="badge blue">{statusForRole(role, activeDocuments)}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="panel">
-            <div className="panel-header">
-              <div>
-                <h2>Logo</h2>
-                <p>Imagen usada en portada pública y barra privada.</p>
-              </div>
-              <Building2 size={20} />
-            </div>
-            <LogoUploadForm />
-          </article>
-        </section>
-
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Fuentes oficiales de legislatura</h2>
-              <p>Referencias del Portal de Transparencia de Majadahonda para completar los datos institucionales.</p>
-            </div>
-            <Landmark size={20} />
-          </div>
-          <div className="requirement-grid">
-            {officialLegislatureSources.map((source) => (
-              <article className="requirement-card" key={source.url}>
-                <strong>{source.title}</strong>
-                <p>{source.detail}</p>
-                <a href={source.url} rel="noreferrer" target="_blank">
-                  Abrir fuente oficial
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <section className="panel">
           <div className="panel-header">
             <div>
               <h2>Importar desde Portal de Transparencia</h2>
-              <p>Exploración controlada del portal municipal para localizar fuentes, documentos y datos institucionales.</p>
+              <p>Proceso guiado para localizar datos institucionales, fuentes y documentos oficiales del mandato.</p>
             </div>
             <FileText size={20} />
           </div>
@@ -401,174 +340,40 @@ export default async function LegislatureConfigurationPage() {
           />
         </section>
 
-        <section className="panel">
+        <section className="panel legislature-progress-panel">
           <div className="panel-header">
             <div>
-              <h2>Ciclo electoral municipal</h2>
-              <p>Regla legal base para elecciones, constitución del Ayuntamiento e inicio efectivo del mandato.</p>
+              <h2>Datos de la legislatura activa</h2>
+              <p>
+                {activeLegislature
+                  ? `${activeLegislature.name} · ${formatDate(activeLegislature.start_date)} - ${formatDate(activeLegislature.end_date)}`
+                  : "Crea o importa una legislatura para empezar."}
+              </p>
             </div>
-            <CalendarPlus size={20} />
+            <Gauge size={20} />
           </div>
-          <div className="status-list">
-            {municipalCycles.map((cycle) => (
-              <div className="status-item" key={cycle.electionYear}>
-                <div>
-                  <div className="status-title">Elecciones municipales {cycle.electionYear}</div>
-                  <div className="status-meta">
-                    Elección: {formatDate(cycle.electionDate)} · Constitución: {formatDate(cycle.constitutionDate)}
-                  </div>
-                </div>
-                <span className="badge blue">{cycle.legalBasis}</span>
-              </div>
+
+          <div className="legislature-progress">
+            <div>
+              <strong>{progress}%</strong>
+              <span>{activeLegislature?.configuration_status ?? "pending"}</span>
+            </div>
+            <i>
+              <span style={{ width: `${progress}%` }} />
+            </i>
+          </div>
+
+          <div className="legislature-actions">
+            <ValidateLegislatureForm legislatureId={activeLegislature?.id ?? null} />
+          </div>
+
+          <div className="legislature-data-grid">
+            {activeStats.map(([label, value]) => (
+              <article className="legislature-data-card" key={label}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </article>
             ))}
-          </div>
-          <div className="critical-warning">
-            <CalendarPlus size={18} />
-            <span>
-              La LOREG fija el cuarto domingo de mayo. En 2027 eso apunta al 23 de mayo y a la constitución el 12 de junio,
-              no al 30 de mayo y 19 de junio, salvo cambio legal o supuesto electoral específico. Fuente:
-              <a href="https://www.boe.es/buscar/act.php?id=BOE-A-1985-11672" rel="noreferrer" target="_blank">
-                {" "}
-                Ley Orgánica 5/1985, de Régimen Electoral General
-              </a>
-              .
-            </span>
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Calendario ordinario base</h2>
-              <p>Registra reglas ordinarias de Pleno y comisiones antes de generar eventos institucionales.</p>
-            </div>
-            <CalendarPlus size={20} />
-          </div>
-          <div className="legislature-accordion-grid">
-            <details open>
-              <summary>Régimen ordinario de Pleno</summary>
-              <PlenaryScheduleForm legislatureId={activeLegislature?.id ?? null} schedules={activePlenarySchedules} />
-            </details>
-            <details>
-              <summary>Régimen ordinario de comisiones</summary>
-              <CommitteeScheduleForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
-            </details>
-            <details>
-              <summary>Generar calendario institucional</summary>
-              <GenerateCalendarForm legislatureId={activeLegislature?.id ?? null} />
-              <div className="status-list">
-                <div className="status-item">
-                  <div>
-                    <div className="status-title">Reglas de Pleno</div>
-                    <div className="status-meta">{activePlenarySchedules.map((schedule) => schedule.rule_description).join(", ") || "Pendiente"}</div>
-                  </div>
-                  <span className="badge blue">{activePlenarySchedules.length}</span>
-                </div>
-                <div className="status-item">
-                  <div>
-                    <div className="status-title">Reglas de comisiones</div>
-                    <div className="status-meta">Reglas registradas para comisiones ordinarias</div>
-                  </div>
-                  <span className="badge blue">{activeCommitteeSchedules.length}</span>
-                </div>
-              </div>
-            </details>
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Bandeja de revisión</h2>
-              <p>Los datos detectados no se consolidan sin revisión humana.</p>
-            </div>
-            <Archive size={20} />
-          </div>
-          <div className="review-grid">
-            {activeDocuments.length ? (
-              activeDocuments.map((document) => (
-                <article className="review-card" key={document.id}>
-                  <header>
-                    <div>
-                      <strong>{document.document_role}</strong>
-                      <span>{document.status}</span>
-                    </div>
-                    <div className="form-actions-row">
-                      <ValidateLegislatureDocumentForm documentId={document.id} />
-                      <DiscardLegislatureDocumentForm documentId={document.id} />
-                    </div>
-                  </header>
-                  <div className="extraction-compare-grid">
-                    <div>
-                      <strong>Datos extraídos</strong>
-                      <pre>{documentSummary(document, "extracted_data")}</pre>
-                    </div>
-                    <div>
-                      <strong>Datos revisados</strong>
-                      <pre>{documentSummary(document, "reviewed_data")}</pre>
-                    </div>
-                    <div>
-                      <strong>Datos consolidados</strong>
-                      <p>
-                        Se consolidan al validar el documento si el JSON revisado contiene concejales, grupos, áreas,
-                        comisiones o calendario de plenos.
-                      </p>
-                    </div>
-                  </div>
-                  <ReviewLegislatureDocumentForm document={document} />
-                </article>
-              ))
-            ) : (
-              <div className="empty-state">
-                Aún no hay documentos de legislatura. Crea una legislatura y sube el Pleno de Organización, el decreto de delegaciones o el ROM.
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Formularios estructurados</h2>
-              <p>Completa o corrige manualmente los datos institucionales validados de la legislatura.</p>
-            </div>
-            <UsersRound size={20} />
-          </div>
-          <div className="legislature-accordion-grid">
-            <details open>
-              <summary>Composición del Pleno</summary>
-              <CorporationMemberForm legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
-            </details>
-            <details>
-              <summary>Grupos municipales</summary>
-              <MunicipalGroupForm groups={activeGroups} legislatureId={activeLegislature?.id ?? null} />
-            </details>
-            <details>
-              <summary>Áreas de gobierno</summary>
-              <GovernmentAreaForm areas={activeAreas} legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
-            </details>
-            <details>
-              <summary>Delegaciones</summary>
-              <DelegationForm
-                areas={activeAreas}
-                delegations={activeDelegations}
-                legislatureId={activeLegislature?.id ?? null}
-                members={activeMembers}
-              />
-            </details>
-            <details>
-              <summary>Comisiones informativas</summary>
-              <StandingCommitteeForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
-            </details>
-            <details>
-              <summary>Miembros de comisiones</summary>
-              <CommitteeMembershipForm
-                committees={activeCommittees}
-                legislatureId={activeLegislature?.id ?? null}
-                memberships={activeMemberships}
-                members={activeMembers}
-              />
-            </details>
           </div>
         </section>
 
@@ -576,8 +381,8 @@ export default async function LegislatureConfigurationPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <h2>Composición municipal validada</h2>
-                <p>Datos definitivos tras revisión.</p>
+                <h2>Composicion del Pleno</h2>
+                <p>Datos consolidados de la legislatura activa.</p>
               </div>
               <UsersRound size={20} />
             </div>
@@ -596,12 +401,12 @@ export default async function LegislatureConfigurationPage() {
                       <tr key={member.id}>
                         <td>{member.full_name}</td>
                         <td>{member.political_group ?? "-"}</td>
-                        <td>{member.role ?? (member.is_mayor ? "Alcaldía" : "-")}</td>
+                        <td>{member.role ?? (member.is_mayor ? "Alcaldia" : "-")}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3}>No hay concejales validados todavía.</td>
+                      <td colSpan={3}>No hay concejales validados todavia.</td>
                     </tr>
                   )}
                 </tbody>
@@ -612,8 +417,8 @@ export default async function LegislatureConfigurationPage() {
           <article className="panel">
             <div className="panel-header">
               <div>
-                <h2>Grupos, áreas y comisiones</h2>
-                <p>Marco institucional disponible para procesos posteriores.</p>
+                <h2>Estructura institucional</h2>
+                <p>Grupos, areas, comisiones y delegaciones disponibles.</p>
               </div>
               <Landmark size={20} />
             </div>
@@ -627,7 +432,7 @@ export default async function LegislatureConfigurationPage() {
               </div>
               <div className="status-item">
                 <div>
-                  <div className="status-title">Áreas de gobierno</div>
+                  <div className="status-title">Areas de gobierno</div>
                   <div className="status-meta">{activeAreas.map((area) => area.name).join(", ") || "Pendiente"}</div>
                 </div>
                 <span className="badge blue">{activeAreas.length}</span>
@@ -646,15 +451,66 @@ export default async function LegislatureConfigurationPage() {
                 </div>
                 <span className="badge blue">{activeDelegations.length}</span>
               </div>
-              <div className="status-item">
-                <div>
-                  <div className="status-title">Miembros de comisiones</div>
-                  <div className="status-meta">Titulares y suplentes configurados</div>
-                </div>
-                <span className="badge blue">{activeMemberships.length}</span>
-              </div>
             </div>
           </article>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Corregir datos de la legislatura</h2>
+              <p>Correcciones manuales posteriores a la importacion desde el portal oficial.</p>
+            </div>
+            <UsersRound size={20} />
+          </div>
+          <div className="legislature-accordion-grid">
+            <details>
+              <summary>Composicion y grupos municipales</summary>
+              <CorporationMemberForm legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
+              <MunicipalGroupForm groups={activeGroups} legislatureId={activeLegislature?.id ?? null} />
+            </details>
+            <details>
+              <summary>Gobierno municipal y delegaciones</summary>
+              <GovernmentAreaForm areas={activeAreas} legislatureId={activeLegislature?.id ?? null} members={activeMembers} />
+              <DelegationForm
+                areas={activeAreas}
+                delegations={activeDelegations}
+                legislatureId={activeLegislature?.id ?? null}
+                members={activeMembers}
+              />
+            </details>
+            <details>
+              <summary>Comisiones y calendario institucional</summary>
+              <StandingCommitteeForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
+              <CommitteeMembershipForm
+                committees={activeCommittees}
+                legislatureId={activeLegislature?.id ?? null}
+                memberships={activeMemberships}
+                members={activeMembers}
+              />
+              <PlenaryScheduleForm legislatureId={activeLegislature?.id ?? null} schedules={activePlenarySchedules} />
+              <CommitteeScheduleForm committees={activeCommittees} legislatureId={activeLegislature?.id ?? null} />
+              <GenerateCalendarForm legislatureId={activeLegislature?.id ?? null} />
+              <div className="status-list legislature-step-list">
+                <div className="status-item">
+                  <div>
+                    <div className="status-title">Reglas de Pleno</div>
+                    <div className="status-meta">
+                      {activePlenarySchedules.map((schedule) => schedule.rule_description).join(", ") || "Pendiente"}
+                    </div>
+                  </div>
+                  <span className="badge blue">{activePlenarySchedules.length}</span>
+                </div>
+                <div className="status-item">
+                  <div>
+                    <div className="status-title">Reglas de comisiones</div>
+                    <div className="status-meta">Reglas registradas para comisiones ordinarias</div>
+                  </div>
+                  <span className="badge blue">{activeCommitteeSchedules.length}</span>
+                </div>
+              </div>
+            </details>
+          </div>
         </section>
       </main>
     </div>

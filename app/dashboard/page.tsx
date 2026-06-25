@@ -15,6 +15,7 @@ import {
   Vote
 } from "lucide-react";
 import { redirect } from "next/navigation";
+import { AppBreadcrumbs } from "@/components/app/breadcrumbs";
 import { PrivateTopNav } from "@/components/app/private-top-nav";
 import { GuidedProcessForms } from "@/components/admin/guided-process-forms";
 import { OperationalForms } from "@/components/admin/operational-forms";
@@ -91,6 +92,10 @@ const currentTasks = [
     status: "En revisión"
   }
 ];
+
+function roleLabel(role: string) {
+  return role === "spokesperson" ? "Usuario portavoz" : "Usuario administrador";
+}
 
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -185,10 +190,10 @@ export default async function DashboardPage() {
       <main className="private-main">
         <header className="private-page-header">
           <div>
-            <span className="eyebrow">
-              <Target size={16} />
-              Direccion operativa
-            </span>
+            <AppBreadcrumbs
+              icon={<Target size={16} />}
+              items={[{ href: "/dashboard", label: roleLabel(context.membership.role) }, { label: "Panel de direccion" }]}
+            />
             <h1>{municipalProfile.groupName}</h1>
             <p>Alertas, calendario, tareas y procesos activos del mandato {municipalProfile.municipality.mandate}.</p>
           </div>

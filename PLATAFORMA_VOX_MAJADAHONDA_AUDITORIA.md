@@ -18,6 +18,8 @@ Actualizacion de ciclo electoral municipal incorporada el 25 de junio de 2026: s
 
 Actualizacion de importador del Portal de Transparencia incorporada el 25 de junio de 2026: se anade `0015_transparency_portal_import.sql`, el proceso guiado `import_transparency_portal`, `system_locks`, tablas de jobs/fuentes/staging/diffs, formulario de importacion en `/admin/legislature`, crawler limitado al dominio `transparencia.majadahonda.org` y ruta de revision `/admin/legislature/transparency-imports/[jobId]`. La aplicacion definitiva de cambios queda bloqueada en esta fase y requiere una iteracion posterior.
 
+Actualizacion de experiencia de configuracion de legislatura incorporada el 25 de junio de 2026: `/admin/legislature` deja de funcionar como formulario extenso y pasa a organizarse como proceso guiado. La parte superior muestra legislaturas registradas con la actual resaltada y detalle en ventana superpuesta; debajo queda el importador del Portal de Transparencia; y finalmente aparecen datos consolidados de la legislatura activa con correcciones manuales agrupadas en desplegables. Se anade navegacion contextual reutilizable con migas de ruta en dashboard, configuracion, legislatura, usuarios y mi ficha.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -73,6 +75,8 @@ La plataforma ya tiene una base funcional desplegable:
 - Fuentes oficiales de legislatura visibles desde `/admin/legislature` para facilitar carga y validacion manual de datos institucionales.
 - Calculo normativo del ciclo electoral municipal visible desde `/admin/legislature`.
 - Importador guiado del Portal de Transparencia de Majadahonda con staging revisable y bloqueo temporal de configuracion de legislatura.
+- Rediseño de `/admin/legislature` como flujo guiado: selector de legislaturas, modal de detalle, importacion oficial y datos/correcciones de la legislatura activa.
+- Migas de navegacion reutilizables en cabeceras privadas para mostrar la ruta funcional del usuario.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -1596,7 +1600,8 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 | `CreateUserForm` | Alta de usuarios. |
 | `OperationalForms` | Formularios minimos para crear alertas, tareas y eventos de calendario desde el panel de direccion. |
 | `GuidedProcessForms` | Procesos guiados para importar ordenes del dia de Pleno y convocatorias de comision. |
-| `LegislatureForms` | Configuracion de legislatura: crear mandato, subir documentos, revisar datos, validar documentos, formularios institucionales, activar legislatura y generar calendario. |
+| `LegislatureForms` | Configuracion de legislatura: crear mandato, importar desde Portal de Transparencia, validar legislatura, corregir datos institucionales y generar calendario. |
+| `AppBreadcrumbs` | Migas de navegacion reutilizables para ubicar al usuario dentro de panel, configuracion, legislatura, usuarios y ficha personal. |
 | `LogoUploadForm` | Carga del logo del grupo municipal en Supabase Storage. |
 | `TransparencyImportReviewActions` | Acciones de aprobacion, rechazo, cancelacion y aplicacion bloqueada de importaciones del portal. |
 
@@ -1650,6 +1655,8 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Generacion de calendario institucional para plenos y comisiones con rango configurable.
 - Inicio de importacion desde Portal de Transparencia con confirmacion escrita y bloqueo temporal.
 - Exploracion limitada de URLs, clasificacion de fuentes, descarga documental controlada, staging y pantalla de revision.
+- Pantalla `/admin/legislature` redisenada alrededor del proceso: legislaturas registradas, detalle en ventana superpuesta, importador oficial y correccion agrupada de datos activos.
+- Migas de navegacion privadas para sustituir rotulos ambiguos en panel de direccion, configuracion, legislatura, usuarios y mi ficha.
 - Auditoria basica de acciones.
 - RLS inicial.
 
