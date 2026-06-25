@@ -12,6 +12,8 @@ Actualizacion de configuracion de legislatura incorporada el 23 de junio de 2026
 
 Actualizacion de consolidacion de legislatura incorporada el 24 de junio de 2026: `/admin/legislature` se amplia con formularios estructurados para composicion del Pleno, grupos municipales, areas de gobierno, delegaciones, comisiones, miembros de comision y reglas ordinarias de Pleno/comisiones. La activacion de legislatura valida datos minimos obligatorios y la generacion de calendario admite ano actual, legislatura completa o rango personalizado, evitando duplicados basicos.
 
+Actualizacion de fuentes oficiales de legislatura incorporada el 24 de junio de 2026: la pantalla `/admin/legislature` incorpora enlaces del Portal de Transparencia de Majadahonda para organos de gobierno, estructura organizativa, legislatura 2023-2027, informacion general de organos de gobierno y acuerdos/decretos de organizacion. Estas fuentes se usan como referencia manual oficial para completar el marco institucional.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -64,6 +66,7 @@ La plataforma ya tiene una base funcional desplegable:
 - Portada publica con proximos eventos institucionales basicos.
 - Modulo inicial de configuracion de legislatura para portavoz/admin, con subida documental, revision humana, consolidacion de datos institucionales y calendario ordinario base.
 - Formularios estructurados de legislatura para completar manualmente el marco institucional sin depender todavia de OCR, IA o conectores externos.
+- Fuentes oficiales de legislatura visibles desde `/admin/legislature` para facilitar carga y validacion manual de datos institucionales.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 

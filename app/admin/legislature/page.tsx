@@ -44,6 +44,34 @@ const requiredDocuments = [
   ["logo", "Logo del Grupo Municipal"]
 ];
 
+const officialLegislatureSources = [
+  {
+    title: "Órganos de Gobierno Municipal",
+    url: "https://transparencia.majadahonda.org/organos-de-gobierno-municipal",
+    detail: "Índice oficial para grupos políticos, Pleno, comisiones, Junta de Gobierno y decretos de organización."
+  },
+  {
+    title: "Estructura Organizativa del Ayuntamiento",
+    url: "https://transparencia.majadahonda.org/estructura-organizativa",
+    detail: "Fuente oficial para alcaldía, equipo de gobierno, tenencias de alcaldía, áreas y concejalías."
+  },
+  {
+    title: "Legislatura 2023-2027",
+    url: "https://transparencia.majadahonda.org/legislatura-2023-2027",
+    detail: "Grupos políticos municipales y datos biográficos de alcaldesa y concejales."
+  },
+  {
+    title: "Información general sobre órganos de gobierno",
+    url: "https://transparencia.majadahonda.org/organos-de-gobierno",
+    detail: "Regla publicada: Pleno ordinario mensual el último martes de cada mes a las 10:00; agosto suspendido."
+  },
+  {
+    title: "Acuerdos y decretos de organización",
+    url: "https://transparencia.majadahonda.org/acuerdos-y-decretos-organizacion-funcionamiento",
+    detail: "Decretos y acuerdos para delegaciones, áreas, tenencias y cambios organizativos."
+  }
+];
+
 function progressFor(legislature: Legislature | null, documents: LegislatureDocument[]) {
   if (!legislature) {
     return 0;
@@ -297,6 +325,27 @@ export default async function LegislatureConfigurationPage() {
             </div>
             <LogoUploadForm />
           </article>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Fuentes oficiales de legislatura</h2>
+              <p>Referencias del Portal de Transparencia de Majadahonda para completar los datos institucionales.</p>
+            </div>
+            <Landmark size={20} />
+          </div>
+          <div className="requirement-grid">
+            {officialLegislatureSources.map((source) => (
+              <article className="requirement-card" key={source.url}>
+                <strong>{source.title}</strong>
+                <p>{source.detail}</p>
+                <a href={source.url} rel="noreferrer" target="_blank">
+                  Abrir fuente oficial
+                </a>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="panel">

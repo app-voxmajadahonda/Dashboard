@@ -721,6 +721,12 @@ Ampliación implementada:
 - Advertencia no bloqueante si faltan datos recomendados: decreto de delegaciones, áreas, comisiones o logo.
 - Generación de calendario base para año actual, legislatura completa o rango personalizado.
 - Generación de eventos ordinarios de Pleno y comisiones evitando duplicados básicos.
+- Panel de fuentes oficiales de legislatura con enlaces al Portal de Transparencia de Majadahonda:
+  - órganos de gobierno municipal;
+  - estructura organizativa;
+  - legislatura 2023-2027;
+  - información general de órganos de gobierno;
+  - acuerdos y decretos de organización.
 
 Pendiente:
 
