@@ -117,6 +117,7 @@ export type VoteItemType = "motion" | "amendment" | "agreement" | "ordinance" | 
 export type GuidedProcessType =
   | "import_plenary_agenda"
   | "import_committee_call"
+  | "import_transparency_portal"
   | "register_motion"
   | "register_institutional_request"
   | "import_minutes"
@@ -145,6 +146,60 @@ export type LegislatureDocumentStatus = "uploaded" | "extracting" | "extracted" 
 export type StandingCommitteeType = "standing" | "special" | "accounts" | "other";
 
 export type CommitteeMembershipRole = "chair" | "vice_chair" | "member" | "substitute";
+
+export type SystemLockStatus = "active" | "released" | "expired";
+
+export type TransparencyImportJobStatus =
+  | "pending"
+  | "crawling"
+  | "downloaded"
+  | "extracted"
+  | "needs_review"
+  | "applied"
+  | "failed"
+  | "cancelled";
+
+export type TransparencyImportSourceType = "page" | "pdf" | "docx" | "xlsx" | "videoacta" | "external_link" | "unknown";
+
+export type TransparencyImportCategory =
+  | "pleno"
+  | "composicion_pleno"
+  | "grupos_municipales"
+  | "comisiones"
+  | "junta_gobierno"
+  | "areas_gobierno"
+  | "organigrama"
+  | "delegaciones"
+  | "convocatorias"
+  | "actas"
+  | "mociones"
+  | "videoactas"
+  | "otros";
+
+export type TransparencyImportSourceStatus = "discovered" | "downloaded" | "parsed" | "failed" | "ignored";
+
+export type TransparencyImportEntityType =
+  | "municipal_corporation_member"
+  | "municipal_group"
+  | "government_area"
+  | "delegated_councillor"
+  | "standing_committee"
+  | "committee_membership"
+  | "plenary_regular_schedule"
+  | "committee_regular_schedule"
+  | "plenary_session"
+  | "committee_session"
+  | "government_board_member"
+  | "motion"
+  | "vote"
+  | "video_minutes"
+  | "document_reference";
+
+export type TransparencyImportStagingStatus = "extracted" | "matched" | "needs_review" | "approved" | "rejected" | "applied";
+
+export type TransparencyImportChangeType = "create" | "update" | "deactivate" | "no_change" | "conflict";
+
+export type TransparencyImportDiffStatus = "pending_review" | "approved" | "rejected" | "applied";
 
 export type Alert = {
   id: string;
@@ -466,6 +521,90 @@ export type CommitteeRegularSchedule = {
   exceptions: unknown[];
   source_document_id: string | null;
   active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SystemLock = {
+  id: string;
+  organization_id: string;
+  lock_type: string;
+  reason: string;
+  process_run_id: string | null;
+  created_by: string | null;
+  created_at: string;
+  expires_at: string;
+  released_at: string | null;
+  status: SystemLockStatus;
+};
+
+export type TransparencyImportJob = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  process_run_id: string | null;
+  source_url: string;
+  status: TransparencyImportJobStatus;
+  started_by: string | null;
+  started_at: string;
+  finished_at: string | null;
+  error_message: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TransparencyImportSource = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  job_id: string;
+  url: string;
+  title: string | null;
+  source_type: TransparencyImportSourceType;
+  category: TransparencyImportCategory;
+  status: TransparencyImportSourceStatus;
+  document_id: string | null;
+  checksum: string | null;
+  discovered_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TransparencyImportStaging = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  job_id: string;
+  source_id: string | null;
+  entity_type: TransparencyImportEntityType;
+  extracted_data: Record<string, unknown>;
+  matched_existing_table: string | null;
+  matched_existing_id: string | null;
+  confidence: number | null;
+  status: TransparencyImportStagingStatus;
+  review_notes: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  applied_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TransparencyImportDiff = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  job_id: string;
+  staging_id: string | null;
+  target_table: string;
+  target_id: string | null;
+  change_type: TransparencyImportChangeType;
+  current_data: Record<string, unknown>;
+  proposed_data: Record<string, unknown>;
+  diff_summary: string | null;
+  risk_level: OperationalPriority;
+  status: TransparencyImportDiffStatus;
   created_at: string;
   updated_at: string;
 };

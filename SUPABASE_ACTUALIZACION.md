@@ -2,7 +2,7 @@
 
 ## Estado
 
-La aplicación necesita tener aplicadas las migraciones `0003` a `0013` para que funcionen correctamente:
+La aplicación necesita tener aplicadas las migraciones `0003` a `0015` para que funcionen correctamente:
 
 - configuración documental;
 - documentos base requeridos;
@@ -15,6 +15,7 @@ La aplicación necesita tener aplicadas las migraciones `0003` a `0013` para que
 - núcleo operativo de alertas, tareas, calendario institucional y procesos.
 - procesos guiados y registro en `process_runs`.
 - configuración de legislatura, documentos iniciales, composición municipal, grupos, áreas, comisiones y calendario ordinario base.
+- importador del Portal de Transparencia, staging de datos, diferencias y locks temporales.
 
 ## Cómo ejecutarlo
 
@@ -62,6 +63,14 @@ supabase/migrations/0013_legislature_configuration.sql
 ```
 
 17. Ejecutar y esperar confirmación correcta.
+18. Crear otra query nueva.
+19. Abrir y copiar el contenido de:
+
+```text
+supabase/migrations/0015_transparency_portal_import.sql
+```
+
+20. Ejecutar y esperar confirmación correcta.
 
 ## Por qué son dos pasos
 
@@ -100,6 +109,12 @@ Comprobar en Supabase que existen estas tablas o columnas:
 - `committee_memberships`
 - `plenary_regular_schedule`
 - `committee_regular_schedule`
+- `system_locks`
+- `transparency_import_jobs`
+- `transparency_import_sources`
+- `transparency_import_staging`
+- `transparency_import_diffs`
 - columnas `source_key` y `expires_at` en `municipal_indicators`
+- columna `checksum` en `document_files`
 
 Después, la aplicación podrá usar el catálogo de datos, fuentes, caducidades y el núcleo operativo persistente.

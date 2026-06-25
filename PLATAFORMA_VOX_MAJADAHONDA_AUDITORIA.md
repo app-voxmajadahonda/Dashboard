@@ -16,6 +16,8 @@ Actualizacion de fuentes oficiales de legislatura incorporada el 24 de junio de 
 
 Actualizacion de ciclo electoral municipal incorporada el 25 de junio de 2026: se crea `lib/municipal-election-cycle.ts` para calcular elecciones municipales conforme a la regla del cuarto domingo de mayo y constitucion de la corporacion el vigesimo dia posterior segun LOREG. La pantalla `/admin/legislature` muestra los ciclos 2023, 2027 y 2031 y advierte que, con la regla vigente, 2027 corresponde al 23/05/2027 y 12/06/2027, no al 30/05/2027 y 19/06/2027.
 
+Actualizacion de importador del Portal de Transparencia incorporada el 25 de junio de 2026: se anade `0015_transparency_portal_import.sql`, el proceso guiado `import_transparency_portal`, `system_locks`, tablas de jobs/fuentes/staging/diffs, formulario de importacion en `/admin/legislature`, crawler limitado al dominio `transparencia.majadahonda.org` y ruta de revision `/admin/legislature/transparency-imports/[jobId]`. La aplicacion definitiva de cambios queda bloqueada en esta fase y requiere una iteracion posterior.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma
@@ -70,6 +72,7 @@ La plataforma ya tiene una base funcional desplegable:
 - Formularios estructurados de legislatura para completar manualmente el marco institucional sin depender todavia de OCR, IA o conectores externos.
 - Fuentes oficiales de legislatura visibles desde `/admin/legislature` para facilitar carga y validacion manual de datos institucionales.
 - Calculo normativo del ciclo electoral municipal visible desde `/admin/legislature`.
+- Importador guiado del Portal de Transparencia de Majadahonda con staging revisable y bloqueo temporal de configuracion de legislatura.
 
 El producto todavia esta en fase MVP ampliado. La mayor parte de los procesos politicos estan disenados o preparados, pero no implementados como flujos completos con estados, responsables, fichas individuales, automatizaciones, conectores oficiales o analisis documental real.
 
@@ -163,6 +166,7 @@ Rutas principales:
 | `/admin/config` | Configuracion municipal, fuentes, documentos e indicadores. |
 | `/admin/users` | Alta de usuarios y roles. |
 | `/admin/legislature` | Configuracion de legislatura, documentos iniciales, revision humana, composicion municipal y calendario base. |
+| `/admin/legislature/transparency-imports/[jobId]` | Revision de fuentes, staging y diferencias generadas por importacion del portal de transparencia. |
 
 ### Backend
 
@@ -322,6 +326,11 @@ Supabase
   |     |-- committee_memberships
   |     |-- plenary_regular_schedule
   |     |-- committee_regular_schedule
+  |     |-- system_locks
+  |     |-- transparency_import_jobs
+  |     |-- transparency_import_sources
+  |     |-- transparency_import_staging
+  |     |-- transparency_import_diffs
   |     |-- data_sources
   |     |-- cached_external_data
   |     |-- audit_log
@@ -1589,6 +1598,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 | `GuidedProcessForms` | Procesos guiados para importar ordenes del dia de Pleno y convocatorias de comision. |
 | `LegislatureForms` | Configuracion de legislatura: crear mandato, subir documentos, revisar datos, validar documentos, formularios institucionales, activar legislatura y generar calendario. |
 | `LogoUploadForm` | Carga del logo del grupo municipal en Supabase Storage. |
+| `TransparencyImportReviewActions` | Acciones de aprobacion, rechazo, cancelacion y aplicacion bloqueada de importaciones del portal. |
 
 ### Componentes de aplicacion
 
@@ -1638,6 +1648,8 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Formularios estructurados para crear o sobrescribir datos de concejales, grupos, areas, delegaciones, comisiones, miembros y reglas ordinarias.
 - Activacion de legislatura bloqueada por requisitos minimos obligatorios.
 - Generacion de calendario institucional para plenos y comisiones con rango configurable.
+- Inicio de importacion desde Portal de Transparencia con confirmacion escrita y bloqueo temporal.
+- Exploracion limitada de URLs, clasificacion de fuentes, descarga documental controlada, staging y pantalla de revision.
 - Auditoria basica de acciones.
 - RLS inicial.
 
@@ -1656,6 +1668,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 - Formularios operativos: permiten crear alertas, tareas y eventos, pero aun no cubren plenos, mociones, solicitudes y votaciones.
 - Procesos guiados: cubren Pleno y comision, pero falta historial visible y resto de procesos politicos.
 - Configuracion de legislatura: ya tiene formularios estructurados, pero la edicion de registros existentes no precarga valores y la revision documental automatica sigue pendiente.
+- Importador del Portal de Transparencia: existe V1 revisable, pero no aplica cambios definitivos y no usa aun OCR/IA.
 
 ### Solo disenado
 
@@ -1682,7 +1695,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 - Normalizar entidades politicas y administrativas.
 - Implementar conectores oficiales.
-- Aplicar en Supabase las migraciones `0011_operational_core.sql`, `0012_guided_process_runs.sql` y `0013_legislature_configuration.sql` si no estan ya aplicadas.
+- Aplicar en Supabase las migraciones `0011_operational_core.sql`, `0012_guided_process_runs.sql`, `0013_legislature_configuration.sql` y `0015_transparency_portal_import.sql` si no estan ya aplicadas.
 - Completar formularios/importadores de procesos reales.
 - Sustituir datos mock por datos reales.
 - Disenar flujos de validacion.
@@ -1697,7 +1710,7 @@ No existe todavia modelo de expedientes ni relacion formal. Los documentos puede
 
 Prioridad recomendada:
 
-1. Aplicar las migraciones `0011`, `0012` y `0013` en Supabase si no estan ya aplicadas.
+1. Aplicar las migraciones `0011`, `0012`, `0013` y `0015` en Supabase si no estan ya aplicadas.
 2. Completar formularios estructurados de revision de legislatura para sustituir JSON libre.
 3. Consolidar permisos y matriz de roles.
 4. Crear acciones de cambio de estado y cierre de alertas/tareas.

@@ -669,6 +669,40 @@ Pendiente:
 - Crear vistas de historial de `process_runs`.
 - Permitir asignar tareas generadas a distintos responsables por tarea.
 
+### Importar desde Portal de Transparencia
+
+**Estado:** En desarrollo
+
+Primera versión implementada:
+
+- Migración `0015_transparency_portal_import.sql`.
+- Nuevo tipo de proceso `import_transparency_portal`.
+- Tablas `system_locks`, `transparency_import_jobs`, `transparency_import_sources`, `transparency_import_staging` y `transparency_import_diffs`.
+- Columna `checksum` en `document_files` para evitar duplicados documentales.
+- Formulario en `/admin/legislature` para iniciar importación desde `https://transparencia.majadahonda.org/`.
+- Confirmación escrita obligatoria: `IMPORTAR PORTAL DE TRANSPARENCIA`.
+- Bloqueo temporal de configuración de legislatura durante la importación.
+- Crawler limitado a Majadahonda:
+  - dominio permitido: `transparencia.majadahonda.org`;
+  - profundidad máxima: 3;
+  - máximo inicial: 80 URLs;
+  - máximo inicial: 20 documentos;
+  - tamaño máximo por documento: 8 MB.
+- Clasificación básica de fuentes: Pleno, grupos, comisiones, Junta de Gobierno, áreas, organigrama, delegaciones, convocatorias, actas, mociones, videoactas y otros.
+- Descarga de documentos pequeños/relevantes a Supabase Storage cuando procede.
+- Creación de staging y diffs pendientes de revisión humana.
+- Nueva ruta `/admin/legislature/transparency-imports/[jobId]` para revisar fuentes, datos extraídos y diferencias.
+- Acciones de aprobación/rechazo de staging.
+- Aplicación definitiva de cambios bloqueada por diseño en esta fase.
+
+Pendiente:
+
+- Convertir aprobaciones en aplicación controlada sobre tablas definitivas.
+- Mejorar comparación con datos actuales.
+- Añadir edición de datos extraídos antes de aprobar.
+- Añadir extracción IA cuando exista `OPENAI_API_KEY`.
+- Ejecutar realmente en segundo plano con cola o worker externo.
+
 ## 24. Configuración de legislatura
 
 **Estado:** En desarrollo

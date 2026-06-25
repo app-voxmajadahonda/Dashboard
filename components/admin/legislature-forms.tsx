@@ -21,6 +21,14 @@ type LegislatureDocument = {
   reviewed_data: Record<string, unknown>;
 };
 
+type TransparencyImportJobSummary = {
+  id: string;
+  status: string;
+  source_url: string;
+  created_at: string;
+  metadata: Record<string, unknown>;
+};
+
 async function submitForm(form: HTMLFormElement) {
   const response = await fetch("/api/admin/legislature", {
     method: "POST",
@@ -33,6 +41,20 @@ async function submitForm(form: HTMLFormElement) {
   }
 
   return payload?.message ?? "Guardado correctamente.";
+}
+
+async function submitTransparencyImport(form: HTMLFormElement) {
+  const response = await fetch("/api/admin/transparency-imports", {
+    method: "POST",
+    body: new FormData(form)
+  });
+  const payload = (await response.json().catch(() => null)) as { message?: string; error?: string } | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "No se ha podido iniciar la importación.");
+  }
+
+  return payload?.message ?? "Importación iniciada.";
 }
 
 function useSubmitState() {
@@ -166,6 +188,94 @@ export function CreateLegislatureForm() {
         <CalendarPlus size={17} />
         {state.saving ? "Creando..." : "Crear legislatura"}
       </button>
+    </form>
+  );
+}
+
+export function TransparencyPortalImportForm({
+  defaultUrl,
+  disabled,
+  job,
+  legislatureId
+}: {
+  defaultUrl: string;
+  disabled: boolean;
+  job: TransparencyImportJobSummary | null;
+  legislatureId: string | null;
+}) {
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage(null);
+    setError(null);
+    setSaving(true);
+
+    try {
+      setMessage(await submitTransparencyImport(event.currentTarget));
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "No se ha podido iniciar la importación.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const sourcesDiscovered =
+    typeof job?.metadata?.sourcesDiscovered === "number" ? job.metadata.sourcesDiscovered : null;
+  const stagingItems = typeof job?.metadata?.stagingItems === "number" ? job.metadata.stagingItems : null;
+  const downloadedDocuments =
+    typeof job?.metadata?.downloadedDocuments === "number" ? job.metadata.downloadedDocuments : null;
+
+  return (
+    <form className="admin-form two-column-form" onSubmit={handleSubmit}>
+      <input name="legislatureId" type="hidden" value={legislatureId ?? ""} />
+      <FormFeedback error={error} message={message} />
+      <div className="critical-warning form-wide">
+        Este proceso puede detectar cambios en Pleno, grupos, concejales, áreas, delegaciones, comisiones, calendario,
+        actas, mociones y documentos. Nada se aplicará definitivamente sin revisión humana.
+      </div>
+      <label>
+        URL del portal
+        <input defaultValue={defaultUrl} disabled={disabled || !legislatureId} name="sourceUrl" required type="url" />
+      </label>
+      <label>
+        Modo
+        <select defaultValue="explore_only" disabled={disabled || !legislatureId} name="mode">
+          <option value="explore_only">Exploración solamente</option>
+          <option value="draft_import">Importar a borrador</option>
+          <option value="compare_current">Comparar con datos actuales</option>
+        </select>
+      </label>
+      <label className="form-wide">
+        Confirmación obligatoria
+        <input
+          disabled={disabled || !legislatureId}
+          name="confirmation"
+          placeholder="Escribe IMPORTAR PORTAL DE TRANSPARENCIA"
+          required
+        />
+      </label>
+      <button className="button primary form-fit" disabled={disabled || !legislatureId || saving} type="submit">
+        <FileUp size={17} />
+        {saving ? "Importando..." : "Iniciar importación"}
+      </button>
+      {job ? (
+        <div className="status-list form-wide">
+          <div className="status-item">
+            <div>
+              <div className="status-title">Última importación</div>
+              <div className="status-meta">
+                {job.status} · fuentes {sourcesDiscovered ?? "-"} · documentos {downloadedDocuments ?? "-"} · datos {stagingItems ?? "-"}
+              </div>
+            </div>
+            <a className="button" href={`/admin/legislature/transparency-imports/${job.id}`}>
+              Ir a revisión
+            </a>
+          </div>
+        </div>
+      ) : null}
     </form>
   );
 }

@@ -77,6 +77,7 @@ Endpoints de salud:
 /admin/config Configuración del municipio, fuentes y documentación base
 /admin/users Gestión de usuarios y roles
 /admin/legislature Configuración de legislatura, documentos base, revisión y calendario ordinario
+/admin/legislature/transparency-imports/[jobId] Revisión de importaciones desde portal de transparencia
 /api/concejal/observations Observaciones internas de concejales
 ```
 
@@ -122,6 +123,7 @@ supabase/migrations/0010_data_catalog.sql
 supabase/migrations/0011_operational_core.sql
 supabase/migrations/0012_guided_process_runs.sql
 supabase/migrations/0013_legislature_configuration.sql
+supabase/migrations/0015_transparency_portal_import.sql
 ```
 
 Las migraciones crean:
@@ -151,6 +153,7 @@ Las migraciones crean:
 - Procesos guiados registrados en `process_runs` para importar ordenes del dia de Pleno y convocatorias de comision.
 - Configuración de legislatura: mandato, documentos iniciales, composición municipal, grupos, áreas, delegaciones, comisiones, miembros, reglas ordinarias y calendario institucional base con revisión humana.
 - Cálculo de ciclo electoral municipal conforme a LOREG: cuarto domingo de mayo y constitución el vigésimo día posterior.
+- Importador guiado del Portal de Transparencia de Majadahonda con bloqueo temporal, fuentes localizadas, staging de datos y revisión humana.
 
 Para actualizar el Supabase ya desplegado, ver [SUPABASE_ACTUALIZACION.md](./SUPABASE_ACTUALIZACION.md).
 
@@ -195,3 +198,4 @@ Las rutas de servidor comparten helpers de autenticación y lectura de formulari
 7. Crear revisión humana de extracciones.
 8. Aplicar `0013_legislature_configuration.sql` y completar la configuración inicial de legislatura desde `/admin/legislature`.
 9. Sustituir progresivamente la revisión JSON de documentos por formularios de revisión asistida y extracción documental real.
+10. Aplicar `0015_transparency_portal_import.sql` antes de usar el importador desde Portal de Transparencia.

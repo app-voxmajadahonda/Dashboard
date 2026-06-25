@@ -16,6 +16,7 @@ import {
   ReviewLegislatureDocumentForm,
   StandingCommitteeForm,
   CommitteeScheduleForm,
+  TransparencyPortalImportForm,
   ValidateLegislatureDocumentForm,
   ValidateLegislatureForm
 } from "@/components/admin/legislature-forms";
@@ -136,7 +137,9 @@ export default async function LegislatureConfigurationPage() {
     { data: memberships },
     { data: plenarySchedules },
     { data: committeeSchedules },
-    { data: generatedCalendarEvents }
+    { data: generatedCalendarEvents },
+    { data: activeLock },
+    { data: transparencyJobs }
   ] = await Promise.all([
     adminClient
       .from("legislatures")
@@ -196,7 +199,21 @@ export default async function LegislatureConfigurationPage() {
       .from("calendar_events")
       .select("id")
       .eq("organization_id", context.organization.id)
-      .in("event_type", ["pleno", "comision"])
+      .in("event_type", ["pleno", "comision"]),
+    adminClient
+      .from("system_locks")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .eq("lock_type", "legislature_configuration")
+      .eq("status", "active")
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle(),
+    adminClient
+      .from("transparency_import_jobs")
+      .select("*")
+      .eq("organization_id", context.organization.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
   ]);
 
   const allLegislatures = (legislatures ?? []) as Legislature[];
@@ -241,6 +258,14 @@ export default async function LegislatureConfigurationPage() {
     ["Calendario generado", (generatedCalendarEvents ?? []).length > 0],
     ["Legislatura activa", activeLegislature?.status === "active"]
   ] as const;
+  const latestTransparencyJob = (transparencyJobs?.[0] ?? null) as {
+    id: string;
+    status: string;
+    source_url: string;
+    created_at: string;
+    metadata: Record<string, unknown>;
+  } | null;
+  const legislatureLocked = Boolean(activeLock);
 
   return (
     <div className="private-shell">
@@ -294,6 +319,15 @@ export default async function LegislatureConfigurationPage() {
             ))}
           </div>
         </section>
+
+        {legislatureLocked ? (
+          <section className="panel">
+            <div className="critical-warning">
+              Importación institucional en curso. La configuración de legislatura está bloqueada temporalmente hasta que
+              finalice o expire el bloqueo de seguridad.
+            </div>
+          </section>
+        ) : null}
 
         <section className="private-dashboard-grid">
           <article className="panel">
@@ -349,6 +383,22 @@ export default async function LegislatureConfigurationPage() {
               </article>
             ))}
           </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Importar desde Portal de Transparencia</h2>
+              <p>Exploración controlada del portal municipal para localizar fuentes, documentos y datos institucionales.</p>
+            </div>
+            <FileText size={20} />
+          </div>
+          <TransparencyPortalImportForm
+            defaultUrl="https://transparencia.majadahonda.org/"
+            disabled={legislatureLocked}
+            job={latestTransparencyJob}
+            legislatureId={activeLegislature?.id ?? null}
+          />
         </section>
 
         <section className="panel">
