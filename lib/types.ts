@@ -608,3 +608,23 @@ export type TransparencyImportDiff = {
   created_at: string;
   updated_at: string;
 };
+
+export type LegislatureChangeLog = {
+  id: string;
+  organization_id: string;
+  legislature_id: string;
+  import_job_id: string | null;
+  staging_id: string | null;
+  entity_type: string;
+  target_table: string;
+  target_id: string | null;
+  change_type: TransparencyImportChangeType;
+  old_data: Record<string, unknown>;
+  new_data: Record<string, unknown>;
+  source_url: string | null;
+  effective_date: string;
+  applied_by: string | null;
+  applied_at: string;
+  notes: string | null;
+  created_at: string;
+};

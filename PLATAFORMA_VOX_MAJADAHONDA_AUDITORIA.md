@@ -22,6 +22,8 @@ Actualizacion de experiencia de configuracion de legislatura incorporada el 25 d
 
 Actualizacion del flujo de importacion del Portal de Transparencia incorporada el 25 de junio de 2026: el formulario de `/admin/legislature` elimina el selector tecnico de modo y la confirmacion escrita. El flujo queda como URL editable, boton de inicio, ventana modal de confirmacion, barra de progreso durante el escaneo y ventana final con acceso a la revision de datos extraidos. El backend acepta la URL indicada y limita el crawler al mismo dominio de esa URL, preparando el uso futuro multi-municipio.
 
+Actualizacion de revision y aplicacion de cambios de legislatura incorporada el 26 de junio de 2026: se anade `0016_legislature_change_log.sql` para trazabilidad historica de cambios institucionales dentro de una legislatura. La pantalla `/admin/legislature/transparency-imports/[jobId]` pasa a mostrar datos actuales frente a datos detectados, permite aprobar/rechazar/aplicar cambios individuales y registra fecha, usuario, dato anterior, dato nuevo, fuente y entidad afectada. La aplicacion automatica queda limitada a entidades institucionales soportadas y con campos suficientes.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma

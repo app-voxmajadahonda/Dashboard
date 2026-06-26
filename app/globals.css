@@ -3416,6 +3416,61 @@ tr:last-child td {
   padding: 14px;
 }
 
+.import-review-card {
+  gap: 16px;
+}
+
+.source-link {
+  color: var(--brand-dark);
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+.comparison-table {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  overflow: hidden;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr 1fr;
+}
+
+.comparison-row > * {
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+}
+
+.comparison-row > * + * {
+  border-left: 1px solid var(--border);
+}
+
+.comparison-row:last-child > * {
+  border-bottom: 0;
+}
+
+.comparison-head {
+  background: var(--surface-soft);
+  color: var(--brand-dark);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.comparison-row strong {
+  color: var(--brand-dark);
+  font-weight: 900;
+}
+
 .review-card header {
   align-items: flex-start;
   display: flex;

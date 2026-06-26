@@ -19,9 +19,11 @@ async function submitReview(form: HTMLFormElement) {
 }
 
 export function TransparencyImportReviewActions({
+  applyOnly,
   jobId,
   stagingId
 }: {
+  applyOnly?: boolean;
   jobId: string;
   stagingId?: string;
 }) {
@@ -50,13 +52,21 @@ export function TransparencyImportReviewActions({
       {stagingId ? <input name="stagingId" type="hidden" value={stagingId} /> : null}
       {stagingId ? (
         <>
-          <button className="button primary" disabled={saving} name="action" type="submit" value="approve-staging">
+          {applyOnly ? null : (
+            <>
+              <button className="button primary" disabled={saving} name="action" type="submit" value="approve-staging">
+                <CheckCircle2 size={16} />
+                Aprobar
+              </button>
+              <button className="button" disabled={saving} name="action" type="submit" value="reject-staging">
+                <XCircle size={16} />
+                Rechazar
+              </button>
+            </>
+          )}
+          <button className={applyOnly ? "button primary" : "button"} disabled={saving} name="action" type="submit" value="apply-staging">
             <CheckCircle2 size={16} />
-            Aprobar
-          </button>
-          <button className="button" disabled={saving} name="action" type="submit" value="reject-staging">
-            <XCircle size={16} />
-            Rechazar
+            Aplicar cambio
           </button>
         </>
       ) : (
