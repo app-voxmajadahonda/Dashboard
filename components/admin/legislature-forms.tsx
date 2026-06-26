@@ -66,15 +66,16 @@ function useSubmitState() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setMessage(null);
     setError(null);
     setSaving(true);
 
     try {
-      const nextMessage = await submitForm(event.currentTarget);
+      const nextMessage = await submitForm(form);
       setMessage(nextMessage);
-      if (event.currentTarget.dataset.reset === "true") {
-        event.currentTarget.reset();
+      if (form.dataset.reset === "true") {
+        form.reset();
       }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "No se ha podido guardar.");
