@@ -10,8 +10,6 @@ import type {
   TransparencyImportSourceType
 } from "@/lib/types";
 
-const CONFIRMATION = "IMPORTAR PORTAL DE TRANSPARENCIA";
-const ALLOWED_HOST = "transparencia.majadahonda.org";
 const MAX_DEPTH = 3;
 const MAX_URLS = 80;
 const MAX_DOCUMENTS = 20;
@@ -232,6 +230,7 @@ async function runCrawler({
   userId: string;
 }) {
   const adminClient = getSupabaseAdminClient();
+  const allowedHost = new URL(sourceUrl).hostname;
   const queue: Array<{ url: string; depth: number }> = [{ url: sourceUrl, depth: 0 }];
   const visited = new Set<string>();
   const sourceRows: Array<Record<string, unknown>> = [];
@@ -244,7 +243,7 @@ async function runCrawler({
     visited.add(item.url);
 
     const url = new URL(item.url);
-    if (url.hostname !== ALLOWED_HOST) continue;
+    if (url.hostname !== allowedHost) continue;
 
     try {
       const response = await fetch(item.url, {
@@ -296,7 +295,7 @@ async function runCrawler({
         if (item.depth < MAX_DEPTH) {
           for (const link of links) {
             const normalized = normalizeUrl(link, item.url);
-            if (normalized && new URL(normalized).hostname === ALLOWED_HOST && !visited.has(normalized)) {
+            if (normalized && new URL(normalized).hostname === allowedHost && !visited.has(normalized)) {
               queue.push({ url: normalized, depth: item.depth + 1 });
             }
           }
@@ -458,8 +457,7 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const sourceUrl = textValue(formData, "sourceUrl") || "https://transparencia.majadahonda.org/";
   const legislatureId = textValue(formData, "legislatureId");
-  const mode = textValue(formData, "mode") || "explore_only";
-  const confirmation = textValue(formData, "confirmation");
+  const mode = textValue(formData, "mode") || "draft_import";
   const adminClient = getSupabaseAdminClient();
 
   try {
@@ -467,13 +465,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Falta la legislatura destino." }, { status: 400 });
     }
 
-    if (confirmation !== CONFIRMATION) {
-      return NextResponse.json({ error: `Debes escribir exactamente: ${CONFIRMATION}` }, { status: 400 });
-    }
-
     const url = new URL(sourceUrl);
-    if (url.hostname !== ALLOWED_HOST) {
-      return NextResponse.json({ error: `Por seguridad, esta primera version solo admite ${ALLOWED_HOST}.` }, { status: 400 });
+    if (!["http:", "https:"].includes(url.protocol)) {
+      return NextResponse.json({ error: "La URL del portal debe empezar por http o https." }, { status: 400 });
     }
 
     const { data: activeLock } = await adminClient

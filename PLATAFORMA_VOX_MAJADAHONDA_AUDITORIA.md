@@ -20,6 +20,8 @@ Actualizacion de importador del Portal de Transparencia incorporada el 25 de jun
 
 Actualizacion de experiencia de configuracion de legislatura incorporada el 25 de junio de 2026: `/admin/legislature` deja de funcionar como formulario extenso y pasa a organizarse como proceso guiado. La parte superior muestra legislaturas registradas con la actual resaltada y detalle en ventana superpuesta; debajo queda el importador del Portal de Transparencia; y finalmente aparecen datos consolidados de la legislatura activa con correcciones manuales agrupadas en desplegables. Se anade navegacion contextual reutilizable con migas de ruta en dashboard, configuracion, legislatura, usuarios y mi ficha.
 
+Actualizacion del flujo de importacion del Portal de Transparencia incorporada el 25 de junio de 2026: el formulario de `/admin/legislature` elimina el selector tecnico de modo y la confirmacion escrita. El flujo queda como URL editable, boton de inicio, ventana modal de confirmacion, barra de progreso durante el escaneo y ventana final con acceso a la revision de datos extraidos. El backend acepta la URL indicada y limita el crawler al mismo dominio de esa URL, preparando el uso futuro multi-municipio.
+
 ## 1. Resumen ejecutivo
 
 ### Objetivo de la plataforma

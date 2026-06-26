@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { FormEvent } from "react";
 import { useState } from "react";
@@ -48,15 +48,17 @@ async function submitTransparencyImport(form: HTMLFormElement) {
     method: "POST",
     body: new FormData(form)
   });
-  const payload = (await response.json().catch(() => null)) as { message?: string; error?: string } | null;
+  const payload = (await response.json().catch(() => null)) as { jobId?: string; message?: string; error?: string } | null;
 
   if (!response.ok) {
-    throw new Error(payload?.error ?? "No se ha podido iniciar la importación.");
+    throw new Error(payload?.error ?? "No se ha podido iniciar la importacion.");
   }
 
-  return payload?.message ?? "Importación iniciada.";
+  return {
+    jobId: payload?.jobId ?? null,
+    message: payload?.message ?? "Importacion finalizada y pendiente de revision."
+  };
 }
-
 function useSubmitState() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +135,7 @@ function MemberSelect({
 function CommitteeSelect({ committees, name, required }: { committees: StandingCommittee[]; name: string; required?: boolean }) {
   return (
     <select name={name} required={required}>
-      <option value="">Seleccionar comisión</option>
+      <option value="">Seleccionar comisiÃ³n</option>
       {committees.map((committee) => (
         <option key={committee.id} value={committee.id}>
           {committee.name}
@@ -146,7 +148,7 @@ function CommitteeSelect({ committees, name, required }: { committees: StandingC
 function AreaSelect({ areas, name }: { areas: GovernmentArea[]; name: string }) {
   return (
     <select name={name}>
-      <option value="">Sin área</option>
+      <option value="">Sin Ã¡rea</option>
       {areas.map((area) => (
         <option key={area.id} value={area.id}>
           {area.name}
@@ -206,18 +208,45 @@ export function TransparencyPortalImportForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [completedJobId, setCompletedJobId] = useState<string | null>(null);
+  const [pendingForm, setPendingForm] = useState<HTMLFormElement | null>(null);
+  const [progressStep, setProgressStep] = useState("Preparado para escanear el portal.");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setPendingForm(event.currentTarget);
+    setConfirming(true);
+  }
+
+  async function runImport() {
+    if (!pendingForm) return;
+
+    setConfirming(false);
     setMessage(null);
     setError(null);
+    setCompletedJobId(null);
     setSaving(true);
+    setProgressStep("Conectando con el portal de transparencia...");
+
+    const progressTimer = window.setInterval(() => {
+      setProgressStep((current) => {
+        if (current.includes("Conectando")) return "Localizando paginas institucionales y documentos.";
+        if (current.includes("Localizando")) return "Clasificando fuentes de legislatura, grupos, areas y comisiones.";
+        if (current.includes("Clasificando")) return "Preparando resumen para revision del portavoz.";
+        return current;
+      });
+    }, 2200);
 
     try {
-      setMessage(await submitTransparencyImport(event.currentTarget));
+      const result = await submitTransparencyImport(pendingForm);
+      setCompletedJobId(result.jobId);
+      setProgressStep("Escaneo finalizado. Revisa el resumen antes de importar datos definitivos.");
+      setMessage(result.message);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "No se ha podido iniciar la importación.");
+      setError(submitError instanceof Error ? submitError.message : "No se ha podido iniciar la importacion.");
     } finally {
+      window.clearInterval(progressTimer);
       setSaving(false);
     }
   }
@@ -229,57 +258,98 @@ export function TransparencyPortalImportForm({
     typeof job?.metadata?.downloadedDocuments === "number" ? job.metadata.downloadedDocuments : null;
 
   return (
-    <form className="admin-form two-column-form" onSubmit={handleSubmit}>
+    <form className="admin-form transparency-import-form" onSubmit={handleSubmit}>
       <input name="legislatureId" type="hidden" value={legislatureId ?? ""} />
+      <input name="mode" type="hidden" value="draft_import" />
       <FormFeedback error={error} message={message} />
       <div className="critical-warning form-wide">
-        Este proceso puede detectar cambios en Pleno, grupos, concejales, áreas, delegaciones, comisiones, calendario,
-        actas, mociones y documentos. Nada se aplicará definitivamente sin revisión humana.
+        Este proceso revisa el Portal de Transparencia para detectar legislatura, Pleno, grupos, concejales, areas,
+        delegaciones, comisiones, calendario, actas, mociones y documentos. El resultado se revisa antes de consolidarlo.
       </div>
       <label>
-        URL del portal
-        <input defaultValue={defaultUrl} disabled={disabled || !legislatureId} name="sourceUrl" required type="url" />
-      </label>
-      <label>
-        Modo
-        <select defaultValue="explore_only" disabled={disabled || !legislatureId} name="mode">
-          <option value="explore_only">Exploración solamente</option>
-          <option value="draft_import">Importar a borrador</option>
-          <option value="compare_current">Comparar con datos actuales</option>
-        </select>
-      </label>
-      <label className="form-wide">
-        Confirmación obligatoria
-        <input
-          disabled={disabled || !legislatureId}
-          name="confirmation"
-          placeholder="Escribe IMPORTAR PORTAL DE TRANSPARENCIA"
-          required
-        />
+        URL del portal de transparencia
+        <input defaultValue={defaultUrl} disabled={disabled || !legislatureId || saving} name="sourceUrl" required type="url" />
       </label>
       <button className="button primary form-fit" disabled={disabled || !legislatureId || saving} type="submit">
         <FileUp size={17} />
-        {saving ? "Importando..." : "Iniciar importación"}
+        {saving ? "Escaneando..." : "Iniciar importacion"}
       </button>
+      {saving ? (
+        <div className="transparency-progress form-wide">
+          <div>
+            <strong>{progressStep}</strong>
+            <span>El proceso puede tardar unos segundos mientras revisa paginas y documentos del portal.</span>
+          </div>
+          <i>
+            <span />
+          </i>
+        </div>
+      ) : null}
       {job ? (
         <div className="status-list form-wide">
           <div className="status-item">
             <div>
-              <div className="status-title">Última importación</div>
+              <div className="status-title">Ultima importacion</div>
               <div className="status-meta">
                 {job.status} · fuentes {sourcesDiscovered ?? "-"} · documentos {downloadedDocuments ?? "-"} · datos {stagingItems ?? "-"}
               </div>
             </div>
             <a className="button" href={`/admin/legislature/transparency-imports/${job.id}`}>
-              Ir a revisión
+              Ir a revision
             </a>
           </div>
+        </div>
+      ) : null}
+      {confirming ? (
+        <div className="import-flow-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-import-title">
+          <article className="import-flow-card">
+            <h3 id="confirm-import-title">Confirmar escaneo del portal</h3>
+            <p>
+              Se va a revisar la URL indicada para localizar datos de legislatura, composicion del Pleno, grupos,
+              comisiones, areas y documentos institucionales. Nada se consolidara sin revision posterior.
+            </p>
+            <div className="form-actions-row">
+              <button className="button primary" onClick={runImport} type="button">
+                Continuar
+              </button>
+              <button className="button" onClick={() => setConfirming(false)} type="button">
+                Cancelar
+              </button>
+            </div>
+          </article>
+        </div>
+      ) : null}
+      {completedJobId ? (
+        <div className="import-flow-modal" role="dialog" aria-modal="true" aria-labelledby="completed-import-title">
+          <article className="import-flow-card">
+            <h3 id="completed-import-title">Escaneo finalizado</h3>
+            <p>
+              El portal ha sido revisado y se ha preparado un resumen con fuentes, documentos y datos detectados. El
+              siguiente paso es revisar esos datos antes de volcarlos como informacion definitiva.
+            </p>
+            <div className="status-list">
+              <div className="status-item">
+                <div>
+                  <div className="status-title">Resultado</div>
+                  <div className="status-meta">{message ?? "Pendiente de revision humana."}</div>
+                </div>
+                <span className="badge green">Listo</span>
+              </div>
+            </div>
+            <div className="form-actions-row">
+              <a className="button primary" href={`/admin/legislature/transparency-imports/${completedJobId}`}>
+                Revisar datos extraidos
+              </a>
+              <button className="button" onClick={() => setCompletedJobId(null)} type="button">
+                Cerrar
+              </button>
+            </div>
+          </article>
         </div>
       ) : null}
     </form>
   );
 }
-
 export function LegislatureDocumentUploadForm({ legislatureId }: { legislatureId: string | null }) {
   const state = useSubmitState();
 
@@ -291,16 +361,16 @@ export function LegislatureDocumentUploadForm({ legislatureId }: { legislatureId
       <label>
         Tipo de documento
         <select disabled={!legislatureId} name="documentRole" required>
-          <option value="organization_plenary">Pleno de Organización y Funcionamiento</option>
+          <option value="organization_plenary">Pleno de OrganizaciÃ³n y Funcionamiento</option>
           <option value="delegation_decree">Decreto de delegaciones</option>
-          <option value="committee_creation">Acuerdo de creación de comisiones</option>
-          <option value="municipal_group_composition">Composición del Pleno / Grupo Municipal</option>
+          <option value="committee_creation">Acuerdo de creaciÃ³n de comisiones</option>
+          <option value="municipal_group_composition">ComposiciÃ³n del Pleno / Grupo Municipal</option>
           <option value="municipal_rom">ROM municipal</option>
           <option value="other">Otro</option>
         </select>
       </label>
       <label>
-        Título
+        TÃ­tulo
         <input disabled={!legislatureId} name="title" required />
       </label>
       <label>
@@ -335,7 +405,7 @@ export function ReviewLegislatureDocumentForm({ document }: { document: Legislat
       <div className="form-actions-row">
         <button className="button primary" disabled={state.saving} type="submit">
           <Save size={17} />
-          Guardar revisión
+          Guardar revisiÃ³n
         </button>
       </div>
     </form>
@@ -401,7 +471,7 @@ export function GenerateCalendarForm({ legislatureId }: { legislatureId: string 
       <label>
         Alcance
         <select disabled={!legislatureId} name="rangeMode">
-          <option value="current_year">Solo año actual</option>
+          <option value="current_year">Solo aÃ±o actual</option>
           <option value="full_legislature">Toda la legislatura</option>
           <option value="custom">Rango personalizado</option>
         </select>
@@ -495,7 +565,7 @@ export function CorporationMemberForm({
         <input disabled={!legislatureId} name="fullName" required />
       </label>
       <label>
-        Grupo político
+        Grupo polÃ­tico
         <input disabled={!legislatureId} name="politicalGroup" />
       </label>
       <label>
@@ -561,7 +631,7 @@ export function MunicipalGroupForm({ groups, legislatureId }: { groups: Municipa
         <input disabled={!legislatureId} name="deputySpokespersonName" />
       </label>
       <label>
-        Número de concejales
+        NÃºmero de concejales
         <input disabled={!legislatureId} name="councillorsCount" type="number" />
       </label>
       <label>
@@ -573,7 +643,7 @@ export function MunicipalGroupForm({ groups, legislatureId }: { groups: Municipa
         <input disabled={!legislatureId} name="votePercentage" step="0.01" type="number" />
       </label>
       <label>
-        Escaños
+        EscaÃ±os
         <input disabled={!legislatureId} name="seats" type="number" />
       </label>
       <label>
@@ -606,7 +676,7 @@ export function GovernmentAreaForm({
       <FormFeedback error={state.error} message={state.message} />
       <RecordSelect items={areas.map((item) => ({ id: item.id, name: item.name }))} label="Registro" />
       <label>
-        Nombre del área
+        Nombre del Ã¡rea
         <input disabled={!legislatureId} name="name" required />
       </label>
       <label>
@@ -614,17 +684,17 @@ export function GovernmentAreaForm({
         <MemberSelect members={members} name="delegatedCouncillorId" />
       </label>
       <label>
-        Descripción
+        DescripciÃ³n
         <textarea disabled={!legislatureId} name="description" rows={3} />
       </label>
       <label>
         Competencias
-        <textarea disabled={!legislatureId} name="competencies" placeholder="Una competencia por línea" rows={4} />
+        <textarea disabled={!legislatureId} name="competencies" placeholder="Una competencia por lÃ­nea" rows={4} />
       </label>
       <ActiveCheckbox />
       <button className="button primary form-fit" disabled={!legislatureId || state.saving} type="submit">
         <Save size={17} />
-        Guardar área
+        Guardar Ã¡rea
       </button>
     </form>
   );
@@ -654,11 +724,11 @@ export function DelegationForm({
         <MemberSelect members={members} name="councillorId" />
       </label>
       <label>
-        Área
+        Ãrea
         <AreaSelect areas={areas} name="areaId" />
       </label>
       <label>
-        Título de delegación
+        TÃ­tulo de delegaciÃ³n
         <input disabled={!legislatureId} name="delegationTitle" required />
       </label>
       <label>
@@ -680,7 +750,7 @@ export function DelegationForm({
       <ActiveCheckbox />
       <button className="button primary form-fit" disabled={!legislatureId || state.saving} type="submit">
         <Save size={17} />
-        Guardar delegación
+        Guardar delegaciÃ³n
       </button>
     </form>
   );
@@ -715,7 +785,7 @@ export function StandingCommitteeForm({
         </select>
       </label>
       <label>
-        Descripción
+        DescripciÃ³n
         <textarea disabled={!legislatureId} name="description" rows={3} />
       </label>
       <label>
@@ -725,7 +795,7 @@ export function StandingCommitteeForm({
       <ActiveCheckbox />
       <button className="button primary form-fit" disabled={!legislatureId || state.saving} type="submit">
         <Save size={17} />
-        Guardar comisión
+        Guardar comisiÃ³n
       </button>
     </form>
   );
@@ -751,7 +821,7 @@ export function CommitteeMembershipForm({
       <FormFeedback error={state.error} message={state.message} />
       <RecordSelect items={memberships.map((item) => ({ id: item.id, name: `${item.political_group ?? "Miembro"} ${item.role}` }))} label="Registro" />
       <label>
-        Comisión
+        ComisiÃ³n
         <CommitteeSelect committees={committees} name="committeeId" required />
       </label>
       <label>
@@ -759,7 +829,7 @@ export function CommitteeMembershipForm({
         <MemberSelect members={members} name="councillorId" />
       </label>
       <label>
-        Grupo político
+        Grupo polÃ­tico
         <input disabled={!legislatureId} name="politicalGroup" />
       </label>
       <label>
@@ -818,7 +888,7 @@ export function CommitteeScheduleForm({
       <input name="legislatureId" type="hidden" value={legislatureId ?? ""} />
       <FormFeedback error={state.error} message={state.message} />
       <label>
-        Comisión
+        ComisiÃ³n
         <CommitteeSelect committees={committees} name="committeeId" required />
       </label>
       <label>
@@ -830,8 +900,8 @@ export function CommitteeScheduleForm({
         <input disabled={!legislatureId} name="frequency" placeholder="mensual" />
       </label>
       <label>
-        Día de la semana
-        <input disabled={!legislatureId} name="weekday" placeholder="miércoles" />
+        DÃ­a de la semana
+        <input disabled={!legislatureId} name="weekday" placeholder="miÃ©rcoles" />
       </label>
       <label>
         Semana del mes

@@ -3278,6 +3278,100 @@ tr:last-child td {
   padding-top: 16px;
 }
 
+.transparency-import-form {
+  grid-template-columns: minmax(260px, 1fr) auto;
+}
+
+.transparency-progress {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.transparency-progress div {
+  display: grid;
+  gap: 4px;
+}
+
+.transparency-progress strong {
+  color: var(--brand-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.transparency-progress span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.transparency-progress i {
+  background: #fff;
+  border-radius: 999px;
+  display: block;
+  height: 10px;
+  overflow: hidden;
+}
+
+.transparency-progress i span {
+  animation: transparency-progress-slide 1.4s ease-in-out infinite;
+  background: var(--brand);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  width: 45%;
+}
+
+.import-flow-modal {
+  align-items: center;
+  background: rgba(15, 26, 14, 0.56);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 90;
+}
+
+.import-flow-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+  padding: 24px;
+  width: min(620px, 100%);
+}
+
+.import-flow-card h3 {
+  color: var(--brand-dark);
+  font-size: 24px;
+  margin: 0;
+}
+
+.import-flow-card p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+@keyframes transparency-progress-slide {
+  0% {
+    transform: translateX(-70%);
+  }
+
+  50% {
+    transform: translateX(70%);
+  }
+
+  100% {
+    transform: translateX(190%);
+  }
+}
+
 .legislature-step-list {
   border-top: 1px solid var(--border);
   margin-top: 16px;
