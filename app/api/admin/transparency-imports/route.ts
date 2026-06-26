@@ -472,7 +472,7 @@ export async function POST(request: Request) {
 
     const { data: activeLock } = await adminClient
       .from("system_locks")
-      .select("id, expires_at")
+      .select("id, expires_at, process_run_id")
       .eq("organization_id", context.organization.id)
       .eq("lock_type", "legislature_configuration")
       .eq("status", "active")
@@ -480,10 +480,26 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (activeLock) {
-      return NextResponse.json(
-        { error: "Ya hay una importacion institucional en curso. Espera a que finalice o expire el bloqueo." },
-        { status: 409 }
-      );
+      const { data: runningJob } = await adminClient
+        .from("transparency_import_jobs")
+        .select("id, status")
+        .eq("organization_id", context.organization.id)
+        .eq("process_run_id", activeLock.process_run_id)
+        .in("status", ["pending", "crawling"])
+        .maybeSingle();
+
+      if (runningJob) {
+        return NextResponse.json(
+          { error: "Ya hay una importacion institucional en curso. Espera a que finalice o expire el bloqueo." },
+          { status: 409 }
+        );
+      }
+
+      await adminClient
+        .from("system_locks")
+        .update({ status: "released", released_at: new Date().toISOString() })
+        .eq("id", activeLock.id)
+        .eq("organization_id", context.organization.id);
     }
 
     const { data: processRun, error: processError } = await adminClient

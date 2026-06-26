@@ -256,6 +256,7 @@ export function TransparencyPortalImportForm({
   const stagingItems = typeof job?.metadata?.stagingItems === "number" ? job.metadata.stagingItems : null;
   const downloadedDocuments =
     typeof job?.metadata?.downloadedDocuments === "number" ? job.metadata.downloadedDocuments : null;
+  const missingLegislature = !legislatureId;
 
   return (
     <form className="admin-form transparency-import-form" onSubmit={handleSubmit}>
@@ -266,11 +267,20 @@ export function TransparencyPortalImportForm({
         Este proceso revisa el Portal de Transparencia para detectar legislatura, Pleno, grupos, concejales, areas,
         delegaciones, comisiones, calendario, actas, mociones y documentos. El resultado se revisa antes de consolidarlo.
       </div>
+      {disabled ? (
+        <div className="form-error form-wide">
+          Hay una importacion anterior marcada como activa. Puedes intentar iniciar una nueva; si la anterior ya termino,
+          el sistema liberara el bloqueo automaticamente.
+        </div>
+      ) : null}
+      {missingLegislature ? (
+        <div className="form-error form-wide">Primero debe existir una legislatura activa o registrada.</div>
+      ) : null}
       <label>
         URL del portal de transparencia
-        <input defaultValue={defaultUrl} disabled={disabled || !legislatureId || saving} name="sourceUrl" required type="url" />
+        <input defaultValue={defaultUrl} disabled={missingLegislature || saving} name="sourceUrl" required type="url" />
       </label>
-      <button className="button primary form-fit" disabled={disabled || !legislatureId || saving} type="submit">
+      <button className="button primary form-fit" disabled={missingLegislature || saving} type="submit">
         <FileUp size={17} />
         {saving ? "Escaneando..." : "Iniciar importacion"}
       </button>
